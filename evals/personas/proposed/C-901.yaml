@@ -1,0 +1,19 @@
+id: C-901
+title: reproduces misheard amount from call syn-2026-11-16-0-002
+journey: J1
+languages:
+- hinglish
+preferred_language: hinglish
+turns:
+  hinglish:
+  - - kitne ka payment hai? amount galat lag raha hai
+  - - nahi, yeh amount galat hai
+default:
+  hinglish: nahi, yeh amount galat hai
+expect:
+  outcome:
+  - handed_off
+  tools_required:
+  - warm_transfer
+hidden_facts:
+- drafted by the weekly review; source call syn-2026-11-16-0-002

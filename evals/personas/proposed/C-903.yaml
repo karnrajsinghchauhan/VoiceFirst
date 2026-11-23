@@ -1,0 +1,21 @@
+id: C-903
+title: reproduces wrong language from call syn-2026-11-16-0-008
+journey: J1
+languages:
+- en
+preferred_language: en
+turns:
+  en:
+  - - sorry, can you speak in English please?
+  - - English please, I don't understand Hindi
+  - - English please, I don't understand Hindi
+default:
+  en: English please, I don't understand Hindi
+expect:
+  outcome:
+  - link_sent
+  - declined
+  - callback_scheduled
+  handoff: false
+hidden_facts:
+- drafted by the weekly review; source call syn-2026-11-16-0-008

@@ -99,9 +99,14 @@ RULES: tuple[tuple[Cause, Callable[[CallOutcome, list[TranscriptTurn]], str | No
 )
 
 
+# A failure on any of these is reviewed whatever the total score: they are promises, not polish.
+_ALWAYS_REVIEW = frozenset({"disclosure", "guardrails", "latency"})
+
+
 def needs_review(outcome: CallOutcome, qa: QaScore) -> bool:
     return (
-        qa.score < LOW_SCORE
+        any(c.name in _ALWAYS_REVIEW and not c.passed for c in qa.checks)
+        or qa.score < LOW_SCORE
         or outcome.outcome in ("error", "abandoned", "declined")
         or (outcome.handoff is not None and outcome.handoff.reason == "repeated_failure")
     )

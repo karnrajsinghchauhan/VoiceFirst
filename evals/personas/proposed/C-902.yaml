@@ -1,0 +1,18 @@
+id: C-902
+title: reproduces customer confusion from call syn-2026-11-16-0-005
+journey: J1
+languages:
+- hinglish
+preferred_language: hinglish
+turns:
+  hinglish:
+  - - matlab? samajh nahi aaya
+default:
+  hinglish: matlab? samajh nahi aaya
+expect:
+  outcome:
+  - link_sent
+  - handed_off
+  - callback_scheduled
+hidden_facts:
+- drafted by the weekly review; source call syn-2026-11-16-0-005
