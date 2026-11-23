@@ -23,7 +23,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-voice = ["livekit-agents[turn-detector]==1.8.13"]
+voice = [
+  "livekit-agents[turn-detector]==1.8.13",
+  "livekit-plugins-sarvam==1.8.13",
+  "livekit-plugins-silero==1.8.13",
+]
 
 [dependency-groups]
 dev = [

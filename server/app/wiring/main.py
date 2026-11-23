@@ -24,11 +24,13 @@ from app.incidents.api_port import IncidentPort
 from app.messaging.fallback import WhatsAppFallback
 from app.postcall.crypto import DataCipher
 from app.postcall.settings import PostcallSettings, validate_postcall_for_production
+from app.providers.livekit_settings import LiveKitSettings
 from app.providers.registry import Providers, build_providers
 from app.rights.workflow import RightsSlaSettings
 from app.simulator.caller import ScriptedCaller, load_personas
 from app.telephony.handle import CallHandle
 from app.voice.agent import Listener
+from app.voice.livekit_bridge import LiveKitMediaBridge
 from app.wiring.runner import AgentCallRunner, ListenerFactory
 from app.wiring.simulator_port import ScenarioSimulator
 
@@ -52,15 +54,21 @@ def _human_queue(settings: Settings) -> HumanQueue:
 
 
 def _listener_factory(settings: Settings) -> ListenerFactory:
-    """The customer side of a call. Only the mock telephony path has one until M8."""
-    if settings.telephony != "mock":
-        raise NotBuiltYetError("AV-M8: LiveKit media path for real telephony")
-    cooperative = next(p for p in load_personas() if p.id == "C-01")
+    """The customer side of a call: the scripted caller on mock telephony, LiveKit otherwise."""
+    if settings.telephony == "mock":
+        cooperative = next(p for p in load_personas() if p.id == "C-01")
 
-    def make(handle: CallHandle, event: BookingEvent) -> Listener:
-        return ScriptedCaller(cooperative, event.customer.preferred_language, 0)
+        def scripted(handle: CallHandle, event: BookingEvent) -> Listener:
+            return ScriptedCaller(cooperative, event.customer.preferred_language, 0)
 
-    return make
+        return scripted
+    # Raises ConfigError at boot when LiveKit keys are missing (D-502).
+    bridge = LiveKitMediaBridge(settings, LiveKitSettings())
+
+    def live(handle: CallHandle, event: BookingEvent) -> Listener:
+        return bridge.listener_for(handle.provider_call_id, event.customer.preferred_language)
+
+    return live
 
 
 def build_runtime(settings: Settings) -> Runtime:
