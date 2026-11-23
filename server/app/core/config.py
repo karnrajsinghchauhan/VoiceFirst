@@ -7,8 +7,8 @@ hard-coded truth. `validate_for_environment` fails startup on bad config.
 from __future__ import annotations
 
 from datetime import time
-from decimal import Decimal
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
@@ -124,8 +124,8 @@ class Settings(BaseSettings):
     voice_id: str = "mock-female-1"
 
     ntp_servers: tuple[str, ...] = ("samay1.nic.in", "samay2.nic.in")
-    whatsapp_utility_rate_paise: Decimal = Decimal("11.50")
-    gst_rate: Decimal = Decimal("0.18")
+    # Every unit price lives in this file (app.costs.book); nothing else holds a price.
+    costs_file: str = str(Path(__file__).resolve().parents[3] / "config" / "costs.yaml")
 
     compliance: ComplianceSettings = ComplianceSettings()
     holdout: HoldoutSettings = HoldoutSettings()

@@ -7,7 +7,6 @@ utility; per-kind caps. Costs assume every template is paid (REQ-WA-02).
 from __future__ import annotations
 
 from datetime import timedelta
-from decimal import ROUND_CEILING, Decimal
 from typing import Literal
 
 from sqlalchemy import func, select
@@ -26,6 +25,7 @@ from app.core.errors import (
 )
 from app.core.ids import new_id, phone_hash, sha256_hex
 from app.core.money import format_inr
+from app.costs.book import load_book
 from app.incidents.service import page_human
 from app.messaging.models import InboundMessageRow, WhatsAppStateRow
 from app.messaging.templates import TEMPLATES, Template
@@ -35,8 +35,7 @@ SendKind = Literal["in_call", "no_answer_fallback", "notice", "survey", "app_lin
 
 
 def template_cost_paise(settings: Settings) -> int:
-    with_gst = settings.whatsapp_utility_rate_paise * (Decimal(1) + settings.gst_rate)
-    return int(with_gst.to_integral_value(rounding=ROUND_CEILING))
+    return load_book(settings.costs_file).whatsapp_template_paise()
 
 
 def _assert_not_paused(session: Session, tenant_id: str) -> None:

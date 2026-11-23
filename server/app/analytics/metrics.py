@@ -12,9 +12,9 @@ from datetime import timedelta
 from decimal import Decimal
 from statistics import median, quantiles
 
-from app.analytics.cost_model import whatsapp_utility_paise
 from app.analytics.lift import InsufficientSampleError
 from app.contracts.generated.call_outcome import CallOutcome
+from app.costs.book import CostBook
 
 # The AI finished the job with no human: the journey's goal was met on the call.
 AI_RESOLVED = frozenset({"link_sent", "details_confirmed"})
@@ -91,12 +91,12 @@ def call_cost_paise(outcome: CallOutcome) -> int:
 
 
 def cost_per_resolved_contact_paise(
-    outcomes: Sequence[CallOutcome], whatsapp_templates_sent: int
+    outcomes: Sequence[CallOutcome], whatsapp_templates_sent: int, book: CostBook
 ) -> Decimal:
     """All spend (including unresolved calls and every template) over AI-resolved contacts."""
     resolved = sum(o.outcome in AI_RESOLVED for o in outcomes)
     if resolved == 0:
         raise InsufficientSampleError("no AI-resolved contacts")
     total = Decimal(sum(call_cost_paise(o) for o in outcomes))
-    total += whatsapp_utility_paise() * whatsapp_templates_sent
+    total += book.unit_paise("whatsapp") * whatsapp_templates_sent
     return total / resolved

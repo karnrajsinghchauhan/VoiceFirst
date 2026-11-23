@@ -4,6 +4,7 @@ WORKDIR /srv
 COPY server/pyproject.toml server/uv.lock ./server/
 RUN cd server && uv sync --frozen --no-dev
 COPY contracts ./contracts
+COPY config ./config
 COPY server ./server
 WORKDIR /srv/server
 USER 65534

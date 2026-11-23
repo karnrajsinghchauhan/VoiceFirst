@@ -16,6 +16,7 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
+from decimal import ROUND_CEILING, Decimal
 from typing import Literal, Protocol
 from zoneinfo import ZoneInfo
 
@@ -39,6 +40,7 @@ from app.core.errors import (
 from app.core.ids import mask_booking_id, sha256_hex
 from app.core.redaction import redact_text
 from app.core.types import Language, Purpose
+from app.costs.book import load_book
 from app.providers.base import ChatMessage, LlmProvider, ToolCall
 from app.providers.llm.mock import STATE_PREFIX
 from app.voice import prompts
@@ -78,9 +80,6 @@ ANGER_THRESHOLD = 0.7
 # Safety triggers (opt-out, human, emergency, dispute, money) still act: erring toward them is safe.
 MIN_CONFIDENCE = 0.9
 # Telephony unit price is [CD] (Plivo India Rs 0.38/min, 30-s pulse); STT/TTS from Sarvam (S-31).
-_TELEPHONY_PAISE_PER_PULSE = 19
-_STT_PAISE_PER_MIN = 49
-_TTS_PAISE_PER_1000_CHARS = 300
 
 
 @dataclass(frozen=True)
@@ -673,8 +672,14 @@ def _error_path(conv: Conversation, exc: AgodaVoiceError) -> Outcome:
     return "error"
 
 
+def _paise(amount: Decimal) -> int:
+    return int(amount.to_integral_value(rounding=ROUND_CEILING))
+
+
 def _result(conv: Conversation, outcome: Outcome, error_code: str | None) -> ConversationResult:
     s = conv.s
+    # Prices come from the cost book; customer speech at 2.5 words/s is 150 words a minute.
+    book = load_book(s.settings.costs_file)
     agent_chars = sum(len(t.text) for t in conv.transcript if t.speaker == "agent")
     customer_words = sum(len(t.text.split()) for t in conv.transcript if t.speaker == "customer")
     seconds = agent_chars / 15 + customer_words / 2.5
@@ -728,10 +733,10 @@ def _result(conv: Conversation, outcome: Outcome, error_code: str | None) -> Con
         handoff=handoff,
         latency_ms=LatencyMs(p50=p50, p95=p95),
         cost=Cost(
-            telephony=pulses * _TELEPHONY_PAISE_PER_PULSE,
-            stt=int(customer_words / 2.5 / 60 * _STT_PAISE_PER_MIN + 0.999),
-            tts=int(agent_chars * _TTS_PAISE_PER_1000_CHARS / 1000 + 0.999),
-            llm=0,
+            telephony=_paise(pulses * book.unit_paise("telephony")),
+            stt=_paise(Decimal(customer_words) / Decimal("150") * book.unit_paise("stt")),
+            tts=_paise(Decimal(agent_chars) / 1000 * book.unit_paise("tts")),
+            llm=_paise(Decimal(str(seconds)) / 60 * book.unit_paise("llm")),
             whatsapp=conv.cost_whatsapp,
         ),
         redaction_applied=conv.redaction_applied,

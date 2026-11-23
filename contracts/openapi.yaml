@@ -384,6 +384,36 @@ components:
       - status
       title: CliIn
       type: object
+    ComparisonView:
+      properties:
+        checked_at:
+          format: date
+          title: Checked At
+          type: string
+        currency:
+          title: Currency
+          type: string
+        price:
+          title: Price
+          type: string
+        source_url:
+          title: Source Url
+          type: string
+        unit:
+          title: Unit
+          type: string
+        vendor:
+          title: Vendor
+          type: string
+      required:
+      - vendor
+      - price
+      - currency
+      - unit
+      - source_url
+      - checked_at
+      title: ComparisonView
+      type: object
     CompleteIn:
       additionalProperties: false
       properties:
@@ -598,6 +628,94 @@ components:
       - llm
       - whatsapp
       title: Cost
+      type: object
+    CostComponentView:
+      properties:
+        checked_at:
+          format: date
+          title: Checked At
+          type: string
+        estimate:
+          title: Estimate
+          type: boolean
+        name:
+          title: Name
+          type: string
+        per_minute_paise:
+          title: Per Minute Paise
+          type: string
+        source:
+          title: Source
+          type: string
+        source_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Url
+        unit:
+          title: Unit
+          type: string
+        unit_price:
+          title: Unit Price
+          type: string
+      required:
+      - name
+      - unit
+      - unit_price
+      - source
+      - source_url
+      - checked_at
+      - per_minute_paise
+      - estimate
+      title: CostComponentView
+      type: object
+    CostsView:
+      properties:
+        as_of:
+          format: date
+          title: As Of
+          type: string
+        assumptions:
+          additionalProperties:
+            type: string
+          title: Assumptions
+          type: object
+        comparison:
+          items:
+            $ref: '#/components/schemas/ComparisonView'
+          title: Comparison
+          type: array
+        components:
+          items:
+            $ref: '#/components/schemas/CostComponentView'
+          title: Components
+          type: array
+        currency:
+          title: Currency
+          type: string
+        per_call_paise:
+          title: Per Call Paise
+          type: string
+        per_minute_paise:
+          title: Per Minute Paise
+          type: string
+        per_resolved_contact_paise:
+          title: Per Resolved Contact Paise
+          type: string
+        re_check_before_quoting:
+          title: Re Check Before Quoting
+          type: boolean
+      required:
+      - as_of
+      - currency
+      - re_check_before_quoting
+      - components
+      - per_minute_paise
+      - per_call_paise
+      - per_resolved_contact_paise
+      - assumptions
+      - comparison
+      title: CostsView
       type: object
     ErrorBody:
       properties:
@@ -933,6 +1051,64 @@ components:
       - p50
       - p95
       title: LatencyMs
+      type: object
+    NumberView:
+      properties:
+        answer_rate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Answer Rate
+        auto_paused:
+          title: Auto Paused
+          type: boolean
+        cli_e164:
+          title: Cli E164
+          type: string
+        complaints_10d:
+          title: Complaints 10D
+          type: integer
+        declaration_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Declaration Ref
+        dlt_recorded_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Dlt Recorded At
+        oap:
+          title: Oap
+          type: string
+        paused_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Paused Reason
+        purpose:
+          title: Purpose
+          type: string
+        series:
+          title: Series
+          type: string
+        status:
+          title: Status
+          type: string
+      required:
+      - cli_e164
+      - series
+      - purpose
+      - oap
+      - declaration_ref
+      - dlt_recorded_at
+      - status
+      - complaints_10d
+      - answer_rate
+      - auto_paused
+      - paused_reason
+      title: NumberView
       type: object
     OptOutIn:
       additionalProperties: false
@@ -2088,6 +2264,63 @@ paths:
       summary: Opt Out
       tags:
       - consent
+  /costs:
+    get:
+      operationId: get_costs_costs_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CostsView'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Get Costs
+      tags:
+      - costs
   /handoff:
     get:
       operationId: list_handoffs_handoff_get
@@ -2681,6 +2914,66 @@ paths:
       summary: Metrics
       tags:
       - ops
+  /numbers:
+    get:
+      operationId: list_numbers_numbers_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NumberView'
+                title: Response List Numbers Numbers Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Numbers
+      tags:
+      - numbers
   /rights-requests:
     get:
       operationId: list_requests_rights_requests_get

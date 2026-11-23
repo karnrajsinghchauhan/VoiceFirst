@@ -1,0 +1,100 @@
+# Unit prices for every cost view: the console Costs page, GET /costs, call outcomes,
+# analytics, and the proposal and unit-economics tables. Edit here; `make costs`
+# regenerates the documents.
+# Rule (brief v3 0.5): a price either cites a dated source in docs/sources.md or is an
+# estimate. Every price is re-checked before it is quoted to a customer.
+as_of: "2026-11-23"
+currency: INR
+re_check_before_quoting: true
+gst_rate: "0.18"            # S-30 Meta: GST on WhatsApp templates
+assumptions:
+  avg_call_minutes: "2.0"             # estimate
+  resolution_rate: "0.55"             # estimate; pilot containment target band 35-55%
+  agent_tts_chars_per_minute: "420"   # estimate: agent speaks about half the call at ~14 chars/s
+  whatsapp_templates_per_call: "1.0"  # estimate: at most one template per handled call
+components:
+  - name: telephony
+    unit: per 30-s pulse
+    unit_price: "0.19"
+    units_per_minute: "2"
+    source: "Plivo India Rs 0.38/min, 30-s pulse (earlier research, brief v2 7.8) [CD]"
+    source_url: https://www.plivo.com/pricing/
+    checked_at: "2026-01-01"
+    estimate: true
+  - name: a2p_termination
+    unit: per minute
+    unit_price: "0.00"
+    units_per_minute: "1"
+    source: "Whether an A2P termination charge applies to service calls is [CD]; zero until confirmed"
+    source_url: https://www.trai.gov.in/
+    checked_at: "2026-11-23"
+    estimate: true
+  - name: stt
+    unit: per minute
+    unit_price: "0.49"
+    units_per_minute: "1"
+    source: "S-31 Sarvam pay-as-you-go STT"
+    source_url: https://www.sarvam.ai/api-pricing
+    checked_at: "2026-11-01"
+    estimate: false
+  - name: llm
+    unit: per minute
+    unit_price: "0.40"
+    units_per_minute: "1"
+    source: "Estimate for a small hosted model at about 6 turns a minute; no provider contracted"
+    source_url: null
+    checked_at: "2026-11-23"
+    estimate: true
+  - name: tts
+    unit: per 1,000 characters
+    unit_price: "3.00"
+    units_per_minute: "0.42"
+    source: "S-31 Sarvam Bulbul v3; units = agent_tts_chars_per_minute / 1000"
+    source_url: https://www.sarvam.ai/api-pricing
+    checked_at: "2026-11-01"
+    estimate: false
+  - name: orchestration_infra
+    unit: per minute
+    unit_price: "0.10"
+    units_per_minute: "1"
+    source: "Estimate: container host and Postgres share at pilot volume (docs/launch-costs.md)"
+    source_url: null
+    checked_at: "2026-11-23"
+    estimate: true
+  - name: whatsapp
+    unit: per utility template, before GST
+    unit_price: "0.1150"
+    units_per_minute: "0.5"
+    source: "S-30 Meta WhatsApp India utility rate; every template assumed paid (REQ-WA-02); units = templates per call / call minutes"
+    source_url: https://developers.facebook.com/docs/whatsapp/pricing
+    checked_at: "2026-10-01"
+    estimate: false
+    gst_applies: true
+  - name: storage_qa
+    unit: per minute
+    unit_price: "0.02"
+    units_per_minute: "1"
+    source: "Estimate: encrypted transcript storage (180 days) and QA scoring compute"
+    source_url: null
+    checked_at: "2026-11-23"
+    estimate: true
+comparison:
+  # Published list prices only; no claims beyond these numbers. [CD] re-check before quoting.
+  - vendor: Vapi
+    price: "0.05"
+    currency: USD
+    unit: per minute, platform fee only (model, voice and telephony extra)
+    source_url: https://vapi.ai/pricing
+    checked_at: "2026-01-01"
+  - vendor: Retell
+    price: "0.07-0.31"
+    currency: USD
+    unit: per minute, depending on voice and model
+    source_url: https://www.retellai.com/pricing
+    checked_at: "2026-01-01"
+  - vendor: ElevenLabs Agents
+    price: "0.08"
+    currency: USD
+    unit: per minute, overage
+    source_url: https://elevenlabs.io/pricing
+    checked_at: "2026-01-01"

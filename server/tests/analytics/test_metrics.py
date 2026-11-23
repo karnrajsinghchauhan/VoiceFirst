@@ -6,7 +6,6 @@ from decimal import Decimal
 import pytest
 from sqlalchemy import select
 
-from app.analytics.cost_model import ALL_PRICES, whatsapp_utility_paise
 from app.analytics.lift import InsufficientSampleError
 from app.analytics.metrics import (
     containment,
@@ -20,6 +19,7 @@ from app.analytics.queries import j1_arm_counts, j1_lift
 from app.campaigns.models import BookingEventRow, QueueItemRow
 from app.campaigns.seed_data import build_seed
 from app.contracts.generated.call_outcome import CallOutcome
+from app.costs.book import load_book
 from tests.campaigns.m4 import run_campaign
 
 
@@ -55,13 +55,14 @@ def _outcome(name: str) -> CallOutcome:
     )
 
 
+def _book():
+    from tests.factories import make_settings
+
+    return load_book(make_settings().costs_file)
+
+
 def test_whatsapp_utility_includes_gst():
-    assert whatsapp_utility_paise() == Decimal("13.5700")
-
-
-def test_every_price_is_dated_and_tagged():
-    for price in ALL_PRICES:
-        assert price.tag in ("V", "CD") and price.as_of.year >= 2026 and price.source
+    assert _book().unit_paise("whatsapp") == Decimal("13.5700")
 
 
 def test_containment_counts_only_reached_calls():
@@ -73,9 +74,11 @@ def test_containment_counts_only_reached_calls():
 
 def test_cost_per_resolved_contact():
     outs = [_outcome("link_sent"), _outcome("no_answer")]
-    assert cost_per_resolved_contact_paise(outs, whatsapp_templates_sent=2) == Decimal("467.14")
+    assert cost_per_resolved_contact_paise(
+        outs, whatsapp_templates_sent=2, book=_book()
+    ) == Decimal("467.14")
     with pytest.raises(InsufficientSampleError):
-        cost_per_resolved_contact_paise([_outcome("no_answer")], 0)
+        cost_per_resolved_contact_paise([_outcome("no_answer")], 0, _book())
 
 
 def test_recovery_csat_resolution():
