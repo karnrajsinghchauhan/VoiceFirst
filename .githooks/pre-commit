@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Blocks every commit unless `make check` exits 0 (brief v2 6.10, v3 S2).
+# Installed by `make hooks` (git config core.hooksPath .githooks).
+set -uo pipefail
+root="$(git rev-parse --show-toplevel)"
+log="$(mktemp)"
+if ! make -C "$root" check >"$log" 2>&1; then
+  echo "pre-commit: make check failed; commit blocked. Last lines:" >&2
+  tail -25 "$log" >&2
+  rm -f "$log"
+  exit 1
+fi
+rm -f "$log"
