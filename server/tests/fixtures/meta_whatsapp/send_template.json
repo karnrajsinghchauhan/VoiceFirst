@@ -1,0 +1,25 @@
+{
+  "request": {
+    "messaging_product": "whatsapp",
+    "to": "919812345678",
+    "type": "template",
+    "template": {
+      "name": "av_payment_link_v1",
+      "language": {"code": "en_IN"},
+      "components": [
+        {
+          "type": "body",
+          "parameters": [
+            {"type": "text", "parameter_name": "first_name", "text": "Priya"},
+            {"type": "text", "parameter_name": "link", "text": "https://example.invalid/agoda/pay/abc"}
+          ]
+        }
+      ]
+    }
+  },
+  "response": {
+    "messaging_product": "whatsapp",
+    "contacts": [{"input": "919812345678", "wa_id": "919812345678"}],
+    "messages": [{"id": "wamid.HBgLOTE5ODEyMzQ1Njc4FQIAERgSQ0ZGRkE5MjNBQjk3MUY1QzZFAA=="}]
+  }
+}

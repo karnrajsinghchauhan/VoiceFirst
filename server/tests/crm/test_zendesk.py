@@ -17,7 +17,7 @@ from app.providers.crm.zendesk import ZendeskCrm, ZendeskSettings
 from tests.factories import make_settings
 from tests.outcome_factory import make_summary
 
-ZS = ZendeskSettings(subdomain="acme", email="bot@example.invalid", api_token="tok")  # noqa: S106
+ZS = ZendeskSettings(subdomain="acme", email="bot@example.invalid", api_token="tok")
 
 
 def _crm(handler):

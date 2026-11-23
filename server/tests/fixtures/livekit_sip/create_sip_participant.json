@@ -1,0 +1,19 @@
+{
+  "request": {
+    "sip_trunk_id": "ST_test123",
+    "sip_call_to": "+919812345678",
+    "sip_number": "+911600123456",
+    "room_name": "call_abc",
+    "participant_identity": "callee",
+    "participant_name": "callee",
+    "ringing_timeout": "30s",
+    "max_call_duration": "600s",
+    "wait_until_answered": false
+  },
+  "response": {
+    "participant_id": "PA_xyz789",
+    "participant_identity": "callee",
+    "room_name": "call_abc",
+    "sip_call_id": "SCL_456def"
+  }
+}

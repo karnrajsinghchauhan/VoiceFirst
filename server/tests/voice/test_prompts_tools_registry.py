@@ -71,7 +71,6 @@ def test_registry_builds_one_mock_per_role() -> None:
         ("stt", "selfhosted"),
         ("tts", "elevenlabs"),
         ("llm", "vllm"),
-        ("telephony", "exotel"),
         ("crm", "hubspot"),
     ],
 )
@@ -98,3 +97,18 @@ def test_livekit_turn_handling_is_pinned() -> None:
     import importlib.metadata
 
     assert importlib.metadata.version("livekit-agents") == LIVEKIT_AGENTS_VERSION
+
+
+@pytest.mark.parametrize(
+    ("role", "name"),
+    [("telephony", "plivo"), ("telephony", "exotel"), ("whatsapp", "meta_cloud_api")],
+)
+def test_real_channel_without_keys_fails_at_boot(
+    role: str, name: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.core.errors import ConfigError
+
+    for var in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET", "AV_META_ACCESS_TOKEN"):
+        monkeypatch.delenv(var, raising=False)
+    with pytest.raises(ConfigError):
+        build_providers(settings().model_copy(update={role: name}))

@@ -95,20 +95,34 @@ def _llm(settings: Settings, timer: SimTimer, seed: int) -> LlmProvider:
     raise _not_built("llm", settings.llm, "vllm adapter is phase 2")
 
 
+def _telephony(settings: Settings) -> TelephonyProvider:
+    if settings.telephony == "mock":
+        return MockTelephony()
+    # Plivo and Exotel are both SIP trunks behind LiveKit SIP (D-501); one client serves both.
+    from app.providers.livekit_settings import LiveKitSettings
+    from app.providers.telephony.livekit_sip import LiveKitSipTelephony, SipTrunkSettings
+
+    return LiveKitSipTelephony(settings.telephony, LiveKitSettings(), SipTrunkSettings())
+
+
+def _whatsapp(settings: Settings) -> WhatsAppProvider:
+    if settings.whatsapp == "mock":
+        return MockWhatsApp()
+    from app.providers.whatsapp.meta_cloud_api import MetaCloudWhatsApp, MetaWhatsAppSettings
+
+    return MetaCloudWhatsApp(MetaWhatsAppSettings())
+
+
 def build_providers(settings: Settings, seed: int = 0) -> Providers:
     # The prompt set must match the configured voice before any call is placed (REQ-AI-02).
     lint_gender(settings.voice_gender)
     timer = SimTimer()
-    if settings.telephony != "mock":
-        raise _not_built("telephony", settings.telephony, "telephony adapters are owned by W-A")
-    if settings.whatsapp != "mock":
-        raise _not_built("whatsapp", settings.whatsapp, "meta_cloud_api is owned by W-A")
     return Providers(
         stt=_stt(settings, timer, seed),
         tts=_tts(settings, timer, seed),
         llm=_llm(settings, timer, seed),
-        telephony=MockTelephony(),
-        whatsapp=MockWhatsApp(),
+        telephony=_telephony(settings),
+        whatsapp=_whatsapp(settings),
         crm=make_crm(settings),
         timer=timer,
     )
