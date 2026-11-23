@@ -1,0 +1,25 @@
+# Runbooks
+
+## Stop all calling now
+
+Console: Kill switch, enter a reason, Engage. API: `POST /killswitch` with `{"engaged": true, "reason": "..."}` and an admin or ops token. The effect lands within five seconds; confirm that live calls drop to zero.
+
+## A complaint arrives
+
+The CLI pauses automatically. On a second unique complaint within ten days every campaign pauses and a human is paged. Review the calls on that CLI before lifting the pause; lifting it is audit-logged.
+
+## Security incident
+
+The CERT-In timer starts at detection: a report is due within 6 hours. Record `detected_at` in `/incidents` first.
+
+## Personal data breach
+
+Record `detected_at`. A detailed report to the Data Protection Board is due within 72 hours; affected principals are notified without delay.
+
+## WhatsApp quality drops to low
+
+WhatsApp sending pauses and a human is paged. Review template wording with the dark-pattern suite before resuming.
+
+## A provider fails
+
+Expect a typed error and an alert. Before a dial nothing is placed; mid-call the agent apologises and schedules a human callback. Do not switch providers at runtime: fix or reconfigure, then redeploy.

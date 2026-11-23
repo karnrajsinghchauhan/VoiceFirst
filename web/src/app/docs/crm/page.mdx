@@ -1,0 +1,5 @@
+# CRM
+
+One `CrmProvider` interface with `create_ticket` and `add_note`. Implementations: `mock` and `zendesk` (the client's partner helpdesk runs on Zendesk). `salesforce` and `hubspot` are valid configuration values that fail at boot until they are built.
+
+Every handoff and every logged case creates a ticket whose body is the handoff summary. Tickets carry the trace id and the masked booking reference, never the full booking ID, card data or a raw phone number.

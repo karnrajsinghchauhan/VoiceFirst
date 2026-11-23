@@ -1,0 +1,20 @@
+# Providers
+
+One interface per role, and one implementation chosen by environment variable at boot. The default is `mock`; production rejects it.
+
+| Role | Variable | Options |
+|---|---|---|
+| Speech to text | `AV_STT` | mock, sarvam, elevenlabs, selfhosted (IndicConformer; licence to confirm) |
+| Text to speech | `AV_TTS` | mock, sarvam_bulbul, elevenlabs, selfhosted (Indic Parler-TTS or IndicF5; licence to confirm) |
+| Model | `AV_LLM` | mock, openai, anthropic, vllm |
+| Telephony | `AV_TELEPHONY` | mock, plivo, exotel (SIP trunks via LiveKit SIP) |
+| WhatsApp | `AV_WHATSAPP` | mock, meta_cloud_api |
+| CRM | `AV_CRM` | mock, zendesk, salesforce, hubspot |
+
+A configured option that is not yet built fails at boot with `ProviderNotBuiltError`.
+
+A provider failure raises `ProviderError`. Nothing catches it to try another provider: before a dial the call is not placed; during a call the agent apologises and schedules a human callback, and an alert fires.
+
+Voices are stock voices licensed for commercial telephony, never a clone of a real person. Hindi verb gender in prompts matches the configured voice ("bol rahi hoon" or "bol raha hoon").
+
+Real-time voice runs on LiveKit Agents 1.8.13 (pinned; 2.0 is in beta), using `AgentSession` with explicit turn-handling and interruption options and the outbound answering-machine detection helper.

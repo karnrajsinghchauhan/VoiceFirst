@@ -1,0 +1,14 @@
+# Security
+
+Baseline until the client's vendor standards are received:
+
+- Audit log for every privileged action, append-only, also published to `av.audit.v1`.
+- Least-privilege RBAC: admin, ops, auditor, read-only.
+- Encryption in transit and at rest.
+- No training or fine-tuning on client data.
+- A processing record for each purpose.
+- PII redacted inside the logger itself and at write time, not by callers.
+- Phone numbers stored as peppered hashes wherever the raw number is not needed.
+- ICT logs kept for a rolling 180 days, producible within India, with clocks synced to NIC/NPL-traceable NTP.
+
+The full control list is `SECURITY.md` in the repository.

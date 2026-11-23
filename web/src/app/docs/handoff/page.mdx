@@ -1,0 +1,15 @@
+# Handoff and CCaaS
+
+A warm transfer always carries a summary of at most five lines, shaped like the client's own case summaries:
+
+1. Who: the booker or a third party, and the language.
+2. Booking: masked to the last four characters.
+3. What the customer wants.
+4. What the AI did.
+5. Sentiment, policy references and the next best action.
+
+The record also carries the queue, the reason and SLA fields that mirror the 48 h acknowledgement and 30-day resolution timelines. Handoffs are published to `av.handoffs.v1` for the contact-centre platform to route.
+
+If no human is available, the agent says so plainly and schedules a callback. It never pretends a transfer is happening.
+
+Disputes always go to a human, because a technically correct answer may not be a fair one.

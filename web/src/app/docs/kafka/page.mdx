@@ -1,0 +1,14 @@
+# Kafka topics
+
+The event bus speaks the Kafka API: Redpanda locally, the client's Kafka in production. Messages are validated against their contract before publish and keyed by `booking_id` where the record has one. A publish returns only after the broker acknowledges it (`acks=all`, idempotent producer), or raises.
+
+| Topic | Record |
+|---|---|
+| `av.booking-events.v1` | `booking_event` |
+| `av.gate-decisions.v1` | `gate_decision` |
+| `av.call-outcomes.v1` | `call_outcome` |
+| `av.handoffs.v1` | `handoff_summary` |
+| `av.complaints.v1` | `complaint` |
+| `av.audit.v1` | `audit_event` |
+
+Retention per topic is stated in `contracts/kafka-topics.md`. Tests use the `memory` bus, a deterministic test double that production configuration rejects.

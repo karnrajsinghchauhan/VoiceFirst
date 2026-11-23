@@ -1,0 +1,31 @@
+# Architecture
+
+A Python 3.12 modular monolith (FastAPI, pydantic v2, SQLAlchemy 2 on Postgres 16) plus one Next.js app.
+
+| Package | Owns |
+|---|---|
+| `core` | typed errors, config, clock, ids, JSON logging with redaction, db, event bus, audit log |
+| `contracts` | types generated from `contracts/schemas` |
+| `compliance` | the eleven gates, `GateClearance`, consent and opt-out, kill switch, complaints |
+| `telephony` | `dial(clearance)`, the only function that places a call |
+| `campaigns` | dispatcher, the only caller of `dial` |
+| `voice` | agent, versioned prompts, guardrails, normaliser, tools |
+| `providers` | one interface per role, one implementation chosen at boot |
+| `messaging` | WhatsApp templates, opt-in and fallback caps |
+| `handoff`, `postcall`, `crm` | summaries, outcomes, CRM adapters |
+| `analytics` | lift against holdout, recovery, resolution time, cost per contact |
+| `rights`, `incidents`, `admin` | DPDP rights workflow, breach and CERT-In timers, RBAC |
+| `simulator` | synthetic callers, line simulator, load and chaos |
+
+## Rules that shape the code
+
+- One correct path. Exactly one provider per role, chosen by configuration; bad configuration fails at startup with a typed error. No runtime fallback between providers.
+- Every error derives from `AgodaVoiceError` and carries a stable `code`.
+- Each fact has one owner module. Time is injected, so every timer is testable to the second.
+- An import-linter contract allows `telephony.dial` to be imported only by the dispatcher.
+
+## Dial pipeline
+
+`booking_event` -> holdout -> jurisdiction -> kill switch -> consent -> DND -> opt-out lock -> CLI declared -> number series -> CLI status -> call window -> attempt cap and cooldown -> `GateClearance` (single use, 60 s) -> `dial` -> agent session -> `call_outcome`.
+
+The `gate_decision` is written and published whether or not the call is cleared. `dial` consumes the clearance with a conditional update in the same transaction as the call, and re-checks the kill switch, so a clearance minted just before the switch is engaged cannot dial.
