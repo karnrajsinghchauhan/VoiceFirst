@@ -1,0 +1,76 @@
+# No cloud-vendor dependencies: every external system is a hostname you supply.
+image:
+  repository: registry.internal/agoda-voice/server
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+environment: production
+tenantId: agoda-in
+
+# Exactly one provider per role. The server refuses to boot with "mock" in production.
+providers:
+  stt: sarvam
+  tts: sarvam_bulbul
+  llm: openai
+  telephony: plivo
+  whatsapp: meta_cloud_api
+  crm: zendesk
+
+residency:
+  allowedRegions: ["in"]          # [CD] Agoda's allowlist
+  providerRegions:
+    stt: in
+    tts: in
+    llm: in
+    telephony: in
+    whatsapp: in
+    crm: in
+
+kafka:
+  bootstrap: kafka.internal:9093   # Agoda Kafka (Kafka API)
+  tls: true
+
+postgres:
+  # DSN comes from a Secret; sslmode=verify-full enforced.
+  existingSecret: agoda-voice-db
+  secretKey: dsn
+
+secrets:
+  existingSecret: agoda-voice-secrets   # phone pepper, API tokens, provider keys, data key
+
+retention:
+  audioDays: 30
+  transcriptDays: 180
+  ictLogDays: 180                 # REQ-SEC-03; never lower
+
+time:
+  ntpServers: ["samay1.nic.in", "samay2.nic.in"]   # NIC/NPL-traceable (REQ-SEC-03)
+
+api:
+  replicas: 2
+  resources:
+    requests: {cpu: 250m, memory: 512Mi}
+    limits: {cpu: "1", memory: 1Gi}
+
+dispatcher:
+  replicas: 1                      # one dispatcher keeps the attempt cap exact (D-20x)
+  resources:
+    requests: {cpu: 250m, memory: 256Mi}
+    limits: {cpu: 500m, memory: 512Mi}
+
+voiceWorker:
+  replicas: 2
+  # Sizing per concurrent session comes from `make load` (M10, docs/sizing.md).
+  sessionsPerPod: 20
+  resources:
+    requests: {cpu: "2", memory: 2Gi}
+    limits: {cpu: "4", memory: 4Gi}
+
+ingress:
+  enabled: true
+  className: nginx
+  host: voice.internal
+  tlsSecret: agoda-voice-tls
+
+networkPolicy:
+  enabled: true

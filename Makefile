@@ -25,7 +25,7 @@ typecheck:
 	$(UV) mypy app
 
 test:
-	$(UV) pytest -q -m "not e2e"
+	$(UV) pytest -q -n 4 -m "not e2e"
 
 web-check:
 	cd web && npm run --silent typecheck && npm run --silent lint
