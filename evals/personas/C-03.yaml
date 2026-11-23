@@ -1,0 +1,20 @@
+id: C-03
+title: English-only, impatient
+journey: J1
+languages:
+- en
+preferred_language: en
+cooperative: true
+turns:
+  en:
+  - Yes, just send it, I am busy.
+default:
+  en: Yes.
+expect:
+  outcome:
+  - link_sent
+  tools_required:
+  - send_payment_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false

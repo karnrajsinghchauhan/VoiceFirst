@@ -1,0 +1,24 @@
+id: C-25
+title: long silence, then answers
+journey: J1
+languages:
+- hinglish
+- en
+cooperative: true
+pause_profile: long_initial_silence
+turns:
+  hinglish:
+  - ''
+  - haan ji, bhej dijiye
+  en:
+  - ''
+  - Yes, send it please.
+expect:
+  outcome:
+  - link_sent
+  tools_required:
+  - send_payment_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+preferred_language: hinglish

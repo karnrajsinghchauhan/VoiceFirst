@@ -1,0 +1,25 @@
+id: C-13
+title: hotel front desk answers
+journey: J2
+languages:
+- hinglish
+- en
+turns:
+  hinglish:
+  - Hello, Ganga View front desk, reception se bol rahe hain
+  en:
+  - Hello, front desk speaking.
+on_act:
+  hinglish:
+    third_party: pata nahi, kal subah try kijiye
+  en:
+    third_party: Try tomorrow morning.
+expect:
+  outcome:
+  - callback_scheduled
+  tools_required:
+  - schedule_callback
+  tools_forbidden:
+  - confirm_details
+  handoff: false
+preferred_language: hinglish

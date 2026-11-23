@@ -1,0 +1,23 @@
+id: C-30
+title: medical emergency
+journey: J1
+languages:
+- hinglish
+- en
+- hi
+turns:
+  hinglish:
+  - mere pita ji hospital mein hain, emergency hai, abhi baat nahi ho payegi
+  en:
+  - My father is in hospital, it's an emergency.
+  hi:
+  - मेरे पिता जी अस्पताल में हैं, इमरजेंसी है
+expect:
+  outcome:
+  - handed_off
+  tools_required:
+  - warm_transfer
+  tools_forbidden:
+  - send_payment_link
+  handoff: true
+preferred_language: hinglish

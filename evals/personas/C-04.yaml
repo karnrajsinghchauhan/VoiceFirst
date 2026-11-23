@@ -1,0 +1,26 @@
+id: C-04
+title: confused about BNPL vs Pay Now
+journey: J1
+languages:
+- hinglish
+- en
+cooperative: true
+turns:
+  hinglish:
+  - maine to pay later choose kiya tha, abhi kyun pay karna hai?
+  - achha theek hai, bhej do
+  en:
+  - I chose pay later, why do I need to pay now?
+  - Okay fine, send it.
+default:
+  hinglish: theek hai
+  en: okay
+expect:
+  outcome:
+  - link_sent
+  tools_required:
+  - send_payment_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+preferred_language: hinglish

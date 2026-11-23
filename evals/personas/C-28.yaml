@@ -1,0 +1,28 @@
+id: C-28
+title: Varanasi pilgrim asks about ghats
+journey: J2
+languages:
+- hinglish
+- hi
+turns:
+  hinglish:
+  - haan ji
+  - haan sahi hai
+  - subah das baje
+  - Dashashwamedh ghat yahan se kitna door hai?
+  - nahi, kuch nahi chahiye
+  hi:
+  - हाँ जी
+  - हाँ सही है
+  - सुबह दस बजे
+  - दशाश्वमेध घाट यहाँ से कितना दूर है?
+  - नहीं, कुछ नहीं चाहिए
+expect:
+  outcome:
+  - details_confirmed
+  tools_required:
+  - confirm_details
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+preferred_language: hinglish

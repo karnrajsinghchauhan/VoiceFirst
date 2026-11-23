@@ -1,0 +1,18 @@
+id: C-20
+title: code-switches mid-sentence
+journey: J1
+languages:
+- hinglish
+cooperative: true
+turns:
+  hinglish:
+  - haan, actually main pay karne hi wala tha, link bhej do please
+expect:
+  outcome:
+  - link_sent
+  tools_required:
+  - send_payment_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+preferred_language: hinglish

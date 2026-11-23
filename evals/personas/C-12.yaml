@@ -1,0 +1,25 @@
+id: C-12
+title: spouse answers
+journey: J1
+languages:
+- hinglish
+- en
+turns:
+  hinglish:
+  - main unki wife hoon, woh abhi office mein hain
+  en:
+  - I'm his wife, he's not here right now.
+on_act:
+  hinglish:
+    third_party: shaam ko saat baje ke baad
+  en:
+    third_party: After seven in the evening.
+expect:
+  outcome:
+  - callback_scheduled
+  tools_required:
+  - schedule_callback
+  tools_forbidden:
+  - send_payment_link
+  handoff: false
+preferred_language: hinglish

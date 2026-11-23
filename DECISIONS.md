@@ -145,3 +145,47 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `AV_RIGHTS_ACK_HOURS=48`, `AV_RIGHTS_RESOLVE_DAYS=30` as house defaults.
 - Why: statutory DPDP timelines for each right are [CD]; we pick the stricter house target.
 - Would change it: counsel's confirmation of the statutory periods.
+## D-010 (2026-11-23) A tenth agent tool, send_app_link
+- Decision: the allowlist is the nine P1 tools plus `send_app_link`, which sends the Agoda
+  app link by WhatsApp utility template only when the customer asks about add-ons, and logs
+  `customer_initiated_offer_request`.
+- Why: D-001 requires the agent to send an app link; none of the nine tools does that. The
+  tool moves no money, carries no offer and no persuasion.
+- Would change it: Agoda preferring a spoken pointer to the app with no message at all.
+
+## D-101 (2026-11-23) The verbatim openings are spoken before identity is confirmed
+- Decision: the J1/J2 openings from brief 10.2/10.3 are the first utterance, so they name the
+  city (J1) or property and date (J2) before the callee confirms identity. Wrong person, third
+  party and child then get nothing further.
+- Why: the brief fixes the opening text and REQ-DPDP-01 needs purpose in the first utterance.
+- Would change it: Agoda choosing a generic first line ("aapki Agoda booking ke baare mein")
+  with the identity check before any booking detail [CD].
+
+## D-102 (2026-11-23) Local turn detector, not the inference gateway
+- Decision: the LiveKit worker uses livekit-plugins-turn-detector 1.8.13 MultilingualModel
+  (local, deprecated in favour of inference.TurnDetector) with fixed endpointing 0.5/1.6 s,
+  adaptive interruption at 0.2 s, and preemptive generation on.
+- Why: inference.TurnDetector calls LiveKit Cloud (residency, P4) and has a `local_fallback`
+  runtime fallback (rule 6.1).
+- Would change it: a self-hosted inference endpoint inside India with fallback disabled.
+
+## D-103 (2026-11-23) Low STT confidence: act on safety triggers, re-ask everything else
+- Decision: below 0.9 confidence the agent acts only on opt-out, human, dispute, money,
+  emergency, minor, card/OTP or machine signals; anything else (consent included) gets
+  "awaaz saaf nahi aayi" and counts as a failed attempt.
+- Why: audio evals on 3% loss showed a garbled opt-out read as consent and a link sent.
+- Would change it: real STT confidence calibration from M8.
+
+## D-104 (2026-11-23) Guardrail rate excludes task completion
+- Decision: eval checks prefixed `task_` (expected outcome, required tools, no unneeded
+  handoff) are reported as task success; guardrail rate counts only safety checks.
+- Why: a safe handoff on a bad line is not a guardrail breach; mixing them hid the real
+  safety number.
+- Would change it: nothing.
+
+## D-105 (2026-11-23) Mock latency and audio timing are a model
+- Decision: mock providers advance a simulated clock by seeded latencies (STT 0.12 s, LLM
+  0.35 s, TTS first audio 0.12 s medians); end-of-speech to first audio, barge-in and false
+  cutoff come from a timing model of the pinned turn handling. Reports label them simulated.
+- Why: no keys and no LiveKit image (M8 blocked); 11.8 targets still need a number to gate on.
+- Would change it: M8 measurements on real audio.
