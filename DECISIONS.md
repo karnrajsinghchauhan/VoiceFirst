@@ -216,3 +216,18 @@ Format: ID, date, decision, why, what would change it.
   at boot until the LiveKit media path is bridged.
 - Why: one path per configuration; no silent half-real calls.
 - Would change it: provider keys and the M8 media bridge.
+
+## D-017 (2026-11-23) Identity first; D-101 resolved
+- Decision: prompts v2 open with the AI and recording disclosure plus "Kya main {first_name} ji se baat kar rahi hoon?". City, property, dates and amount come only after a confirmed yes (`j1_purpose`/`j2_purpose`).
+- Why: brief v3 S1; a child, spouse, front desk or wrong number must learn nothing about the booking.
+- Would change it: nothing; Agoda may only tighten it (e.g. ask for the booking's last 4 characters).
+
+## D-018 (2026-11-23) "Who is this?" after identity gets an introduction, not the identity question
+- Decision: after identity is confirmed, a clarifying "kaun?" gets the `introduce` line plus the current question.
+- Why: test_req_trai_05_agent found that a repeated identity question let "haan, main hi hoon" count as consent to the payment link (brief 10.6 requires consent to the ask itself).
+- Would change it: nothing.
+
+## D-019 (2026-11-23) False-interruption metric uses the agent's own backchannel rule
+- Decision: the audio simulator classifies a barge-in with `guardrails.classify(..., overlap=True)`, the rule the agent acts on, instead of the lexicon alone.
+- Why: the metric reported a false interruption the agent would not have made ("hmm achha" misheard as "ha" on 3G); a measurement must measure the behaviour.
+- Would change it: real LiveKit traces in M8 replacing the timing model.

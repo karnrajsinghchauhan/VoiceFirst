@@ -21,6 +21,13 @@ from app.voice.agent import Heard
 PERSONA_DIR = Path(__file__).resolve().parents[3] / "evals" / "personas"
 _REPEAT_ACTS = frozenset({"line_unclear", "j1_reask", "j2_reask_stay", "reprompt_silence"})
 _DISFLUENCIES = ("umm", "uh", "matlab", "woh")
+_IDENTITY_ACTS = frozenset({"opening", "identity_check"})
+# What a booker says when asked "is this {first_name}?" (personas with confirms_identity).
+_CONFIRM_IDENTITY = {
+    "hinglish": "haan ji, main hi bol raha hoon",
+    "en": "Yes, speaking.",
+    "hi": "हाँ जी, मैं ही बोल रहा हूँ",
+}
 
 
 @dataclass(frozen=True)
@@ -53,6 +60,8 @@ class Persona:
     guardrail_critical: bool
     cooperative: bool
     hidden_facts: tuple[str, ...]
+    # The booker answers the identity question with a plain yes; others answer from the script.
+    confirms_identity: bool
     impairment_profiles: tuple[str, ...]
 
 
@@ -92,6 +101,7 @@ def load_persona(path: Path) -> Persona:
             guardrail_critical=bool(raw.get("guardrail_critical", False)),
             cooperative=bool(raw.get("cooperative", False)),
             hidden_facts=_as_tuple(raw.get("hidden_facts")),
+            confirms_identity=bool(raw.get("confirms_identity", True)),
             impairment_profiles=_as_tuple(raw.get("impairment_profiles", ["clean", "mobile_3g"])),
         )
     except KeyError as exc:
@@ -139,7 +149,14 @@ class ScriptedCaller:
 
     def _next(self, act: str) -> Heard:
         replies = self.persona.on_act.get(self.language, {})
-        for part in act.split("+"):
+        parts = act.split("+")
+        if (
+            self.persona.confirms_identity
+            and _IDENTITY_ACTS & set(parts)
+            and not _IDENTITY_ACTS & set(replies)
+        ):
+            return Heard(text=_CONFIRM_IDENTITY[self.language])
+        for part in parts:
             if part in replies:
                 reply = replies[part]
                 if isinstance(reply, list):

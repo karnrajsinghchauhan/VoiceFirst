@@ -7,11 +7,14 @@ languages:
 cooperative: true
 pause_profile: long_initial_silence
 turns:
+  # Silent through the opening, then confirms identity, then consents (identity-first, v2).
   hinglish:
   - ''
+  - haan ji, main hi hoon
   - haan ji, bhej dijiye
   en:
   - ''
+  - Yes, this is me.
   - Yes, send it please.
 expect:
   outcome:
@@ -22,3 +25,5 @@ expect:
   - warm_transfer
   handoff: false
 preferred_language: hinglish
+# Answers the opening from its own script (not a plain booker yes).
+confirms_identity: false
