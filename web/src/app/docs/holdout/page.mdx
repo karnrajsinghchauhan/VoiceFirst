@@ -1,0 +1,16 @@
+# Holdout method
+
+```
+bucket = int(sha256(experiment_salt + booking_id).hexdigest(), 16) % 100
+held_out = bucket < 10
+```
+
+- The salt is fixed per experiment, so a booking lands in the same bucket in every process and on every retry.
+- The holdout is the first gate and nothing overrides it. A held-out booking is never called and never sent a fallback message.
+- Over 1,000 seeded bookings the test suite expects 100 plus or minus 15 held out and zero held-out dials.
+
+## Lift
+
+Lift is the difference in recovery rate (J1: paid by the payment date) between eligible called bookings and held-out bookings, reported with a 95% confidence interval from a two-proportion test. The same report carries recovery rate, case-resolution time, CSAT from a WhatsApp utility survey (to be confirmed) and cost per resolved contact.
+
+Containment is reported per persona, but it is not the headline: a call can be contained and still not move a payment.

@@ -1,0 +1,27 @@
+# Compliance
+
+**This page is engineering guidance, not legal advice.** Indian counsel must sign off on the compliance mapping before go-live; that sign-off is an open discovery item.
+
+Each requirement has a test in `server/tests/compliance/test_<req_id>.py`. A requirement without a passing test blocks the compliance milestone.
+
+## TRAI TCCCPR
+
+- Every outbound call is an A2P call; its CLI must be declared on DLT, otherwise `CliNotDeclaredError`.
+- Service and transactional calls use only the configured 1600/1601 series; promotional calls (J7, not in the pilot) only 140. A mismatch raises `NumberSeriesMismatchError`. Which series applies to the client's sender category is to be confirmed.
+- Every call needs a live consent basis: the transaction relationship, or explicit consent valid for seven days or until revoked.
+- The preference registry is checked before every attempt. As house policy any DND flag blocks J2; J1 may dial a DND number on a transaction basis only once counsel's sign-off reference is configured.
+- "Call mat karo" ends the call, marks the number and locks consent re-requests for 90 days.
+- Any complaint pauses that CLI; two unique complaints in ten days pause all campaigns and page a human.
+- Dialling only 09:00 to 21:00 recipient local time, configurable narrower, never wider. At most two attempts per event, a 24 h cooldown per number, one WhatsApp fallback per event. The pilot dials +91 only.
+
+## DPDP Act 2023 and Rules 2025
+
+Notice in the first utterance and an itemised notice by link; purpose-tagged fields; withdrawal in one sentence or one WhatsApp reply; a child on the line ends the booking discussion; rights requests with SLA timers; breach timers with a 72 h Board report; retention by purpose with a nightly purge; India residency by default.
+
+## Other rules
+
+- CERT-In: incident report within 6 h of detection, 180-day ICT logs, NTP sync.
+- AI disclosure in every first utterance and provenance on every recording.
+- Payments only through an Agoda-hosted link; no UPI collect requests, no card storage.
+- None of the 13 CCPA dark patterns in any script or template.
+- WhatsApp utility templates only, and only to opted-in numbers.

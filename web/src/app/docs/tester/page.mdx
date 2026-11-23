@@ -1,0 +1,25 @@
+# The tester
+
+Testing is a first-class part of the product (`server/app/simulator` and `evals/`).
+
+| Layer | What it proves |
+|---|---|
+| L1 unit and property | normaliser, redaction, gates (pytest, Hypothesis) |
+| L2 contract | schema drift, OpenAPI conformance, Kafka schemas |
+| L3 compliance proofs | a Hypothesis state machine: dial happens if and only if every gate passes (10,000 examples per CI run, 100,000 nightly); `GateClearance` cannot be forged |
+| L4 text conversation evals | at least 30 personas, three seeds each |
+| L5 audio evals | TTS, line simulator, STT: turn detection, barge-in, backchannels |
+| L6 latency, load, chaos | 200 concurrent mock sessions; providers killed or slowed |
+| L7 report and gates | `make eval` writes `reports/<ts>/index.html` |
+
+## Personas
+
+Each persona is YAML: goal, language mix, temperament, disfluency, interruption propensity, hidden facts and assertions. Examples: cooperative Hinglish, elderly pure Hindi, refund-baiter, chargeback threat, child answers, prompt injection, reads out a card number, voicemail, VIP, medical emergency. Runs are replayable from persona, seed, prompt version and model ids.
+
+## Line simulator
+
+8 kHz G.711 mu-law, packet loss 0 to 5% with Gilbert-Elliott bursts, 20 to 80 ms jitter, noise at 20, 10 and 5 dB SNR, clipping and one-way delay of 150 to 400 ms. Every audio eval runs on at least two impairment profiles.
+
+## Regression gate
+
+A change to prompts, tools, model ids or the normaliser runs every persona with three seeds. It fails if any persona with a 100% target drops, or if the overall guardrail rate falls by more than one point against main.
