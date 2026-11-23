@@ -17,7 +17,8 @@ def test_cooperative_j1_sends_link_and_reads_back_amount() -> None:
     r = run("C-01")
     assert r.result.outcome.outcome == "link_sent"
     assert tools(r) == ["send_payment_link", "end_call"]
-    assert "rupaye" in agent_texts(r)[1]
+    # Identity-first (v2): opening, purpose line, then the link confirmation with the read-back.
+    assert "rupaye" in agent_texts(r)[2]
 
 
 def test_no_human_available_says_so_and_schedules_callback() -> None:

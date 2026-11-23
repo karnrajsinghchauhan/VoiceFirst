@@ -175,7 +175,8 @@ class Conversation:
         pref = self.ctx.get("customer.preferred_language")
         self.lang: Language = "hinglish" if pref == "unknown" else pref
         self.detected: Language = "unknown"
-        self.stage = "await_link_consent" if setup.purpose == "J1" else "await_start_consent"
+        # Identity first (brief v3 S1): no booking detail is spoken until the person confirms.
+        self.stage = "await_identity"
         self.fails: dict[str, int] = {}
         self.anger_streak = 0
         self.injections = 0
@@ -406,6 +407,12 @@ class Conversation:
         )
         return _Step((lead_act,), tools, end="handed_off")
 
+    def _identity_confirmed(self) -> _Step:
+        if self.s.purpose == "J1":
+            self.asks.append(("payment_link", False))
+            return _Step(("j1_purpose",), stage="await_link_consent")
+        return _Step(("j2_purpose",), stage="await_start_consent")
+
     def _fail(self, reask: str) -> _Step:
         count = self.fails.get(self.stage, 0) + 1
         self.fails[self.stage] = count
@@ -417,6 +424,7 @@ class Conversation:
     def _resume_act(self) -> str:
         """The current step's question, asked plainly after a side topic (bot question, warning)."""
         return {
+            "await_identity": "identity_check",
             "await_link_consent": "j1_ask",
             "await_start_consent": "j2_resume",
             "confirm_stay": "j2_confirm_stay",
@@ -427,6 +435,7 @@ class Conversation:
     def _reask_act(self) -> str:
         """The current step's question after an unclear answer."""
         return {
+            "await_identity": "identity_check",
             "await_link_consent": "j1_reask",
             "await_start_consent": "j2_resume",
             "confirm_stay": "j2_reask_stay",
@@ -490,6 +499,20 @@ class Conversation:
         if sig.payment_credential:
             self.sensitive_spoken = True
             return _Step(("credential_warning", self._resume_act()))
+        if self.stage == "await_identity" and not (
+            sig.wants_human
+            or sig.dispute
+            or sig.injection
+            or sig.money_request
+            or sig.bot_question
+            or self.anger_streak >= 2
+        ):
+            if sig.yes:
+                return self._identity_confirmed()
+            if sig.clarify:
+                # "Who is this?" is a fair question, not a failed attempt: answer and ask again.
+                return _Step(("identity_check",))
+            return self._fail("identity_check")
         if sig.wants_human:
             self.customer_wants = "asked to speak to a human"
             return self._handoff("customer_request", "handoff", "customer_request")
@@ -553,7 +576,9 @@ class Conversation:
                 end="declined",
             )
         if sig.clarify:
-            return _Step(("identity_check",))
+            # After identity is confirmed, "who is this?" gets an introduction and the current
+            # question again, so the next "yes" answers that question, not who we are (10.6).
+            return _Step(("introduce", self._resume_act()))
         if sig.question:
             return _Step(("unknown_question", "j1_ask"))
         return self._fail("j1_reask")
@@ -596,7 +621,9 @@ class Conversation:
                     end="details_confirmed",
                 )
         if sig.clarify:
-            return _Step(("identity_check",))
+            # After identity is confirmed, "who is this?" gets an introduction and the current
+            # question again, so the next "yes" answers that question, not who we are (10.6).
+            return _Step(("introduce", self._resume_act()))
         if sig.question:
             return _Step(("unknown_question", self._resume_act()))
         return self._fail(self._reask_act())
@@ -616,11 +643,8 @@ class Conversation:
         return sig, redacted, heard.confidence
 
     def run(self) -> Outcome:
-        opening = "j1_opening" if self.s.purpose == "J1" else "j2_opening"
         self.disclosure_at = self.s.clock.now()
-        self._say(_Step((opening,)))
-        if self.s.purpose == "J1":
-            self.asks.append(("payment_link", False))
+        self._say(_Step(("opening",)))
         for _ in range(MAX_AGENT_TURNS):
             sig, redacted, confidence = self._hear()
             self._say(self._decide(sig, redacted, confidence))
