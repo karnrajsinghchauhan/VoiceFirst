@@ -1191,6 +1191,19 @@ components:
       - type
       title: ValidationError
       type: object
+    WhoAmI:
+      properties:
+        actor:
+          title: Actor
+          type: string
+        role:
+          title: Role
+          type: string
+      required:
+      - actor
+      - role
+      title: WhoAmI
+      type: object
   securitySchemes:
     HTTPBearer:
       scheme: bearer
@@ -3004,3 +3017,61 @@ paths:
       summary: Simulate
       tags:
       - simulate
+  /whoami:
+    get:
+      description: The console derives what to show from the caller's role.
+      operationId: whoami_whoami_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhoAmI'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Whoami
+      tags:
+      - ops
