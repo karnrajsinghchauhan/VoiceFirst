@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "handoff_summary.json",
+  "title": "HandoffSummary",
+  "description": "At most 5 lines, shaped like Agoda's own case summary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tenant_id", "trace_id", "call_id", "who", "booking_masked", "customer_wants", "ai_did", "sentiment", "policy_refs", "next_best_action", "reason", "queue", "sla_ack_due_at", "sla_resolve_due_at"],
+  "properties": {
+    "schema_version": {"$ref": "common.json#/$defs/SchemaVersion"},
+    "tenant_id": {"$ref": "common.json#/$defs/TenantId"},
+    "trace_id": {"$ref": "common.json#/$defs/TraceId"},
+    "call_id": {"type": "string", "minLength": 1},
+    "who": {"type": "string", "minLength": 1},
+    "booking_masked": {"type": "string", "pattern": "^\\*+[A-Za-z0-9]{1,4}$"},
+    "customer_wants": {"type": "string", "minLength": 1},
+    "ai_did": {"type": "string", "minLength": 1},
+    "sentiment": {"type": "string", "enum": ["calm", "concerned", "angry", "distressed"]},
+    "policy_refs": {"type": "array", "items": {"type": "string"}},
+    "next_best_action": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 1},
+    "queue": {"type": "string", "minLength": 1},
+    "sla_ack_due_at": {"type": "string", "format": "date-time", "description": "48 h acknowledgement (REQ-CP-03)."},
+    "sla_resolve_due_at": {"type": "string", "format": "date-time", "description": "30-day resolution (REQ-CP-03)."}
+  }
+}

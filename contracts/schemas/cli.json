@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cli.json",
+  "title": "Cli",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tenant_id", "trace_id", "cli_e164", "series", "purpose", "oap", "a2p_declared", "declaration_ref", "dlt_recorded_at", "status", "paused_reason"],
+  "properties": {
+    "schema_version": {"$ref": "common.json#/$defs/SchemaVersion"},
+    "tenant_id": {"$ref": "common.json#/$defs/TenantId"},
+    "trace_id": {"$ref": "common.json#/$defs/TraceId"},
+    "cli_e164": {"$ref": "common.json#/$defs/PhoneE164"},
+    "series": {"type": "string", "enum": ["140", "1600", "1601"]},
+    "purpose": {"type": "string", "enum": ["service", "transactional", "promotional"]},
+    "oap": {"type": "string", "minLength": 1},
+    "a2p_declared": {"type": "boolean"},
+    "declaration_ref": {"type": ["string", "null"]},
+    "dlt_recorded_at": {"type": ["string", "null"], "format": "date-time"},
+    "status": {"type": "string", "enum": ["active", "paused", "retired"]},
+    "paused_reason": {"type": ["string", "null"]}
+  }
+}

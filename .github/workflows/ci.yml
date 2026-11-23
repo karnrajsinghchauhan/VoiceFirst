@@ -1,0 +1,35 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 20 * * *"  # nightly: 100,000-example compliance proof
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_PASSWORD: postgres, POSTGRES_DB: agoda_voice_test}
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with: {version: "0.5.11"}
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - run: cd server && uv sync --frozen
+      - run: cd tools/contracts-ts && npm ci
+      - run: cd web && npm ci
+      - name: make check
+        env:
+          AV_PROOF_EXAMPLES: ${{ github.event_name == 'schedule' && '100000' || '10000' }}
+        run: make check
+      - run: make e2e
+      - name: eval gate
+        run: make eval
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: eval-report, path: reports/}

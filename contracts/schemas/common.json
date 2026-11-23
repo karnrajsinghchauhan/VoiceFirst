@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common.json",
+  "title": "Common",
+  "$defs": {
+    "SchemaVersion": {"type": "string", "const": "1.0.0"},
+    "TenantId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"},
+    "TraceId": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+    "PhoneE164": {"type": "string", "pattern": "^\\+[1-9][0-9]{6,14}$"},
+    "Money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "currency"],
+      "properties": {
+        "value": {"type": "string", "pattern": "^[0-9]+(\\.[0-9]{1,2})?$"},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+      }
+    },
+    "Purpose": {"type": "string", "enum": ["J1", "J2"]},
+    "Language": {"type": "string", "enum": ["hi", "en", "hinglish", "unknown"]}
+  }
+}

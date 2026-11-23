@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "complaint.json",
+  "title": "Complaint",
+  "description": "A UCC complaint against one of our CLIs. Accepts DLT-forwarded complaints, including spam reports from call-management apps (REQ-TRAI-10).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tenant_id", "trace_id", "complaint_id", "cli_e164", "complainant_hash", "received_at", "source", "ai_flagged", "dlt_ref"],
+  "properties": {
+    "schema_version": {"$ref": "common.json#/$defs/SchemaVersion"},
+    "tenant_id": {"$ref": "common.json#/$defs/TenantId"},
+    "trace_id": {"$ref": "common.json#/$defs/TraceId"},
+    "complaint_id": {"type": "string", "minLength": 1},
+    "cli_e164": {"$ref": "common.json#/$defs/PhoneE164"},
+    "complainant_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "received_at": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "enum": ["dlt_forwarded", "call_management_app_via_dlt", "direct"]},
+    "ai_flagged": {"type": "boolean"},
+    "dlt_ref": {"type": ["string", "null"]}
+  }
+}
