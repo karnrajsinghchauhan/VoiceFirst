@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 
 from app.admin.rbac import Principal
-from app.api.deps import Db, Deps, require
+from app.api.deps import Db, Deps, get_principal, require
 from app.api.ports import CampaignView, IncidentKind, IncidentView, SimulationResult
 from app.compliance import killswitch
 from app.compliance.models import KillSwitchRow
@@ -62,6 +62,17 @@ def _kill_state(row: KillSwitchRow | None) -> KillSwitchState:
     return KillSwitchState(
         engaged=row.engaged, actor=row.actor, reason=row.reason, changed_at=row.changed_at
     )
+
+
+class WhoAmI(BaseModel):
+    actor: str
+    role: str
+
+
+@router.get("/whoami", tags=["ops"])
+def whoami(principal: Annotated[Principal, Depends(get_principal)]) -> WhoAmI:
+    """The console derives what to show from the caller's role."""
+    return WhoAmI(actor=principal.actor, role=principal.role)
 
 
 @router.get("/killswitch", tags=["killswitch"])
