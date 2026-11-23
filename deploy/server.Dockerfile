@@ -1,0 +1,10 @@
+FROM python:3.12.13-slim
+RUN pip install --no-cache-dir uv==0.5.11
+WORKDIR /srv
+COPY server/pyproject.toml server/uv.lock ./server/
+RUN cd server && uv sync --frozen --no-dev
+COPY contracts ./contracts
+COPY server ./server
+WORKDIR /srv/server
+USER 65534
+CMD ["uv", "run", "--no-dev", "uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]

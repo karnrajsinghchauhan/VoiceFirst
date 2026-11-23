@@ -1,0 +1,55 @@
+# Local stack. `make up` waits for health. Images pinned to exact versions.
+name: agoda-voice
+services:
+  postgres:
+    image: postgres:16.4
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: agoda_voice
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 3s
+      retries: 20
+
+  redpanda:
+    image: redpandadata/redpanda:v24.2.7
+    command:
+      - redpanda start --mode dev-container --smp 1 --memory 1G
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+    ports: ["19092:19092"]
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "health", "--exit-when-healthy"]
+      interval: 5s
+      retries: 20
+
+  topics:
+    # Retention per contracts/kafka-topics.md, in milliseconds.
+    image: redpandadata/redpanda:v24.2.7
+    depends_on:
+      redpanda: {condition: service_healthy}
+    entrypoint: ["/bin/bash", "/topics.sh"]
+    volumes: ["./create-topics.sh:/topics.sh:ro"]
+    restart: "no"
+
+  livekit:
+    image: livekit/livekit-server:v1.8.4
+    command: --dev --bind 0.0.0.0
+    ports: ["7880:7880", "7881:7881"]
+
+  api:
+    build: {context: .., dockerfile: deploy/server.Dockerfile}
+    environment:
+      AV_ENVIRONMENT: dev
+      AV_DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/agoda_voice
+      AV_BUS: kafka
+      AV_KAFKA_BOOTSTRAP: redpanda:9092
+    depends_on:
+      postgres: {condition: service_healthy}
+      topics: {condition: service_completed_successfully}
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      retries: 20

@@ -109,3 +109,15 @@ Format: ID, date, decision, why, what would change it.
 - Why: a paid, cancelled or changed booking must not get a stale call; Kafka delivers at
   least once.
 - Would change it: nothing expected.
+
+## D-011 (2026-11-23) Merge order D, E, F before B/C
+- Decision: merge W-D, W-E and W-F as they finish; merge W-BC last, then wire.
+- Why: W-BC (voice + tester) is the largest stream; the others touch disjoint
+  files, so waiting would only delay `make check` on the integrated tree.
+- Would change it: a file overlap between W-BC and an earlier merge.
+
+## D-012 (2026-11-23) Helm chart not linted in this session
+- Decision: ship the chart without `helm lint`/`helm template` output.
+- Why: get.helm.sh is blocked by the session's network policy.
+- Would change it: run `helm lint deploy/helm/agoda-voice` in CI (added to the
+  next-tasks list).
