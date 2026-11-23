@@ -17,8 +17,9 @@ SERVER = Path(__file__).parents[2]
 
 def _alembic(*args: str, url: str) -> subprocess.CompletedProcess[str]:
     env = {**os.environ, "AV_DATABASE_URL": url}
-    return subprocess.run(["alembic", *args], cwd=SERVER, env=env, capture_output=True,
-                          text=True, check=False)
+    return subprocess.run(
+        ["alembic", *args], cwd=SERVER, env=env, capture_output=True, text=True, check=False
+    )
 
 
 def test_upgrade_then_check_has_no_drift() -> None:
