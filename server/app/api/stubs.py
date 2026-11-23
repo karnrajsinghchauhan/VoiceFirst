@@ -29,6 +29,15 @@ from app.postcall.crypto import DataCipher
 from app.postcall.settings import PostcallSettings
 from app.providers.crm.mock import MockCrm
 from app.rights.workflow import RightsSlaSettings
+from app.webhooks_in.verify import WebhookSecrets
+
+# Test-only secrets; production reads them from the secret store (wiring.main).
+STUB_WEBHOOK_SECRETS = WebhookSecrets(
+    meta_app_secret="test-meta-app-secret",
+    meta_verify_token="test-verify-token",
+    livekit_api_key="test-livekit-key",
+    livekit_api_secret="test-livekit-secret-0123456789abcdef",
+)
 
 
 class StubSimulator:
@@ -127,4 +136,5 @@ def build_stub_deps(
         human_queue=InMemoryHumanQueue(),
         crm=MockCrm(),
         metrics=make_metrics(),
+        webhook_secrets=STUB_WEBHOOK_SECRETS,
     )

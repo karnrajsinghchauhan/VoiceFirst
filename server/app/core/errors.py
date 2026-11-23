@@ -178,6 +178,29 @@ class StateConflictError(AgodaVoiceError):
     code = "state_conflict"
 
 
+# Webhooks (inbound and outbound)
+class WebhookSignatureError(AuthError):
+    """Signature missing, malformed or wrong, or the verifying secret is not configured."""
+
+    code = "webhook_signature_invalid"
+
+
+class WebhookReplayError(StateConflictError):
+    """The delivery was seen before or is outside the accepted time window."""
+
+    code = "webhook_replay"
+
+
+class DeliveryError(ProviderError):
+    """An outbound sync (CRM, webhook) failed; the item is in the dead-letter queue."""
+
+    code = "delivery_failed"
+
+
+class MappingConfigError(ConfigError):
+    code = "crm_mapping_invalid"
+
+
 class NotBuiltYetError(NotImplementedError):
     """Phase 2 stubs. Carries the ticket reference."""
 

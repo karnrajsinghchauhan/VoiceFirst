@@ -8,3 +8,4 @@ from app.incidents import models as incidents_models  # noqa: F401
 from app.messaging import models as messaging_models  # noqa: F401
 from app.postcall import models as postcall_models  # noqa: F401
 from app.rights import models as rights_models  # noqa: F401
+from app.webhooks_in import models as webhooks_in_models  # noqa: F401

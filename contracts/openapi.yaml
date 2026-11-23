@@ -1,5 +1,24 @@
 components:
   schemas:
+    Ack:
+      properties:
+        accepted:
+          title: Accepted
+          type: integer
+        actions:
+          items:
+            enum:
+            - withdrawn
+            - recorded
+            - status
+            type: string
+          title: Actions
+          type: array
+      required:
+      - accepted
+      - actions
+      title: Ack
+      type: object
     AuditEvent:
       additionalProperties: false
       description: One privileged action. Append-only.
@@ -1132,6 +1151,15 @@ components:
       - assertions_passed
       - trace_id
       title: SimulationResult
+      type: object
+    TelephonyAck:
+      properties:
+        event:
+          title: Event
+          type: string
+      required:
+      - event
+      title: TelephonyAck
       type: object
     ToolsCalledItem:
       additionalProperties: false
@@ -3040,6 +3068,237 @@ paths:
       summary: Simulate
       tags:
       - simulate
+  /webhooks/telephony:
+    post:
+      operationId: telephony_inbound_webhooks_telephony_post
+      parameters:
+      - in: header
+        name: authorization
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelephonyAck'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Telephony Inbound
+      tags:
+      - webhooks
+  /webhooks/whatsapp:
+    get:
+      operationId: whatsapp_handshake_webhooks_whatsapp_get
+      parameters:
+      - in: query
+        name: hub.mode
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hub.Mode
+      - in: query
+        name: hub.verify_token
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hub.Verify Token
+      - in: query
+        name: hub.challenge
+        required: false
+        schema:
+          default: ''
+          title: Hub.Challenge
+          type: string
+      responses:
+        '200':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Successful Response
+        '400':
+          content:
+            application/json: {}
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json: {}
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json: {}
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json: {}
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json: {}
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json: {}
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json: {}
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Whatsapp Handshake
+      tags:
+      - webhooks
+    post:
+      operationId: whatsapp_inbound_webhooks_whatsapp_post
+      parameters:
+      - in: header
+        name: X-Hub-Signature-256
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Hub-Signature-256
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ack'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Whatsapp Inbound
+      tags:
+      - webhooks
   /whoami:
     get:
       description: The console derives what to show from the caller's role.

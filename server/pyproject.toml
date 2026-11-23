@@ -12,6 +12,7 @@ dependencies = [
   "alembic",
   "psycopg[binary]",
   "confluent-kafka",
+  "livekit-api==1.2.3",
   "httpx",
   "prometheus-client",
   "opentelemetry-api",
@@ -58,6 +59,7 @@ extend-exclude = ["app/contracts/generated"]
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S603", "S607", "PLC0415", "S105", "S106"]
 "app/postcall/retention.py" = ["PLC0415"]
+"app/api/stubs.py" = ["S106"]  # test doubles; never wired in production
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "S", "RUF", "PL", "SIM"]

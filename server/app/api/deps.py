@@ -22,6 +22,7 @@ from app.handoff.transfer import HumanQueue
 from app.postcall.crypto import DataCipher
 from app.providers.base import CrmProvider
 from app.rights.workflow import RightsSlaSettings
+from app.webhooks_in.verify import WebhookSecrets
 
 
 @dataclass(frozen=True)
@@ -59,6 +60,7 @@ class ApiDeps:
     human_queue: HumanQueue
     crm: CrmProvider
     metrics: Metrics
+    webhook_secrets: WebhookSecrets
 
 
 def get_deps(request: Request) -> ApiDeps:

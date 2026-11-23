@@ -26,11 +26,13 @@ from app.postcall.crypto import DataCipher
 from app.postcall.settings import PostcallSettings, validate_postcall_for_production
 from app.providers.livekit_settings import LiveKitSettings
 from app.providers.registry import Providers, build_providers
+from app.providers.whatsapp.meta_cloud_api import MetaWhatsAppSettings
 from app.rights.workflow import RightsSlaSettings
 from app.simulator.caller import ScriptedCaller, load_personas
 from app.telephony.handle import CallHandle
 from app.voice.agent import Listener
 from app.voice.livekit_bridge import LiveKitMediaBridge
+from app.webhooks_in.verify import WebhookSecrets
 from app.wiring.runner import AgentCallRunner, ListenerFactory
 from app.wiring.simulator_port import ScenarioSimulator
 
@@ -102,7 +104,20 @@ def build_api(rt: Runtime) -> FastAPI:
             human_queue=rt.human_queue,
             crm=rt.providers.crm,
             metrics=make_metrics(),
+            webhook_secrets=_webhook_secrets(),
         )
+    )
+
+
+def _webhook_secrets() -> WebhookSecrets:
+    # Unset secrets make every inbound webhook fail verification: closed, never open.
+    meta = MetaWhatsAppSettings()
+    livekit = LiveKitSettings()
+    return WebhookSecrets(
+        meta_app_secret=meta.app_secret,
+        meta_verify_token=meta.verify_token,
+        livekit_api_key=livekit.api_key,
+        livekit_api_secret=livekit.api_secret,
     )
 
 
