@@ -23,4 +23,4 @@ Every setting is an `AV_*` environment variable, nested with `__`, for example `
 cd web && npm run build && npm start
 ```
 
-Unless built with `NEXT_PUBLIC_AV_API_MODE=http`, the console uses its mock data layer. Sign in with `dev-ops-token`, `dev-admin-token`, `dev-auditor-token` or `dev-ro-token`.
+The web app talks to the engine through its own server routes. With `AV_API_MODE=mock` (the default) they use a mock data layer; set `AV_API_MODE=http` and `AV_API_URL` to use a running engine. Sign in with `dev-ops-token`, `dev-admin-token`, `dev-auditor-token` or `dev-ro-token`.

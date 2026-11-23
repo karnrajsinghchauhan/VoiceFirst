@@ -74,7 +74,7 @@ export default function KillSwitchPage() {
                 </Button>
               </div>
               {error && (
-                <p role="alert" className="mt-3 text-warn">
+                <p role="alert" className="mt-3 text-fail">
                   {error}
                 </p>
               )}

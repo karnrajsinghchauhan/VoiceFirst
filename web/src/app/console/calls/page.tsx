@@ -36,7 +36,8 @@ export default function CallsPage() {
         <Loaded result={ended}>
           {(rows) => (
             <Table
-              head={["Call", "Booking", "Purpose", "Outcome", "Language", "p50 / p95 ms", "Trace"]}
+              head={["Call", "Booking", "Purpose", "Outcome", "QA", "Language", "p50 / p95 ms", "Trace"]}
+              testId="call-outcomes"
               rows={rows.map((o) => [
                 o.call_id,
                 mask(o.booking_id),
@@ -44,6 +45,7 @@ export default function CallsPage() {
                 <Badge key="o" tone={o.outcome === "handed_off" || o.outcome === "error" ? "warn" : "ok"}>
                   {o.outcome}
                 </Badge>,
+                o.qa_score === null ? <span key="q" className="text-muted">none</span> : <span key="q" data-testid="qa-score">{o.qa_score}</span>,
                 o.language_detected,
                 `${o.latency_ms.p50} / ${o.latency_ms.p95}`,
                 <code key="t">{o.trace_id}</code>,

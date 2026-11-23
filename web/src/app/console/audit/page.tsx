@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback } from "react";
-import { Card, Table } from "@/components/ui";
+import { Button, Card, Table } from "@/components/ui";
+import { auditCsv, auditJson, download } from "@/lib/audit-export";
 import { can } from "@/lib/rbac";
 import { useConsole } from "../session";
 import { useLoad } from "../use-load";
@@ -18,16 +19,32 @@ export default function AuditPage() {
       </Card>
     );
   }
+  const stamp = new Date().toISOString().slice(0, 10);
   return (
-    <Card title="Audit log" testId="audit-log">
-      <Loaded result={result}>
-        {(rows) => (
+    <Loaded result={result}>
+      {(rows) => (
+        <Card
+          title="Audit log"
+          testId="audit-log"
+          actions={
+            can(identity.role, "export_audit") ? (
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => download(`audit-${stamp}.csv`, "text/csv", auditCsv(rows))}>
+                  Export CSV
+                </Button>
+                <Button variant="outline" onClick={() => download(`audit-${stamp}.json`, "application/json", auditJson(rows))}>
+                  Export JSON
+                </Button>
+              </div>
+            ) : null
+          }
+        >
           <Table
             head={["At", "Actor", "Role", "Action", "Target", "Reason", "Trace"]}
             rows={rows.map((a) => [a.at, a.actor, a.role, a.action, a.target, a.reason, <code key="t">{a.trace_id}</code>])}
           />
-        )}
-      </Loaded>
-    </Card>
+        </Card>
+      )}
+    </Loaded>
   );
 }

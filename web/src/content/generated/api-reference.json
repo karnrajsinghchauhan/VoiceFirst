@@ -1,0 +1,249 @@
+{
+ "title": "Agoda Voice API",
+ "version": "1.0.0",
+ "operations": [
+  {
+   "method": "GET",
+   "path": "/audit",
+   "summary": "List Audit",
+   "tag": "audit",
+   "auth": true,
+   "request": null,
+   "response": "AuditEvent[]"
+  },
+  {
+   "method": "GET",
+   "path": "/calls",
+   "summary": "List Calls",
+   "tag": "calls",
+   "auth": true,
+   "request": null,
+   "response": "CallOutcome[]"
+  },
+  {
+   "method": "GET",
+   "path": "/calls/{call_id}",
+   "summary": "Get Call",
+   "tag": "calls",
+   "auth": true,
+   "request": null,
+   "response": "CallOutcome"
+  },
+  {
+   "method": "GET",
+   "path": "/calls/{call_id}/transcript",
+   "summary": "Get Transcript",
+   "tag": "calls",
+   "auth": true,
+   "request": null,
+   "response": "TranscriptLine[]"
+  },
+  {
+   "method": "GET",
+   "path": "/campaigns",
+   "summary": "List Campaigns",
+   "tag": "campaigns",
+   "auth": true,
+   "request": null,
+   "response": "CampaignView[]"
+  },
+  {
+   "method": "POST",
+   "path": "/campaigns/{campaign_id}/pause",
+   "summary": "Pause Campaign",
+   "tag": "campaigns",
+   "auth": true,
+   "request": "ReasonIn",
+   "response": "CampaignView"
+  },
+  {
+   "method": "POST",
+   "path": "/campaigns/{campaign_id}/resume",
+   "summary": "Resume Campaign",
+   "tag": "campaigns",
+   "auth": true,
+   "request": "ReasonIn",
+   "response": "CampaignView"
+  },
+  {
+   "method": "GET",
+   "path": "/cli",
+   "summary": "List Cli",
+   "tag": "cli",
+   "auth": true,
+   "request": null,
+   "response": "Cli[]"
+  },
+  {
+   "method": "PUT",
+   "path": "/cli/{cli_e164}",
+   "summary": "Upsert Cli",
+   "tag": "cli",
+   "auth": true,
+   "request": "CliIn",
+   "response": "Cli"
+  },
+  {
+   "method": "POST",
+   "path": "/consent",
+   "summary": "Record Consent",
+   "tag": "consent",
+   "auth": true,
+   "request": "ConsentIn",
+   "response": "ConsentRecord"
+  },
+  {
+   "method": "POST",
+   "path": "/consent/lookup",
+   "summary": "Lookup Consent",
+   "tag": "consent",
+   "auth": true,
+   "request": "PhoneIn",
+   "response": "ConsentRecord[]"
+  },
+  {
+   "method": "POST",
+   "path": "/consent/opt-out",
+   "summary": "Opt Out",
+   "tag": "consent",
+   "auth": true,
+   "request": "OptOutIn",
+   "response": "ConsentRecord[]"
+  },
+  {
+   "method": "GET",
+   "path": "/handoff",
+   "summary": "List Handoffs",
+   "tag": "handoff",
+   "auth": true,
+   "request": null,
+   "response": "HandoffView[]"
+  },
+  {
+   "method": "GET",
+   "path": "/handoff/{call_id}",
+   "summary": "Get Handoff",
+   "tag": "handoff",
+   "auth": true,
+   "request": null,
+   "response": "HandoffSummary"
+  },
+  {
+   "method": "POST",
+   "path": "/handoff/{call_id}",
+   "summary": "Act On Handoff",
+   "tag": "handoff",
+   "auth": true,
+   "request": "HandoffAction",
+   "response": "HandoffSummary"
+  },
+  {
+   "method": "GET",
+   "path": "/incidents",
+   "summary": "List Incidents",
+   "tag": "incidents",
+   "auth": true,
+   "request": null,
+   "response": "IncidentView[]"
+  },
+  {
+   "method": "POST",
+   "path": "/incidents",
+   "summary": "Open Incident",
+   "tag": "incidents",
+   "auth": true,
+   "request": "IncidentIn",
+   "response": "IncidentView"
+  },
+  {
+   "method": "GET",
+   "path": "/killswitch",
+   "summary": "Get Killswitch",
+   "tag": "killswitch",
+   "auth": true,
+   "request": null,
+   "response": "KillSwitchState"
+  },
+  {
+   "method": "POST",
+   "path": "/killswitch",
+   "summary": "Set Killswitch",
+   "tag": "killswitch",
+   "auth": true,
+   "request": "KillSwitchIn",
+   "response": "KillSwitchState"
+  },
+  {
+   "method": "GET",
+   "path": "/healthz",
+   "summary": "Healthz",
+   "tag": "ops",
+   "auth": false,
+   "request": null,
+   "response": "Health"
+  },
+  {
+   "method": "GET",
+   "path": "/metrics",
+   "summary": "Metrics",
+   "tag": "ops",
+   "auth": true,
+   "request": null,
+   "response": null
+  },
+  {
+   "method": "GET",
+   "path": "/whoami",
+   "summary": "Whoami",
+   "tag": "ops",
+   "auth": true,
+   "request": null,
+   "response": "WhoAmI"
+  },
+  {
+   "method": "GET",
+   "path": "/rights-requests",
+   "summary": "List Requests",
+   "tag": "rights",
+   "auth": true,
+   "request": null,
+   "response": "RightsRequestView[]"
+  },
+  {
+   "method": "POST",
+   "path": "/rights-requests",
+   "summary": "Open Request",
+   "tag": "rights",
+   "auth": true,
+   "request": "RightsRequestIn",
+   "response": "RightsRequestView"
+  },
+  {
+   "method": "POST",
+   "path": "/rights-requests/{request_id}/acknowledge",
+   "summary": "Acknowledge",
+   "tag": "rights",
+   "auth": true,
+   "request": null,
+   "response": "RightsRequestView"
+  },
+  {
+   "method": "POST",
+   "path": "/rights-requests/{request_id}/complete",
+   "summary": "Complete",
+   "tag": "rights",
+   "auth": true,
+   "request": "CompleteIn",
+   "response": "CompleteOut"
+  },
+  {
+   "method": "POST",
+   "path": "/simulate",
+   "summary": "Simulate",
+   "tag": "simulate",
+   "auth": true,
+   "request": "SimulateIn",
+   "response": "SimulationResult"
+  }
+ ]
+}

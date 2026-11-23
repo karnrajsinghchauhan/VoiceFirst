@@ -1,0 +1,209 @@
+{
+ "note": "Every [V] fact used anywhere in this repo. Each row was supplied in the build brief v2.0 (23 Nov 2026) with the publication and date shown. URLs are not recorded here because the brief did not include them; this session did not re-fetch the sources. Re-verify before any external use.",
+ "rows": [
+  {
+   "id": "S-01",
+   "fact": "CEO Omri Morgenshtern; CTO Idan Zalzberg",
+   "source": "Agoda corporate",
+   "date": "2026"
+  },
+  {
+   "id": "S-02",
+   "fact": "One Bangkok office for 4,000 staff, opened 1 Apr 2026",
+   "source": "Agoda press",
+   "date": "2026-04-01"
+  },
+  {
+   "id": "S-03",
+   "fact": "6M+ properties; flights; activities; connected trips",
+   "source": "Agoda corporate",
+   "date": "2026"
+  },
+  {
+   "id": "S-04",
+   "fact": "Payment options: Pay Now, BNPL, Book with Zero Pay, Pay at Hotel",
+   "source": "Agoda Terms of Use",
+   "date": "2026"
+  },
+  {
+   "id": "S-05",
+   "fact": "India BNPL: pay on or before payment date with an India-issuer instrument",
+   "source": "Agoda Terms of Use",
+   "date": "2026"
+  },
+  {
+   "id": "S-06",
+   "fact": "Paytm Travel hotel distribution partnership",
+   "source": "Press",
+   "date": "early 2025"
+  },
+  {
+   "id": "S-07",
+   "fact": "CS priorities, \"humans in charge of the outcome\", escalation paths, metrics",
+   "source": "Frontier Enterprise, Gauri Vicknasvaran",
+   "date": "2026-08-17"
+  },
+  {
+   "id": "S-08",
+   "fact": "Property AMA bot 30,000+ questions/day",
+   "source": "Agoda press",
+   "date": "2025-08"
+  },
+  {
+   "id": "S-09",
+   "fact": "In-app AI Assistant beta Sep 2026; 21 markets by 30 Oct 2026",
+   "source": "Agoda press",
+   "date": "2026-10-30"
+  },
+  {
+   "id": "S-10",
+   "fact": "Meta Muse connector SG and JP",
+   "source": "Press",
+   "date": "2026-10"
+  },
+  {
+   "id": "S-11",
+   "fact": "\"AI voice agents capable of having reasonable conversations with suppliers\"",
+   "source": "TTG Asia, CEO interview",
+   "date": "2026-05-04"
+  },
+  {
+   "id": "S-12",
+   "fact": "Engineers expected to vibe code; business rebuilt bottom-up with agents",
+   "source": "Skift",
+   "date": "2026-01, 2026-04"
+  },
+  {
+   "id": "S-13",
+   "fact": "One million CPU cores, 14 PB/day, four trillion messages",
+   "source": "ComputerWeekly",
+   "date": "2026"
+  },
+  {
+   "id": "S-14",
+   "fact": "Kafka around 1.8 trillion events/day",
+   "source": "Agoda Engineering blog",
+   "date": "2026"
+  },
+  {
+   "id": "S-15",
+   "fact": "Fleet on Kubernetes; Spark; Zendesk partner helpdesk",
+   "source": "Agoda Engineering",
+   "date": "2026"
+  },
+  {
+   "id": "S-16",
+   "fact": "Country Director ISC & IOI: Gaurav Malik",
+   "source": "Agoda press",
+   "date": "2026"
+  },
+  {
+   "id": "S-17",
+   "fact": "2026 Travel Outlook: 19% spiritual trip; 47% <= INR 5,000/night; 68% AI planning (n=3,353)",
+   "source": "Agoda Travel Outlook",
+   "date": "2025-10"
+  },
+  {
+   "id": "S-18",
+   "fact": "Prayagraj searches +233% during 2025 Maha Kumbh",
+   "source": "Agoda press",
+   "date": "2025"
+  },
+  {
+   "id": "S-19",
+   "fact": "Top domestic festive searches: Goa, Puri, Udaipur",
+   "source": "Agoda press",
+   "date": "2026"
+  },
+  {
+   "id": "S-20",
+   "fact": "Booking Holdings voice AI across majority of eligible inbound calls",
+   "source": "BKNG Q2 2026 call",
+   "date": "2026-08-04"
+  },
+  {
+   "id": "S-21",
+   "fact": "Airbnb AI assistant resolved about 40% of issues in Q3 2026",
+   "source": "Storyboard18",
+   "date": "2026"
+  },
+  {
+   "id": "S-22",
+   "fact": "Expedia \"virtual agents now resolve more than half of inquiries\"",
+   "source": "CX Dive, Q3 2025 call",
+   "date": "2025"
+  },
+  {
+   "id": "S-23",
+   "fact": "MakeMyTrip Myra 2.0: \"70% of voice queries come in Hinglish\"",
+   "source": "The Hans India",
+   "date": "2026"
+  },
+  {
+   "id": "S-24",
+   "fact": "TRAI TCCCPR Third Amendment (05 of 2026), notified 18 Sep 2026, PR 119/2026",
+   "source": "TRAI",
+   "date": "2026-09-18"
+  },
+  {
+   "id": "S-25",
+   "fact": "DPDP Rules 2025 notified 13 Nov 2025; CM provisions 13 Nov 2026; core 13 May 2027",
+   "source": "MeitY",
+   "date": "2025-11-13"
+  },
+  {
+   "id": "S-26",
+   "fact": "IT Amendment Rules 2026 (G.S.R. 120(E)) notified 10 Feb 2026, in force 20 Feb 2026",
+   "source": "MeitY",
+   "date": "2026-02-10"
+  },
+  {
+   "id": "S-27",
+   "fact": "E-Commerce (Amendment) Rules 2026 (G.S.R. 789(E)) notified 9 Sep 2026, in force 1 Jan 2027",
+   "source": "MoCA",
+   "date": "2026-09-09"
+  },
+  {
+   "id": "S-28",
+   "fact": "CCPA Dark Patterns Guidelines 2023: 13 patterns",
+   "source": "CCPA",
+   "date": "2023"
+  },
+  {
+   "id": "S-29",
+   "fact": "CERT-In Directions: 6 h reporting, 180-day logs, NTP sync",
+   "source": "CERT-In",
+   "date": "2022-04-28"
+  },
+  {
+   "id": "S-30",
+   "fact": "WhatsApp India rates utility Rs 0.1150, marketing Rs 0.8631, +18% GST; 1 Oct 2026 changes",
+   "source": "Meta",
+   "date": "2026"
+  },
+  {
+   "id": "S-31",
+   "fact": "Sarvam STT Rs 0.49/min; Bulbul v3 Rs 3.00/1,000 chars",
+   "source": "Sarvam pricing page",
+   "date": "2026-11"
+  },
+  {
+   "id": "S-32",
+   "fact": "FCC Feb 2024: AI voices are \"artificial\" under TCPA",
+   "source": "FCC",
+   "date": "2024-02"
+  },
+  {
+   "id": "S-33",
+   "fact": "EU AI Act Art. 50 applicable since 2 Aug 2026",
+   "source": "EU",
+   "date": "2026-08-02"
+  },
+  {
+   "id": "S-34",
+   "fact": "LiveKit Agents 1.8.x stable, 2.0 beta",
+   "source": "LiveKit",
+   "date": "2026-10"
+  }
+ ]
+}

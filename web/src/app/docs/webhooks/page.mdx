@@ -1,0 +1,25 @@
+export const metadata = { title: "Webhooks" };
+
+# Webhooks
+
+Status: in progress. This page describes the contract the outbound webhook is being built to; it will say "built" here when the implementation and its replay test are on main.
+
+## Outbound: call outcomes
+
+Any system can subscribe to `call_outcome` records instead of reading Kafka. Each delivery is a `POST` with the `CallOutcome` JSON as the body (schema: `contracts/schemas/call_outcome.json`).
+
+Every delivery is signed and timestamped:
+
+- the signature is an HMAC-SHA256 over the timestamp and the raw body, with a secret shared once per subscriber;
+- the timestamp is checked against a short tolerance window, so an old delivery replayed later is rejected;
+- each delivery carries a unique id; a receiver that has seen the id before must ignore it.
+
+A receiver should verify the signature with a constant-time comparison, reject stale timestamps, and store delivery ids long enough to cover the window.
+
+## Inbound: telephony and WhatsApp
+
+Webhooks from the telephony provider and from the WhatsApp Cloud API are accepted only with a valid provider signature and a fresh timestamp. Unsigned or replayed requests are rejected before any processing.
+
+## Failures
+
+A delivery that fails lands in a dead-letter queue that raises an alert. Nothing is dropped silently.

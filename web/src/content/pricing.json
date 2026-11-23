@@ -1,0 +1,46 @@
+{
+ "title": "Pricing",
+ "intro": "We are paid for outcomes we can measure against a holdout, not for minutes we can inflate.",
+ "sections": [
+  {
+   "id": "pilot",
+   "heading": "Pilot",
+   "body": "An eight-week pilot on India-originating bookings: payment rescue and booking confirmation, with a no-call holdout to measure lift.",
+   "points": [
+    "Fixed fee [[spec:offer.pilot_fee|USD 20,000]], with [[spec:offer.pilot_at_risk|half]] at risk against the agreed success metrics.",
+    "Containment target [[spec:offer.containment_target|35 to 55 percent]]. A target, not a measured result."
+   ]
+  },
+  {
+   "id": "after",
+   "heading": "After the pilot",
+   "body": "Two options. Pick the one whose unit you trust more.",
+   "points": [
+    "Per outcome: [[spec:offer.retainer|USD 6,000 a month]] plus [[spec:offer.per_resolved|Rs 25 per contact the AI resolves]] with no human.",
+    "Per minute: [[spec:offer.per_minute|USD 0.09 per outbound minute]]."
+   ]
+  },
+  {
+   "id": "logic",
+   "heading": "Why per outcome",
+   "body": "A per-minute price rewards long calls. A per-resolved-contact price rewards short calls that finish the job, which is what a customer wants too. Resolved means the journey's goal was met on the call (payment link accepted, or details confirmed) with no human involved.",
+   "points": []
+  },
+  {
+   "id": "costs",
+   "heading": "What a call costs to run",
+   "body": "Our unit economics page lists each cost component (telephony, speech, model, voice, WhatsApp, infrastructure) with its unit price, source and the date it was checked. Prices are re-checked before any quote.",
+   "points": [
+    "Speech-to-text list price [[S-31|Rs 0.49 per minute]] (Sarvam).",
+    "Text-to-speech list price [[S-31|Rs 3.00 per 1,000 characters]] (Sarvam Bulbul v3).",
+    "WhatsApp utility template [[S-30|Rs 0.1150 plus 18% GST]] (Meta, India)."
+   ]
+  },
+  {
+   "id": "enterprise",
+   "heading": "Enterprise path",
+   "body": "Run as a managed service first. When you are ready, the same Helm chart runs on your Kubernetes and we hand it over: build, operate, transfer. Private deployment, SSO, data residency and an SLA are part of the enterprise agreement.",
+   "points": []
+  }
+ ]
+}
