@@ -2,3 +2,6 @@
 
 from app.compliance import models as compliance_models  # noqa: F401
 from app.core import audit as core_audit  # noqa: F401
+from app.handoff import models as handoff_models  # noqa: F401
+from app.postcall import models as postcall_models  # noqa: F401
+from app.rights import models as rights_models  # noqa: F401
