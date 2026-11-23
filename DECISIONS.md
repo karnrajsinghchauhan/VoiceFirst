@@ -77,3 +77,28 @@ Format: ID, date, decision, why, what would change it.
   guardrail layer can override it.
 - Why: P1-P3 must hold even when the model misbehaves (C-16 injection).
 - Would change it: nothing.
+
+## D-301 (2026-11-23) Data key for encryption at rest is postcall-owned
+- Decision: `app/postcall/settings.py` reads `AV_DATA_KEY` (a Fernet key). Transcripts
+  and audio references are redacted first, then encrypted. A fixed dev key exists for
+  tests; `validate_postcall_for_production` rejects it.
+- Why: one owner for the key; core config stays untouched by W-E.
+- Would change it: Agoda's KMS (envelope encryption) once storage vendors are known [CD].
+
+## D-302 (2026-11-23) Erasure pseudonymises outcomes and keeps consent and opt-out rows
+- Decision: erasure deletes transcripts and audio, pseudonymises call outcomes
+  (phone hash and booking id replaced), and keeps consent records and opt-outs.
+- Why: outcomes feed the holdout lift measurement; consent records prove the lawful
+  basis of past calls; opt-outs are what stops the number being called again.
+- Would change it: counsel's view on consent-record retention [CD 15].
+
+## D-303 (2026-11-23) Generic domain errors are HTTP 400; 422 stays request validation
+- Decision: one exception handler maps typed errors to statuses (401/403/404/409/
+  502/500, else 400). FastAPI's own 422 is the only request-validation response.
+- Why: two error shapes must never share a status code in the OpenAPI document.
+- Would change it: nothing.
+
+## D-304 (2026-11-23) Rights-request SLAs default to 48 h ack and 30 days
+- Decision: `AV_RIGHTS_ACK_HOURS=48`, `AV_RIGHTS_RESOLVE_DAYS=30` as house defaults.
+- Why: statutory DPDP timelines for each right are [CD]; we pick the stricter house target.
+- Would change it: counsel's confirmation of the statutory periods.

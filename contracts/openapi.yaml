@@ -1,0 +1,3006 @@
+components:
+  schemas:
+    AuditEvent:
+      additionalProperties: false
+      description: One privileged action. Append-only.
+      properties:
+        action:
+          minLength: 1
+          title: Action
+          type: string
+        actor:
+          minLength: 1
+          title: Actor
+          type: string
+        at:
+          format: date-time
+          title: At
+          type: string
+        audit_id:
+          minLength: 1
+          title: Audit Id
+          type: string
+        reason:
+          minLength: 1
+          title: Reason
+          type: string
+        role:
+          enum:
+          - admin
+          - ops
+          - auditor
+          - read_only
+          - system
+          title: Role
+          type: string
+        schema_version:
+          const: 1.0.0
+          title: Schema Version
+          type: string
+        target:
+          title: Target
+          type: string
+        tenant_id:
+          pattern: ^[a-z0-9][a-z0-9-]{1,62}$
+          title: Tenant Id
+          type: string
+        trace_id:
+          pattern: ^[0-9a-f]{32}$
+          title: Trace Id
+          type: string
+      required:
+      - schema_version
+      - tenant_id
+      - trace_id
+      - audit_id
+      - at
+      - actor
+      - role
+      - action
+      - target
+      - reason
+      title: AuditEvent
+      type: object
+    CallOutcome:
+      additionalProperties: false
+      properties:
+        ai_generated:
+          const: true
+          description: REQ-AI-01.
+          title: Ai Generated
+          type: boolean
+        amd_result:
+          enum:
+          - human
+          - machine-ivr
+          - machine-vm
+          - machine-unavailable
+          - uncertain
+          - not_run
+          title: Amd Result
+          type: string
+        answered:
+          title: Answered
+          type: boolean
+        booking_id:
+          minLength: 4
+          title: Booking Id
+          type: string
+        call_id:
+          minLength: 1
+          title: Call Id
+          type: string
+        clearance_id:
+          minLength: 1
+          title: Clearance Id
+          type: string
+        cli:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Cli
+          type: string
+        cost:
+          $ref: '#/components/schemas/Cost'
+        disclosure_played_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Disclosure Played At
+        grievance_channel:
+          description: REQ-CP-03.
+          minLength: 1
+          title: Grievance Channel
+          type: string
+        handoff:
+          anyOf:
+          - $ref: '#/components/schemas/Handoff'
+          - type: 'null'
+        language_detected:
+          enum:
+          - hi
+          - en
+          - hinglish
+          - unknown
+          title: Language Detected
+          type: string
+        latency_ms:
+          $ref: '#/components/schemas/LatencyMs'
+        model_ids:
+          additionalProperties:
+            type: string
+          title: Model Ids
+          type: object
+        outcome:
+          enum:
+          - link_sent
+          - details_confirmed
+          - callback_scheduled
+          - handed_off
+          - opted_out
+          - wrong_person
+          - minor_on_line
+          - no_answer
+          - voicemail
+          - abandoned
+          - error
+          title: Outcome
+          type: string
+        provenance_hash:
+          pattern: ^[0-9a-f]{64}$
+          title: Provenance Hash
+          type: string
+        purpose:
+          enum:
+          - J1
+          - J2
+          title: Purpose
+          type: string
+        redaction_applied:
+          title: Redaction Applied
+          type: boolean
+        schema_version:
+          const: 1.0.0
+          title: Schema Version
+          type: string
+        sensitive_data_spoken:
+          title: Sensitive Data Spoken
+          type: boolean
+        started_at:
+          format: date-time
+          title: Started At
+          type: string
+        tenant_id:
+          pattern: ^[a-z0-9][a-z0-9-]{1,62}$
+          title: Tenant Id
+          type: string
+        tools_called:
+          items:
+            $ref: '#/components/schemas/ToolsCalledItem'
+          title: Tools Called
+          type: array
+        trace_id:
+          pattern: ^[0-9a-f]{32}$
+          title: Trace Id
+          type: string
+        turns:
+          minimum: 0.0
+          title: Turns
+          type: integer
+      required:
+      - schema_version
+      - tenant_id
+      - trace_id
+      - call_id
+      - clearance_id
+      - booking_id
+      - purpose
+      - cli
+      - started_at
+      - answered
+      - amd_result
+      - language_detected
+      - turns
+      - tools_called
+      - outcome
+      - latency_ms
+      - cost
+      - redaction_applied
+      - sensitive_data_spoken
+      - grievance_channel
+      - ai_generated
+      - model_ids
+      - provenance_hash
+      title: CallOutcome
+      type: object
+    CampaignView:
+      additionalProperties: false
+      properties:
+        campaign_id:
+          title: Campaign Id
+          type: string
+        dialled:
+          title: Dialled
+          type: integer
+        held_out:
+          title: Held Out
+          type: integer
+        purpose:
+          enum:
+          - J1
+          - J2
+          title: Purpose
+          type: string
+        queued:
+          title: Queued
+          type: integer
+        status:
+          enum:
+          - active
+          - paused
+          title: Status
+          type: string
+      required:
+      - campaign_id
+      - purpose
+      - status
+      - queued
+      - dialled
+      - held_out
+      title: CampaignView
+      type: object
+    Cli:
+      additionalProperties: false
+      properties:
+        a2p_declared:
+          title: A2P Declared
+          type: boolean
+        cli_e164:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Cli E164
+          type: string
+        declaration_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Declaration Ref
+        dlt_recorded_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Dlt Recorded At
+        oap:
+          minLength: 1
+          title: Oap
+          type: string
+        paused_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Paused Reason
+        purpose:
+          enum:
+          - service
+          - transactional
+          - promotional
+          title: Purpose
+          type: string
+        schema_version:
+          const: 1.0.0
+          title: Schema Version
+          type: string
+        series:
+          enum:
+          - '140'
+          - '1600'
+          - '1601'
+          title: Series
+          type: string
+        status:
+          enum:
+          - active
+          - paused
+          - retired
+          title: Status
+          type: string
+        tenant_id:
+          pattern: ^[a-z0-9][a-z0-9-]{1,62}$
+          title: Tenant Id
+          type: string
+        trace_id:
+          pattern: ^[0-9a-f]{32}$
+          title: Trace Id
+          type: string
+      required:
+      - schema_version
+      - tenant_id
+      - trace_id
+      - cli_e164
+      - series
+      - purpose
+      - oap
+      - a2p_declared
+      - status
+      title: Cli
+      type: object
+    CliIn:
+      additionalProperties: false
+      properties:
+        a2p_declared:
+          title: A2P Declared
+          type: boolean
+        declaration_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Declaration Ref
+        dlt_recorded_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Dlt Recorded At
+        oap:
+          minLength: 1
+          title: Oap
+          type: string
+        paused_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Paused Reason
+        purpose:
+          enum:
+          - service
+          - transactional
+          - promotional
+          title: Purpose
+          type: string
+        series:
+          enum:
+          - '140'
+          - '1600'
+          - '1601'
+          title: Series
+          type: string
+        status:
+          enum:
+          - active
+          - paused
+          - retired
+          title: Status
+          type: string
+      required:
+      - series
+      - purpose
+      - oap
+      - a2p_declared
+      - status
+      title: CliIn
+      type: object
+    CompleteIn:
+      additionalProperties: false
+      properties:
+        note:
+          default: ''
+          maxLength: 2000
+          title: Note
+          type: string
+        phone_e164:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Phone E164
+          type: string
+      required:
+      - phone_e164
+      title: CompleteIn
+      type: object
+    CompleteOut:
+      properties:
+        export:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Export
+        request:
+          $ref: '#/components/schemas/RightsRequestView'
+      required:
+      - request
+      - export
+      title: CompleteOut
+      type: object
+    ConsentIn:
+      additionalProperties: false
+      properties:
+        basis:
+          enum:
+          - transaction
+          - explicit
+          - inquiry
+          title: Basis
+          type: string
+        booking_id:
+          anyOf:
+          - minLength: 4
+            type: string
+          - type: 'null'
+          title: Booking Id
+        channel:
+          enum:
+          - voice
+          - whatsapp
+          - sms
+          - web
+          - dca
+          title: Channel
+          type: string
+        evidence_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Uri
+        phone_e164:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Phone E164
+          type: string
+        purpose:
+          enum:
+          - J1
+          - J2
+          title: Purpose
+          type: string
+        source_ref:
+          minLength: 1
+          title: Source Ref
+          type: string
+      required:
+      - phone_e164
+      - basis
+      - purpose
+      - channel
+      - source_ref
+      title: ConsentIn
+      type: object
+    ConsentRecord:
+      additionalProperties: false
+      properties:
+        artefact_ref:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Artefact Ref
+        basis:
+          enum:
+          - transaction
+          - explicit
+          - inquiry
+          title: Basis
+          type: string
+        channel:
+          enum:
+          - voice
+          - whatsapp
+          - sms
+          - web
+          - dca
+          title: Channel
+          type: string
+        consent_id:
+          minLength: 1
+          title: Consent Id
+          type: string
+        consent_manager_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'REQ-DPDP-08: placeholder for a DPDP Consent Manager.'
+          title: Consent Manager Id
+        evidence_uri:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence Uri
+        expires_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          description: Null only for basis=transaction, which lasts while the booking
+            is live.
+          title: Expires At
+        obtained_at:
+          format: date-time
+          title: Obtained At
+          type: string
+        phone_e164:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Phone E164
+          type: string
+        purpose:
+          enum:
+          - J1
+          - J2
+          title: Purpose
+          type: string
+        revoked_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Revoked At
+        schema_version:
+          const: 1.0.0
+          title: Schema Version
+          type: string
+        source_ref:
+          minLength: 1
+          title: Source Ref
+          type: string
+        tenant_id:
+          pattern: ^[a-z0-9][a-z0-9-]{1,62}$
+          title: Tenant Id
+          type: string
+        trace_id:
+          pattern: ^[0-9a-f]{32}$
+          title: Trace Id
+          type: string
+      required:
+      - schema_version
+      - tenant_id
+      - trace_id
+      - consent_id
+      - phone_e164
+      - basis
+      - purpose
+      - channel
+      - obtained_at
+      - source_ref
+      title: ConsentRecord
+      type: object
+    Cost:
+      additionalProperties: false
+      description: Minor units (paise).
+      properties:
+        llm:
+          minimum: 0.0
+          title: Llm
+          type: integer
+        stt:
+          minimum: 0.0
+          title: Stt
+          type: integer
+        telephony:
+          minimum: 0.0
+          title: Telephony
+          type: integer
+        tts:
+          minimum: 0.0
+          title: Tts
+          type: integer
+        whatsapp:
+          minimum: 0.0
+          title: Whatsapp
+          type: integer
+      required:
+      - telephony
+      - stt
+      - tts
+      - llm
+      - whatsapp
+      title: Cost
+      type: object
+    ErrorBody:
+      properties:
+        detail:
+          title: Detail
+          type: string
+        error:
+          title: Error
+          type: string
+      required:
+      - error
+      - detail
+      title: ErrorBody
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    Handoff:
+      additionalProperties: false
+      properties:
+        queue:
+          minLength: 1
+          title: Queue
+          type: string
+        reason:
+          minLength: 1
+          title: Reason
+          type: string
+        summary:
+          minLength: 1
+          title: Summary
+          type: string
+      required:
+      - reason
+      - summary
+      - queue
+      title: Handoff
+      type: object
+    HandoffAction:
+      additionalProperties: false
+      properties:
+        action:
+          enum:
+          - acknowledge
+          - resolve
+          title: Action
+          type: string
+      required:
+      - action
+      title: HandoffAction
+      type: object
+    HandoffSummary:
+      additionalProperties: false
+      description: At most 5 lines, shaped like Agoda's own case summary.
+      properties:
+        ai_did:
+          minLength: 1
+          title: Ai Did
+          type: string
+        booking_masked:
+          pattern: ^\*+[A-Za-z0-9]{1,4}$
+          title: Booking Masked
+          type: string
+        call_id:
+          minLength: 1
+          title: Call Id
+          type: string
+        customer_wants:
+          minLength: 1
+          title: Customer Wants
+          type: string
+        next_best_action:
+          minLength: 1
+          title: Next Best Action
+          type: string
+        policy_refs:
+          items:
+            type: string
+          title: Policy Refs
+          type: array
+        queue:
+          minLength: 1
+          title: Queue
+          type: string
+        reason:
+          minLength: 1
+          title: Reason
+          type: string
+        schema_version:
+          const: 1.0.0
+          title: Schema Version
+          type: string
+        sentiment:
+          enum:
+          - calm
+          - concerned
+          - angry
+          - distressed
+          title: Sentiment
+          type: string
+        sla_ack_due_at:
+          description: 48 h acknowledgement (REQ-CP-03).
+          format: date-time
+          title: Sla Ack Due At
+          type: string
+        sla_resolve_due_at:
+          description: 30-day resolution (REQ-CP-03).
+          format: date-time
+          title: Sla Resolve Due At
+          type: string
+        tenant_id:
+          pattern: ^[a-z0-9][a-z0-9-]{1,62}$
+          title: Tenant Id
+          type: string
+        trace_id:
+          pattern: ^[0-9a-f]{32}$
+          title: Trace Id
+          type: string
+        who:
+          minLength: 1
+          title: Who
+          type: string
+      required:
+      - schema_version
+      - tenant_id
+      - trace_id
+      - call_id
+      - who
+      - booking_masked
+      - customer_wants
+      - ai_did
+      - sentiment
+      - policy_refs
+      - next_best_action
+      - reason
+      - queue
+      - sla_ack_due_at
+      - sla_resolve_due_at
+      title: HandoffSummary
+      type: object
+    HandoffView:
+      properties:
+        acknowledged_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Acknowledged At
+        call_id:
+          title: Call Id
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        crm_ticket_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Crm Ticket Id
+        resolved_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Resolved At
+        result:
+          enum:
+          - transferred
+          - callback_scheduled
+          title: Result
+          type: string
+        summary:
+          $ref: '#/components/schemas/HandoffSummary'
+      required:
+      - call_id
+      - result
+      - created_at
+      - acknowledged_at
+      - resolved_at
+      - crm_ticket_id
+      - summary
+      title: HandoffView
+      type: object
+    Health:
+      properties:
+        status:
+          const: ok
+          title: Status
+          type: string
+      required:
+      - status
+      title: Health
+      type: object
+    IncidentIn:
+      additionalProperties: false
+      properties:
+        detected_at:
+          format: date-time
+          title: Detected At
+          type: string
+        kind:
+          enum:
+          - security
+          - data_breach
+          - telecom_complaint
+          - other
+          title: Kind
+          type: string
+        summary:
+          maxLength: 2000
+          minLength: 3
+          title: Summary
+          type: string
+      required:
+      - kind
+      - summary
+      - detected_at
+      title: IncidentIn
+      type: object
+    IncidentView:
+      additionalProperties: false
+      properties:
+        board_report_due_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Board Report Due At
+        cert_in_due_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Cert In Due At
+        detected_at:
+          format: date-time
+          title: Detected At
+          type: string
+        incident_id:
+          title: Incident Id
+          type: string
+        kind:
+          enum:
+          - security
+          - data_breach
+          - telecom_complaint
+          - other
+          title: Kind
+          type: string
+        status:
+          enum:
+          - open
+          - reported
+          - closed
+          title: Status
+          type: string
+        summary:
+          title: Summary
+          type: string
+      required:
+      - incident_id
+      - kind
+      - summary
+      - detected_at
+      - cert_in_due_at
+      - board_report_due_at
+      - status
+      title: IncidentView
+      type: object
+    KillSwitchIn:
+      additionalProperties: false
+      properties:
+        engaged:
+          title: Engaged
+          type: boolean
+        reason:
+          maxLength: 500
+          minLength: 3
+          title: Reason
+          type: string
+      required:
+      - engaged
+      - reason
+      title: KillSwitchIn
+      type: object
+    KillSwitchState:
+      properties:
+        actor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Actor
+        changed_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Changed At
+        engaged:
+          title: Engaged
+          type: boolean
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+      required:
+      - engaged
+      - actor
+      - reason
+      - changed_at
+      title: KillSwitchState
+      type: object
+    LatencyMs:
+      additionalProperties: false
+      properties:
+        p50:
+          minimum: 0.0
+          title: P50
+          type: integer
+        p95:
+          minimum: 0.0
+          title: P95
+          type: integer
+      required:
+      - p50
+      - p95
+      title: LatencyMs
+      type: object
+    OptOutIn:
+      additionalProperties: false
+      properties:
+        channel:
+          enum:
+          - voice
+          - whatsapp
+          - sms
+          - web
+          - dca
+          title: Channel
+          type: string
+        phone_e164:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Phone E164
+          type: string
+      required:
+      - phone_e164
+      - channel
+      title: OptOutIn
+      type: object
+    PhoneIn:
+      additionalProperties: false
+      properties:
+        phone_e164:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Phone E164
+          type: string
+      required:
+      - phone_e164
+      title: PhoneIn
+      type: object
+    ReasonIn:
+      additionalProperties: false
+      properties:
+        reason:
+          maxLength: 500
+          minLength: 3
+          title: Reason
+          type: string
+      required:
+      - reason
+      title: ReasonIn
+      type: object
+    RightsRequestIn:
+      additionalProperties: false
+      properties:
+        kind:
+          enum:
+          - access
+          - correction
+          - erasure
+          title: Kind
+          type: string
+        phone_e164:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Phone E164
+          type: string
+      required:
+      - phone_e164
+      - kind
+      title: RightsRequestIn
+      type: object
+    RightsRequestView:
+      properties:
+        ack_due_at:
+          format: date-time
+          title: Ack Due At
+          type: string
+        acknowledged_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Acknowledged At
+        completed_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Completed At
+        due_at:
+          format: date-time
+          title: Due At
+          type: string
+        kind:
+          enum:
+          - access
+          - correction
+          - erasure
+          title: Kind
+          type: string
+        received_at:
+          format: date-time
+          title: Received At
+          type: string
+        request_id:
+          title: Request Id
+          type: string
+        result:
+          title: Result
+          type: object
+        status:
+          enum:
+          - open
+          - acknowledged
+          - completed
+          title: Status
+          type: string
+      required:
+      - request_id
+      - kind
+      - status
+      - received_at
+      - ack_due_at
+      - due_at
+      - acknowledged_at
+      - completed_at
+      - result
+      title: RightsRequestView
+      type: object
+    SimulateIn:
+      additionalProperties: false
+      properties:
+        language:
+          default: hinglish
+          enum:
+          - hi
+          - en
+          - hinglish
+          - unknown
+          title: Language
+          type: string
+        persona:
+          pattern: ^C-[0-9]{2}$
+          title: Persona
+          type: string
+        purpose:
+          enum:
+          - J1
+          - J2
+          title: Purpose
+          type: string
+        seed:
+          maximum: 2147483647.0
+          minimum: 0.0
+          title: Seed
+          type: integer
+      required:
+      - persona
+      - seed
+      - purpose
+      title: SimulateIn
+      type: object
+    SimulationResult:
+      additionalProperties: false
+      properties:
+        assertions_passed:
+          title: Assertions Passed
+          type: boolean
+        outcome:
+          title: Outcome
+          type: string
+        persona:
+          title: Persona
+          type: string
+        purpose:
+          enum:
+          - J1
+          - J2
+          title: Purpose
+          type: string
+        seed:
+          title: Seed
+          type: integer
+        tools_called:
+          items:
+            type: string
+          title: Tools Called
+          type: array
+        trace_id:
+          title: Trace Id
+          type: string
+        transcript:
+          items:
+            $ref: '#/components/schemas/TranscriptLine'
+          title: Transcript
+          type: array
+      required:
+      - persona
+      - seed
+      - purpose
+      - outcome
+      - tools_called
+      - transcript
+      - assertions_passed
+      - trace_id
+      title: SimulationResult
+      type: object
+    ToolsCalledItem:
+      additionalProperties: false
+      properties:
+        args_hash:
+          pattern: ^[0-9a-f]{64}$
+          title: Args Hash
+          type: string
+        name:
+          enum:
+          - get_booking_summary
+          - send_payment_link
+          - confirm_details
+          - record_special_request
+          - log_case
+          - schedule_callback
+          - warm_transfer
+          - mark_dnc
+          - end_call
+          - send_app_link
+          title: Name
+          type: string
+        result_code:
+          minLength: 1
+          title: Result Code
+          type: string
+      required:
+      - name
+      - args_hash
+      - result_code
+      title: ToolsCalledItem
+      type: object
+    TranscriptLine:
+      additionalProperties: false
+      properties:
+        speaker:
+          enum:
+          - agent
+          - customer
+          title: Speaker
+          type: string
+        text:
+          title: Text
+          type: string
+      required:
+      - speaker
+      - text
+      title: TranscriptLine
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http
+info:
+  description: Agoda Voice is an independent ProsperOps product and is not affiliated
+    with or endorsed by Agoda.
+  title: Agoda Voice API
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /audit:
+    get:
+      operationId: list_audit_audit_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          maximum: 500
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuditEvent'
+                title: Response List Audit Audit Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Audit
+      tags:
+      - audit
+  /calls:
+    get:
+      operationId: list_calls_calls_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          maximum: 500
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CallOutcome'
+                title: Response List Calls Calls Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Calls
+      tags:
+      - calls
+  /calls/{call_id}:
+    get:
+      operationId: get_call_calls__call_id__get
+      parameters:
+      - in: path
+        name: call_id
+        required: true
+        schema:
+          title: Call Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallOutcome'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Get Call
+      tags:
+      - calls
+  /calls/{call_id}/transcript:
+    get:
+      operationId: get_transcript_calls__call_id__transcript_get
+      parameters:
+      - in: path
+        name: call_id
+        required: true
+        schema:
+          title: Call Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TranscriptLine'
+                title: Response Get Transcript Calls  Call Id  Transcript Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Get Transcript
+      tags:
+      - calls
+  /campaigns:
+    get:
+      operationId: list_campaigns_campaigns_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CampaignView'
+                title: Response List Campaigns Campaigns Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Campaigns
+      tags:
+      - campaigns
+  /campaigns/{campaign_id}/pause:
+    post:
+      operationId: pause_campaign_campaigns__campaign_id__pause_post
+      parameters:
+      - in: path
+        name: campaign_id
+        required: true
+        schema:
+          title: Campaign Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignView'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Pause Campaign
+      tags:
+      - campaigns
+  /campaigns/{campaign_id}/resume:
+    post:
+      operationId: resume_campaign_campaigns__campaign_id__resume_post
+      parameters:
+      - in: path
+        name: campaign_id
+        required: true
+        schema:
+          title: Campaign Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignView'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Resume Campaign
+      tags:
+      - campaigns
+  /cli:
+    get:
+      operationId: list_cli_cli_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Cli'
+                title: Response List Cli Cli Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Cli
+      tags:
+      - cli
+  /cli/{cli_e164}:
+    put:
+      operationId: upsert_cli_cli__cli_e164__put
+      parameters:
+      - in: path
+        name: cli_e164
+        required: true
+        schema:
+          pattern: ^\+[1-9][0-9]{6,14}$
+          title: Cli E164
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CliIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cli'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Upsert Cli
+      tags:
+      - cli
+  /consent:
+    post:
+      operationId: record_consent_consent_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecord'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Record Consent
+      tags:
+      - consent
+  /consent/lookup:
+    post:
+      operationId: lookup_consent_consent_lookup_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ConsentRecord'
+                title: Response Lookup Consent Consent Lookup Post
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Lookup Consent
+      tags:
+      - consent
+  /consent/opt-out:
+    post:
+      operationId: opt_out_consent_opt_out_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OptOutIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ConsentRecord'
+                title: Response Opt Out Consent Opt Out Post
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Opt Out
+      tags:
+      - consent
+  /handoff:
+    get:
+      operationId: list_handoffs_handoff_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          maximum: 500
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/HandoffView'
+                title: Response List Handoffs Handoff Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Handoffs
+      tags:
+      - handoff
+  /handoff/{call_id}:
+    get:
+      operationId: get_handoff_handoff__call_id__get
+      parameters:
+      - in: path
+        name: call_id
+        required: true
+        schema:
+          title: Call Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HandoffSummary'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Get Handoff
+      tags:
+      - handoff
+    post:
+      operationId: act_on_handoff_handoff__call_id__post
+      parameters:
+      - in: path
+        name: call_id
+        required: true
+        schema:
+          title: Call Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoffAction'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HandoffSummary'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Act On Handoff
+      tags:
+      - handoff
+  /healthz:
+    get:
+      operationId: healthz_healthz_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Healthz
+      tags:
+      - ops
+  /incidents:
+    get:
+      operationId: list_incidents_incidents_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/IncidentView'
+                title: Response List Incidents Incidents Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Incidents
+      tags:
+      - incidents
+    post:
+      operationId: open_incident_incidents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentView'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Open Incident
+      tags:
+      - incidents
+  /killswitch:
+    get:
+      operationId: get_killswitch_killswitch_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KillSwitchState'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Get Killswitch
+      tags:
+      - killswitch
+    post:
+      operationId: set_killswitch_killswitch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KillSwitchIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KillSwitchState'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Set Killswitch
+      tags:
+      - killswitch
+  /metrics:
+    get:
+      operationId: metrics_metrics_get
+      responses:
+        '200':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Successful Response
+        '400':
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Metrics
+      tags:
+      - ops
+  /rights-requests:
+    get:
+      operationId: list_requests_rights_requests_get
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          maximum: 500
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RightsRequestView'
+                title: Response List Requests Rights Requests Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Requests
+      tags:
+      - rights
+    post:
+      operationId: open_request_rights_requests_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RightsRequestIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RightsRequestView'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Open Request
+      tags:
+      - rights
+  /rights-requests/{request_id}/acknowledge:
+    post:
+      operationId: acknowledge_rights_requests__request_id__acknowledge_post
+      parameters:
+      - in: path
+        name: request_id
+        required: true
+        schema:
+          title: Request Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RightsRequestView'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Acknowledge
+      tags:
+      - rights
+  /rights-requests/{request_id}/complete:
+    post:
+      operationId: complete_rights_requests__request_id__complete_post
+      parameters:
+      - in: path
+        name: request_id
+        required: true
+        schema:
+          title: Request Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteOut'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Complete
+      tags:
+      - rights
+  /simulate:
+    post:
+      operationId: simulate_simulate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulateIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResult'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Simulate
+      tags:
+      - simulate
