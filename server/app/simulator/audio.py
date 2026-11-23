@@ -21,7 +21,7 @@ from app.providers.tts.mock import MockTts
 from app.simulator.caller import ScriptedCaller
 from app.simulator.line import Line, char_error_rate, word_error_rate
 from app.voice.agent import Heard
-from app.voice.guardrails import BACKCHANNEL_ONLY
+from app.voice.guardrails import BACKCHANNEL_ONLY, classify
 from app.voice.turn_config import MAX_ENDPOINTING_S, MIN_ENDPOINTING_S, MIN_INTERRUPTION_S
 
 # Speech needed before an interruption is detected; same value the worker pins.
@@ -111,8 +111,11 @@ class AudioListener:
             # Server-side: VAD detection, one jitter-buffer frame, TTS flush.
             barge = VAD_DETECT_S + 0.02 + TTS_FLUSH_S
             # Adaptive interruption: a backchannel resumes the agent; only a misheard one stops it.
-            false_int = bool(BACKCHANNEL_ONLY.match(heard.text)) and not bool(
-                BACKCHANNEL_ONLY.match(transcript.text)
+            # The agent decides with guardrails.classify on what STT returned, so the metric
+            # must use the same rule (an overlap of two words or fewer is a backchannel).
+            false_int = (
+                bool(BACKCHANNEL_ONLY.match(heard.text))
+                and not classify(transcript.text, overlap=True).backchannel
             )
         metric = TurnMetrics(
             reference=heard.text,

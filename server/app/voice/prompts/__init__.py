@@ -14,7 +14,7 @@ from app.core.errors import PromptLintError
 from app.core.types import Language
 from app.voice.normalise import spoken_lang
 
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v2"
 _DIR = Path(__file__).parent / PROMPT_VERSION
 _LANGS = ("hinglish", "hi", "en")
 

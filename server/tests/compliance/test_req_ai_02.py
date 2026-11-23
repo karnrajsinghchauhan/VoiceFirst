@@ -20,5 +20,5 @@ def test_male_voice_is_rejected_until_male_lines_exist() -> None:
 
 
 def test_brief_female_forms_present() -> None:
-    assert "bol rahi hoon" in lines()["j1_opening"]["hinglish"]
+    assert "bol rahi hoon" in lines()["opening"]["hinglish"]
     assert "bol raha hoon" not in " ".join(v for d in lines().values() for v in d.values())
