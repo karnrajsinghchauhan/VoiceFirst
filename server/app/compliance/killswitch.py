@@ -18,32 +18,79 @@ from app.core.ids import new_trace_id
 
 
 def _set(
-    session: Session, bus: EventBus, clock: Clock, *, tenant_id: str, engaged: bool,
-    actor: str, role: Role, reason: str,
+    session: Session,
+    bus: EventBus,
+    clock: Clock,
+    *,
+    tenant_id: str,
+    engaged: bool,
+    actor: str,
+    role: Role,
+    reason: str,
 ) -> None:
     now = clock.now()
-    session.merge(KillSwitchRow(tenant_id=tenant_id, engaged=engaged, actor=actor, reason=reason,
-                                changed_at=now))
+    session.merge(
+        KillSwitchRow(
+            tenant_id=tenant_id, engaged=engaged, actor=actor, reason=reason, changed_at=now
+        )
+    )
     session.flush()
-    write_audit(session, bus, tenant_id=tenant_id, trace_id=new_trace_id(), at=now, actor=actor,
-                role=role, action="kill_switch.engage" if engaged else "kill_switch.release",
-                target=f"tenant:{tenant_id}", reason=reason)
+    write_audit(
+        session,
+        bus,
+        tenant_id=tenant_id,
+        trace_id=new_trace_id(),
+        at=now,
+        actor=actor,
+        role=role,
+        action="kill_switch.engage" if engaged else "kill_switch.release",
+        target=f"tenant:{tenant_id}",
+        reason=reason,
+    )
 
 
 def engage(
-    session: Session, bus: EventBus, clock: Clock, *, tenant_id: str, actor: str, role: Role,
+    session: Session,
+    bus: EventBus,
+    clock: Clock,
+    *,
+    tenant_id: str,
+    actor: str,
+    role: Role,
     reason: str,
 ) -> None:
-    _set(session, bus, clock, tenant_id=tenant_id, engaged=True, actor=actor, role=role,
-         reason=reason)
+    _set(
+        session,
+        bus,
+        clock,
+        tenant_id=tenant_id,
+        engaged=True,
+        actor=actor,
+        role=role,
+        reason=reason,
+    )
 
 
 def release(
-    session: Session, bus: EventBus, clock: Clock, *, tenant_id: str, actor: str, role: Role,
+    session: Session,
+    bus: EventBus,
+    clock: Clock,
+    *,
+    tenant_id: str,
+    actor: str,
+    role: Role,
     reason: str,
 ) -> None:
-    _set(session, bus, clock, tenant_id=tenant_id, engaged=False, actor=actor, role=role,
-         reason=reason)
+    _set(
+        session,
+        bus,
+        clock,
+        tenant_id=tenant_id,
+        engaged=False,
+        actor=actor,
+        role=role,
+        reason=reason,
+    )
 
 
 def is_engaged(session: Session, tenant_id: str) -> bool:
