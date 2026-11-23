@@ -11,3 +11,4 @@ reports/
 .env
 *.wav
 !evals/datasets/**/*.wav
+.claude/worktrees/
