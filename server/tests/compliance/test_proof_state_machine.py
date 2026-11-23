@@ -61,7 +61,7 @@ EXAMPLES = int(os.environ.get("AV_PROOF_EXAMPLES", "10000"))
 
 # One engine for the whole run; each example starts from empty tables. Creating the
 # schema per example dominated runtime.
-_ENGINE = make_engine("sqlite://")
+_ENGINE = make_engine("sqlite://", "agoda-in")
 create_all(_ENGINE)
 _FACTORY = make_session_factory(_ENGINE)
 

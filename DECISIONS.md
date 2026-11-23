@@ -231,3 +231,8 @@ Format: ID, date, decision, why, what would change it.
 - Decision: the audio simulator classifies a barge-in with `guardrails.classify(..., overlap=True)`, the rule the agent acts on, instead of the lexicon alone.
 - Why: the metric reported a false interruption the agent would not have made ("hmm achha" misheard as "ha" on 3G); a measurement must measure the behaviour.
 - Would change it: real LiveKit traces in M8 replacing the timing model.
+
+## D-020 (2026-11-23) Tenant isolation by Postgres row-level security; one tenant per runtime
+- Decision: every table carries tenant_id; phone-keyed tables are keyed (tenant_id, phone_hash). Migration b2c3d4e5f6a7 enables and forces RLS with policy `tenant_id = current_setting('app.tenant_id')`. `make_engine(url, tenant_id)` declares the tenant on every connection; a runtime serves one tenant. Production refuses to boot when the DB role is a superuser (superusers bypass RLS).
+- Why: brief v3 S7; isolation must hold even when a query forgets its tenant filter. One runtime per tenant also matches build-operate-transfer (each client runs its own).
+- Would change it: a shared multi-tenant runtime, which would set app.tenant_id per transaction from the authenticated principal.

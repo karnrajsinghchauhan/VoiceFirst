@@ -24,7 +24,7 @@ def _alembic(*args: str, url: str) -> subprocess.CompletedProcess[str]:
 
 def test_upgrade_then_check_has_no_drift() -> None:
     url = os.environ["AV_TEST_DATABASE_URL"]
-    engine = make_engine(url)
+    engine = make_engine(url, "agoda-in")
     Base.metadata.drop_all(engine)
     with engine.begin() as conn:
         conn.execute(text("DROP TABLE IF EXISTS alembic_version"))

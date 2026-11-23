@@ -28,6 +28,7 @@ def _seed_call(session, bus, settings, clock):
     store_transcript(
         session,
         CIPHER,
+        tenant_id="agoda-in",
         call_id=outcome.call_id,
         phone_hash=ph,
         at=clock.now(),

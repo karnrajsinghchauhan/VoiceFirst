@@ -63,6 +63,7 @@ def store_transcript(
     session: Session,
     cipher: DataCipher,
     *,
+    tenant_id: str,
     call_id: str,
     phone_hash: str,
     at: datetime,
@@ -73,6 +74,7 @@ def store_transcript(
     ]
     session.add(
         TranscriptRow(
+            tenant_id=tenant_id,
             call_id=call_id,
             phone_hash=phone_hash,
             created_at=at,
@@ -96,6 +98,7 @@ def store_audio_ref(
     session: Session,
     cipher: DataCipher,
     *,
+    tenant_id: str,
     call_id: str,
     phone_hash: str,
     at: datetime,
@@ -103,6 +106,7 @@ def store_audio_ref(
 ) -> None:
     session.add(
         AudioRefRow(
+            tenant_id=tenant_id,
             call_id=call_id,
             phone_hash=phone_hash,
             created_at=at,

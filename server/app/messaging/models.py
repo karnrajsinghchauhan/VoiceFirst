@@ -22,5 +22,6 @@ class InboundMessageRow(Base):
     """Last inbound message per number; opens the 24 h customer-service window (REQ-WA-03)."""
 
     __tablename__ = "whatsapp_inbound"
+    tenant_id: Mapped[str] = mapped_column(String, primary_key=True)
     phone_hash: Mapped[str] = mapped_column(String, primary_key=True)
     last_inbound_at: Mapped[datetime] = mapped_column(UtcDateTime)

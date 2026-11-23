@@ -125,6 +125,7 @@ def seed_consent(
 def seed_preference(session: Session, settings: Settings, phone: str, state: str) -> None:
     session.merge(
         PreferenceRow(
+            tenant_id=settings.tenant_id,
             phone_hash=phone_hash(phone, settings.phone_pepper),
             state=state,
             synced_at=datetime(2026, 11, 23, tzinfo=UTC),
@@ -136,6 +137,7 @@ def seed_preference(session: Session, settings: Settings, phone: str, state: str
 def seed_opt_out(session: Session, settings: Settings, phone: str, at: datetime) -> None:
     session.merge(
         OptOutRow(
+            tenant_id=settings.tenant_id,
             phone_hash=phone_hash(phone, settings.phone_pepper),
             opted_out_at=at,
             channel="voice",

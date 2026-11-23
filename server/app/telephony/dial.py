@@ -51,6 +51,7 @@ def dial(
     session.add(
         DialAttemptRow(
             attempt_id=new_id("att"),
+            tenant_id=tenant_id,
             clearance_id=clearance.clearance_id,
             booking_event_id=clearance.booking_event_id,
             booking_id=clearance.booking_id,

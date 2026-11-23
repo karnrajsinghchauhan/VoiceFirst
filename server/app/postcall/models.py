@@ -26,6 +26,7 @@ class CallOutcomeRow(Base):
 
 class TranscriptRow(Base):
     __tablename__ = "transcripts"
+    tenant_id: Mapped[str] = mapped_column(String, index=True)
     call_id: Mapped[str] = mapped_column(String, primary_key=True)
     phone_hash: Mapped[str] = mapped_column(String, index=True)
     created_at: Mapped[datetime] = mapped_column(UtcDateTime, index=True)
@@ -34,6 +35,7 @@ class TranscriptRow(Base):
 
 class AudioRefRow(Base):
     __tablename__ = "audio_refs"
+    tenant_id: Mapped[str] = mapped_column(String, index=True)
     call_id: Mapped[str] = mapped_column(String, primary_key=True)
     phone_hash: Mapped[str] = mapped_column(String, index=True)
     created_at: Mapped[datetime] = mapped_column(UtcDateTime, index=True)
