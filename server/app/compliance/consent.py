@@ -71,8 +71,8 @@ def to_record(row: ConsentRow) -> ConsentRecord:
         consent_id=row.consent_id,
         phone_e164=row.phone_e164,
         basis=row.basis,
-        purpose=row.purpose,  # type: ignore[arg-type]
-        channel=row.channel,  # type: ignore[arg-type]
+        purpose=row.purpose,
+        channel=row.channel,
         obtained_at=row.obtained_at,
         expires_at=row.expires_at,
         revoked_at=row.revoked_at,
