@@ -12,6 +12,7 @@ from sqlalchemy import select
 from app.admin.rbac import Principal
 from app.api.deps import Db, Deps, require
 from app.api.ports import TranscriptLine
+from app.api.types import IsoDatetime, StrictBool
 from app.compliance import consent as consent_api
 from app.compliance.models import CliRow
 from app.contracts.generated.call_outcome import CallOutcome
@@ -30,6 +31,7 @@ _E164 = r"^\+[1-9][0-9]{6,14}$"
 
 
 class _In(BaseModel):
+    # Strict: a request that violates the documented schema is refused, never coerced.
     model_config = ConfigDict(extra="forbid")
 
 
@@ -178,9 +180,9 @@ class CliIn(_In):
     series: Literal["140", "1600", "1601"]
     purpose: Literal["service", "transactional", "promotional"]
     oap: str = Field(min_length=1)
-    a2p_declared: bool
+    a2p_declared: StrictBool
     declaration_ref: str | None = None
-    dlt_recorded_at: datetime | None = None
+    dlt_recorded_at: IsoDatetime | None = None
     status: Literal["active", "paused", "retired"]
     paused_reason: str | None = None
 

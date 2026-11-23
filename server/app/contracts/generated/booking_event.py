@@ -3,10 +3,10 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 from . import common
 
@@ -34,7 +34,7 @@ class WhatsappOptIn(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    at: datetime
+    at: AwareDatetime
     source: Annotated[str, Field(min_length=1)]
 
 
@@ -53,7 +53,7 @@ class Customer(BaseModel):
     first_name: Annotated[str, Field(min_length=1)]
     phone_e164: Annotated[str, Field(pattern="^\\+[1-9][0-9]{6,14}$")]
     preferred_language: Literal["hi", "en", "hinglish", "unknown"]
-    whatsapp_opt_in: WhatsappOptIn | None = None
+    whatsapp_opt_in: WhatsappOptIn | None
 
 
 class BookingEvent(BaseModel):
@@ -68,7 +68,7 @@ class BookingEvent(BaseModel):
     tenant_id: Annotated[str, Field(pattern="^[a-z0-9][a-z0-9-]{1,62}$")]
     trace_id: Annotated[str, Field(pattern="^[0-9a-f]{32}$")]
     event_id: Annotated[str, Field(min_length=1)]
-    occurred_at: datetime
+    occurred_at: AwareDatetime
     booking_id: Annotated[
         str,
         Field(
@@ -78,7 +78,7 @@ class BookingEvent(BaseModel):
     ]
     status: Literal["payment_failed", "payment_pending", "confirmed", "cancelled"]
     payment_option: Literal["pay_now", "bnpl", "zero_pay", "pay_at_hotel"]
-    payment_due_at: datetime | None = None
+    payment_due_at: AwareDatetime | None
     amount_due: common.Money
     property: Property
     stay: Stay

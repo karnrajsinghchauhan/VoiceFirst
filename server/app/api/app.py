@@ -5,10 +5,12 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
+from fastapi.routing import APIRoute
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.routing import Match
 
 from app.api.deps import ApiDeps
-from app.api.errors import ERROR_RESPONSES, handle_agoda_voice_error
+from app.api.errors import ERROR_RESPONSES, handle_agoda_voice_error, handle_http_error
 from app.api.routes import ops, records, rights
 from app.core.errors import AgodaVoiceError
 
@@ -20,11 +22,11 @@ DISCLAIMER = (
 
 def _route_label(request: Request) -> str:
     # The route template, not the raw path, so call ids do not explode metric cardinality.
-    for route in request.app.router.routes:
-        match, _ = route.matches(request.scope)
-        if match == Match.FULL:
-            return str(getattr(route, "path", "unknown"))
-    return "unmatched"
+    # The router records the matched route in the scope; absent means nothing matched (404).
+    route = request.scope.get("route")
+    if route is None:
+        return "unmatched"
+    return str(route.path)
 
 
 def create_app(deps: ApiDeps) -> FastAPI:
@@ -36,6 +38,7 @@ def create_app(deps: ApiDeps) -> FastAPI:
     )
     app.state.deps = deps
     app.add_exception_handler(AgodaVoiceError, handle_agoda_voice_error)
+    app.add_exception_handler(StarletteHTTPException, handle_http_error)
 
     @app.middleware("http")
     async def count_requests(
@@ -43,6 +46,22 @@ def create_app(deps: ApiDeps) -> FastAPI:
     ) -> Response:
         response = await call_next(request)
         deps.metrics.requests.labels(_route_label(request), str(response.status_code)).inc()
+        return response
+
+    @app.middleware("http")
+    async def complete_allow_header(
+        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
+        # Starlette answers 405 from the first route matching the path, so a path served by
+        # separate GET and POST routes would advertise only one method. List all of them.
+        response = await call_next(request)
+        if response.status_code == 405:
+            methods: set[str] = set()
+            for route in app.router.routes:
+                match, _ = route.matches(request.scope)
+                if match != Match.NONE and isinstance(route, APIRoute) and route.methods:
+                    methods |= route.methods
+            response.headers["Allow"] = ", ".join(sorted(methods))
         return response
 
     app.include_router(ops.router)

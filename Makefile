@@ -5,7 +5,7 @@ unexport UV_NATIVE_TLS
 UV := cd server && uv run --quiet
 PG_URL ?= postgresql+psycopg://postgres:postgres@localhost:5432/agoda_voice_test
 
-.PHONY: up down gen check lint typecheck test e2e eval eval-audio load chaos seed demo report web-check
+.PHONY: scan up down gen check lint typecheck test e2e eval eval-audio load chaos seed demo report web-check
 
 up:
 	docker compose -f deploy/docker-compose.yml up -d --wait
@@ -35,7 +35,7 @@ check: lint typecheck test web-check
 	scripts/check_contract_drift.sh
 
 e2e:
-	AV_TEST_DATABASE_URL=$(PG_URL) $(UV) pytest -q -m e2e
+	cd server && AV_TEST_DATABASE_URL=$(PG_URL) uv run --quiet pytest -q -m e2e
 
 eval:
 	$(UV) python ../evals/run_evals.py --mode text
@@ -57,3 +57,8 @@ demo:
 
 report:
 	$(UV) python ../evals/run_evals.py --mode text --report-only
+
+scan:
+	cd server && uv run --quiet --with pip-audit pip-audit --skip-editable --progress-spinner off
+	cd web && npm audit --omit=dev --audit-level=high
+	scripts/secret_scan.sh

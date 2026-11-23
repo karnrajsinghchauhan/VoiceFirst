@@ -199,9 +199,11 @@ components:
       - answered
       - amd_result
       - language_detected
+      - disclosure_played_at
       - turns
       - tools_called
       - outcome
+      - handoff
       - latency_ms
       - cost
       - redaction_applied
@@ -320,7 +322,10 @@ components:
       - purpose
       - oap
       - a2p_declared
+      - declaration_ref
+      - dlt_recorded_at
       - status
+      - paused_reason
       title: Cli
       type: object
     CliIn:
@@ -553,7 +558,12 @@ components:
       - purpose
       - channel
       - obtained_at
+      - expires_at
+      - revoked_at
       - source_ref
+      - consent_manager_id
+      - artefact_ref
+      - evidence_uri
       title: ConsentRecord
       type: object
     Cost:
@@ -1172,6 +1182,11 @@ components:
       type: object
     ValidationError:
       properties:
+        ctx:
+          title: Context
+          type: object
+        input:
+          title: Input
         loc:
           items:
             anyOf:
@@ -2613,42 +2628,49 @@ paths:
           description: Successful Response
         '400':
           content:
+            application/json: {}
             text/plain:
               schema:
                 $ref: '#/components/schemas/ErrorBody'
           description: Bad Request
         '401':
           content:
+            application/json: {}
             text/plain:
               schema:
                 $ref: '#/components/schemas/ErrorBody'
           description: Unauthorized
         '403':
           content:
+            application/json: {}
             text/plain:
               schema:
                 $ref: '#/components/schemas/ErrorBody'
           description: Forbidden
         '404':
           content:
+            application/json: {}
             text/plain:
               schema:
                 $ref: '#/components/schemas/ErrorBody'
           description: Not Found
         '409':
           content:
+            application/json: {}
             text/plain:
               schema:
                 $ref: '#/components/schemas/ErrorBody'
           description: Conflict
         '500':
           content:
+            application/json: {}
             text/plain:
               schema:
                 $ref: '#/components/schemas/ErrorBody'
           description: Internal Server Error
         '502':
           content:
+            application/json: {}
             text/plain:
               schema:
                 $ref: '#/components/schemas/ErrorBody'

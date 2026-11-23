@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class Complaint(BaseModel):
@@ -23,7 +22,7 @@ class Complaint(BaseModel):
     complaint_id: Annotated[str, Field(min_length=1)]
     cli_e164: Annotated[str, Field(pattern="^\\+[1-9][0-9]{6,14}$")]
     complainant_hash: Annotated[str, Field(pattern="^[0-9a-f]{64}$")]
-    received_at: datetime
+    received_at: AwareDatetime
     source: Literal["dlt_forwarded", "call_management_app_via_dlt", "direct"]
     ai_flagged: bool
-    dlt_ref: str | None = None
+    dlt_ref: str | None
