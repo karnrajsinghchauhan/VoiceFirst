@@ -42,16 +42,35 @@ def test_paused_purpose_is_skipped_by_dispatcher_query(session_factory, settings
     from app.providers.telephony.mock import MockTelephony
 
     with session_factory() as s:
-        s.add(QueueItemRow(item_id="q1", tenant_id=settings.tenant_id, booking_event_id="e",
-                           booking_id="b", purpose="J1", cli_e164="+911600123456",
-                           due_at=clock.now(), state="queued", attempts=0, last_reason=None,
-                           last_call_id=None, last_outcome=None, last_dialled_at=None,
-                           updated_at=clock.now()))
+        s.add(
+            QueueItemRow(
+                item_id="q1",
+                tenant_id=settings.tenant_id,
+                booking_event_id="e",
+                booking_id="b",
+                purpose="J1",
+                cli_e164="+911600123456",
+                due_at=clock.now(),
+                state="queued",
+                attempts=0,
+                last_reason=None,
+                last_call_id=None,
+                last_outcome=None,
+                last_dialled_at=None,
+                updated_at=clock.now(),
+            )
+        )
         s.commit()
     CampaignPort(session_factory, settings.tenant_id, clock).pause("cmp_j1", "ops", "drill")
-    dispatcher = Dispatcher(session_factory=session_factory, bus=MemoryBus(), settings=settings,
-                            clock=clock, telephony=MockTelephony(), runner=None,  # type: ignore[arg-type]
-                            fallback=None,  # type: ignore[arg-type]
-                            cli_by_purpose={"J1": "+911600123456", "J2": "+911601123456"},
-                            rules=JourneyRules())
+    dispatcher = Dispatcher(
+        session_factory=session_factory,
+        bus=MemoryBus(),
+        settings=settings,
+        clock=clock,
+        telephony=MockTelephony(),
+        runner=None,  # type: ignore[arg-type]
+        fallback=None,  # type: ignore[arg-type]
+        cli_by_purpose={"J1": "+911600123456", "J2": "+911601123456"},
+        rules=JourneyRules(),
+    )
     assert dispatcher._take_next_due() is None
