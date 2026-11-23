@@ -1,0 +1,19 @@
+id: C-26
+title: voicemail or IVR
+journey: J1
+languages:
+- hinglish
+- en
+turns:
+  hinglish:
+  - Aap jis number par call kar rahe hain woh abhi uplabdh nahi hai, kripya beep ke baad message chhodein
+  en:
+  - The number you have dialled is not available. Please leave a message after the tone.
+expect:
+  outcome:
+  - voicemail
+  tools_forbidden:
+  - send_payment_link
+  - warm_transfer
+  handoff: false
+preferred_language: hinglish

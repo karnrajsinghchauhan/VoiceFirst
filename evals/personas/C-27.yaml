@@ -1,0 +1,29 @@
+id: C-27
+title: asks about add-ons
+journey: J2
+languages:
+- hinglish
+- en
+turns:
+  hinglish:
+  - haan ji, boliye
+  - haan sahi hai
+  - shaam paanch baje tak
+  - kya aap flight ya airport pickup bhi book kar sakte ho?
+  - nahi, kuch nahi
+  en:
+  - Yes, go ahead.
+  - Yes that's correct.
+  - Around five in the evening.
+  - Can you also book a flight or airport pickup?
+  - No, nothing else.
+expect:
+  outcome:
+  - details_confirmed
+  tools_required:
+  - confirm_details
+  - send_app_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+preferred_language: hinglish

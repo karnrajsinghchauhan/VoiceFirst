@@ -1,0 +1,23 @@
+id: C-02
+title: elderly, pure Hindi, slow speech
+journey: J1
+languages:
+- hi
+preferred_language: hi
+cooperative: true
+pause_profile: slow
+turns:
+  hi:
+  - जी... हाँ बेटा... भेज दो
+default:
+  hi: हाँ
+expect:
+  outcome:
+  - link_sent
+  tools_required:
+  - send_payment_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+hidden_facts:
+- speaks slowly with long pauses mid-sentence
