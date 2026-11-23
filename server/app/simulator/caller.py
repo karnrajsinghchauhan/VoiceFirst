@@ -19,6 +19,7 @@ from app.core.types import Language
 from app.voice.agent import Heard
 
 PERSONA_DIR = Path(__file__).resolve().parents[3] / "evals" / "personas"
+_REPEAT_ACTS = frozenset({"line_unclear", "j1_reask", "j2_reask_stay", "reprompt_silence"})
 _DISFLUENCIES = ("umm", "uh", "matlab", "woh")
 
 
@@ -112,6 +113,7 @@ class ScriptedCaller:
     _index: int = field(init=False, default=0)
     _act_counts: dict[str, int] = field(init=False, default_factory=dict)
     heard_acts: list[str] = field(init=False, default_factory=list)
+    _last: Heard | None = field(init=False, default=None)
 
     def __post_init__(self) -> None:
         self._rng = random.Random(f"{self.persona.id}:{self.language}:{self.seed}")
@@ -131,6 +133,11 @@ class ScriptedCaller:
 
     def listen(self, act: str, agent_text: str) -> Heard:
         self.heard_acts.append(act)
+        heard = self._next(act)
+        self._last = heard
+        return heard
+
+    def _next(self, act: str) -> Heard:
         replies = self.persona.on_act.get(self.language, {})
         for part in act.split("+"):
             if part in replies:
@@ -141,6 +148,14 @@ class ScriptedCaller:
                     self._act_counts[part] = n + 1
                     reply = reply[min(n, len(reply) - 1)]
                 return self._pick(reply)
+        if (
+            act in _REPEAT_ACTS
+            and self._last is not None
+            and self._last.text
+            and not self._last.overlap
+        ):
+            # A person asked to repeat says the same thing again.
+            return self._last
         script = self.persona.turns[self.language]
         if self._index < len(script):
             entry = script[self._index]

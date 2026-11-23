@@ -184,6 +184,11 @@ unknown_question:
   hi: "यह जानकारी मेरी बुकिंग डिटेल्स में नहीं है। आप Agoda ऐप में प्रॉपर्टी से सीधे पूछ सकते हैं।"
   en: "That information is not in the booking details I have. You can ask the property directly in the Agoda app."
 
+line_unclear:
+  hinglish: "Maaf kijiye ji, awaaz saaf nahi aayi. Kya aap dobara bol sakte hain?"
+  hi: "माफ़ कीजिए जी, आवाज़ साफ़ नहीं आई। क्या आप दोबारा बोल सकते हैं?"
+  en: "Sorry, the line was not clear. Could you say that again?"
+
 reprompt_silence:
   hinglish: "Hello ji, kya aap meri awaaz sun pa rahe hain?"
   hi: "हैलो जी, क्या आप मेरी आवाज़ सुन पा रहे हैं?"

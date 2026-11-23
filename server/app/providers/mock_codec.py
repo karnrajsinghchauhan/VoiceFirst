@@ -18,7 +18,7 @@ TONES_HZ = np.array([600 + 200 * k for k in range(16)], dtype=np.float64)
 AMPLITUDE = 0.3
 # Symbol energy below this fraction of a clean symbol's energy is an erasure (lost packet).
 _ERASURE_FRACTION = 0.15
-_ERASED = 0x3F  # "?"
+_ERASED = 0x7F  # DEL: a control byte that no text contains
 
 _t = np.arange(SYMBOL_SAMPLES) / SAMPLE_RATE
 _SYMBOLS = AMPLITUDE * np.sin(2 * np.pi * TONES_HZ[:, None] * _t[None, :])
@@ -39,7 +39,7 @@ def encode(text: str) -> Float:
 
 
 def decode(signal: Float) -> tuple[str, float]:
-    """Returns (text, erasure_ratio). Undecodable bytes become U+FFFD or '?'."""
+    """Returns (text, erasure_ratio). Erased bytes become DEL; undecodable bytes U+FFFD."""
     n_symbols = signal.size // SYMBOL_SAMPLES
     if n_symbols < 2:
         return "", 0.0

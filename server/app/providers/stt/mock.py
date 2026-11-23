@@ -25,4 +25,10 @@ class MockStt:
             raise ProviderError("mock STT unavailable")
         self.timer.advance(self.latency.sample())
         text, erasures = mock_codec.decode(mock_codec.from_pcm16(pcm16_8khz))
-        return Transcript(text=text, language=detect_language(text), confidence=1.0 - erasures)
+        # Replacement characters are bytes the codec decoded into invalid UTF-8: also lost.
+        damaged = erasures + text.count("\ufffd") / max(1, len(text))
+        # A recogniser drops what it could not hear rather than emitting a placeholder.
+        heard = " ".join(text.replace("\x7f", "").replace("\ufffd", "").split())
+        return Transcript(
+            text=heard, language=detect_language(heard), confidence=max(0.0, 1.0 - damaged)
+        )

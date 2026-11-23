@@ -73,6 +73,9 @@ Outcome = Literal[
 MAX_AGENT_TURNS = 14
 FILLER_THRESHOLD_S = 0.7
 ANGER_THRESHOLD = 0.7
+# Below this STT confidence the agent does not act on consent or answers; it asks again.
+# Safety triggers (opt-out, human, emergency, dispute, money) still act: erring toward them is safe.
+MIN_CONFIDENCE = 0.9
 # Telephony unit price is [CD] (Plivo India Rs 0.38/min, 30-s pulse); STT/TTS from Sarvam (S-31).
 _TELEPHONY_PAISE_PER_PULSE = 19
 _STT_PAISE_PER_MIN = 49
@@ -87,6 +90,7 @@ class Heard:
     overlap: bool = False
     stt_s: float = 0.0
     endpoint_s: float = 0.0
+    confidence: float = 1.0
 
 
 class Listener(Protocol):
@@ -429,7 +433,19 @@ class Conversation:
             "ask_request": "j2_ask_request",
         }[self.stage]
 
-    def _decide(self, sig: Signals, redacted: str) -> _Step:
+    def _decide(self, sig: Signals, redacted: str, confidence: float) -> _Step:
+        unsafe_to_act = confidence < MIN_CONFIDENCE and not (
+            sig.emergency
+            or sig.opt_out
+            or sig.wants_human
+            or sig.dispute
+            or sig.money_request
+            or sig.minor
+            or sig.payment_credential
+            or sig.machine
+        )
+        if unsafe_to_act:
+            return self._fail("line_unclear")
         first = self.first_customer_turn
         self.first_customer_turn = False
         self.anger_streak = self.anger_streak + 1 if sig.anger >= ANGER_THRESHOLD else 0
@@ -584,7 +600,7 @@ class Conversation:
             return _Step(("unknown_question", self._resume_act()))
         return self._fail(self._reask_act())
 
-    def _hear(self) -> tuple[Signals, str]:
+    def _hear(self) -> tuple[Signals, str, float]:
         heard = self.s.listener.listen(self.last_agent_act, self.transcript[-1].text)
         sig = classify(heard.text, heard.overlap)
         redacted = redact_text(heard.text)
@@ -596,7 +612,7 @@ class Conversation:
         self.transcript.append(
             TranscriptTurn("customer", redacted, "", sig.language, self.s.monotonic())
         )
-        return sig, redacted
+        return sig, redacted, heard.confidence
 
     def run(self) -> Outcome:
         opening = "j1_opening" if self.s.purpose == "J1" else "j2_opening"
@@ -605,8 +621,8 @@ class Conversation:
         if self.s.purpose == "J1":
             self.asks.append(("payment_link", False))
         for _ in range(MAX_AGENT_TURNS):
-            sig, redacted = self._hear()
-            self._say(self._decide(sig, redacted))
+            sig, redacted, confidence = self._hear()
+            self._say(self._decide(sig, redacted, confidence))
         self.customer_wants = "conversation did not converge"
         self._say(self._handoff("turn_limit", "handoff", "turn_limit"))
         raise AssertionError("unreachable: handoff always ends the call")
