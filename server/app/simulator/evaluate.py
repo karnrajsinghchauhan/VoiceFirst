@@ -85,6 +85,7 @@ def run_one(
         listener = AudioListener(
             caller=caller,
             tts=MockTts(t, LatencyModel(0.12, 0.3, seed + 11)),
+            agent_tts=MockTts(t, LatencyModel(0.12, 0.3, seed + 13)),
             stt=MockStt(t, LatencyModel(0.12, 0.3, seed + 12)),
             line=Line(PROFILES[profile], seed),
             timer=t,
@@ -95,7 +96,8 @@ def run_one(
         return listener
 
     run = run_text(settings, persona, language, seed, listener_factory=factory, timer=timer)
-    listeners[0].finish()
+    agent_turns = [t for t in run.result.transcript if t.speaker == "agent"]
+    listeners[0].finish(agent_turns[-1].text)
     return _record(run, profile, [asdict(m) for m in listeners[0].metrics])
 
 

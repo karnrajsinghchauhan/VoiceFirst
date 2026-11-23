@@ -22,11 +22,10 @@ from app.simulator.caller import ScriptedCaller
 from app.simulator.line import Line, char_error_rate, word_error_rate
 from app.voice.agent import Heard
 from app.voice.guardrails import BACKCHANNEL_ONLY
+from app.voice.turn_config import MAX_ENDPOINTING_S, MIN_ENDPOINTING_S, MIN_INTERRUPTION_S
 
-# Turn-handling settings pinned to match voice/livekit_worker.py.
-MIN_ENDPOINTING_S = 0.5
-MAX_ENDPOINTING_S = 1.6
-VAD_DETECT_S = 0.2  # speech needed before an interruption is detected
+# Speech needed before an interruption is detected; same value the worker pins.
+VAD_DETECT_S = MIN_INTERRUPTION_S
 TTS_FLUSH_S = 0.04
 WORDS_PER_S = {"normal": 2.6, "slow": 1.4, "long_initial_silence": 2.6}
 _INCOMPLETE = re.compile(r"(\.\.\.|,|\b(aur|and|lekin|but|ki|to)\b)\s*$", re.IGNORECASE)
@@ -53,6 +52,7 @@ def _phrases(text: str) -> list[str]:
 class AudioListener:
     caller: ScriptedCaller
     tts: MockTts
+    agent_tts: MockTts
     stt: MockStt
     line: Line
     timer: SimTimer
@@ -78,23 +78,25 @@ class AudioListener:
 
     _pending: tuple[TurnMetrics, float, float, float] | None = field(init=False, default=None)
 
-    def _close_pending(self) -> None:
-        """The agent's reply to the previous turn is ready now: complete its latency."""
+    def _speak_agent(self, agent_text: str) -> None:
+        """The agent's line goes out through the agent TTS, then its latency is complete."""
+        t0 = self.timer.now()
+        self.agent_tts.synthesize(agent_text, self.language)
+        tts_first = self.timer.now() - t0
         if self._pending is None:
             return
         metric, heard_at, endpoint_s, stt_s = self._pending
-        tts_first = self.tts.latency.sample()
         # Preemptive generation (pinned in livekit_worker): STT final + LLM run while the
         # endpointer waits, so the slower of the two gates the reply, then TTS first audio.
-        agent_work = stt_s + (self.timer.now() - heard_at)
+        agent_work = stt_s + (t0 - heard_at)
         metric.eos_to_first_audio_s = max(endpoint_s, agent_work) + tts_first
         self._pending = None
 
-    def finish(self) -> None:
-        self._close_pending()
+    def finish(self, last_agent_text: str) -> None:
+        self._speak_agent(last_agent_text)
 
     def listen(self, act: str, agent_text: str) -> Heard:
-        self._close_pending()
+        self._speak_agent(agent_text)
         heard = self.caller.listen(act, agent_text)
         audio = mock_codec.from_pcm16(self.tts.synthesize(heard.text, self.language))
         received, stats = self.line.transmit(audio)
