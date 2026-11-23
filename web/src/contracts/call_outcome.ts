@@ -40,6 +40,7 @@ export interface CallOutcome {
     | "minor_on_line"
     | "no_answer"
     | "voicemail"
+    | "declined"
     | "abandoned"
     | "error";
   handoff: null | {

@@ -45,3 +45,11 @@ hard-coded as truth. Config key in brackets where one exists.
 
 ## Cost model (carried from earlier research, re-confirm before quoting)
 25. Plivo India Rs 0.38/min (30-s pulse); Vapi $0.05/min hosting; Retell $0.07-0.31; Bland $0.12-0.14; ElevenLabs Agents $0.08/min overage.
+
+## Raised during the build
+26. The brief's verbatim openings name the city/property before the callee confirms identity (D-101). Is that acceptable to Agoda's privacy team, or should the identity check come first?
+27. Male-voice Hindi/Hinglish lines: does Agoda want a male voice option? (Only female lines exist; boot rejects a male voice until they do.)
+28. Agoda app deep link for customer-initiated add-on questions (D-001). [`wiring/backend.AGODA_APP_LINK`]
+29. CCaaS platform and queue API for warm transfer (D-015).
+30. Where confirmed details and special requests should land: booking system API, property extranet, or a human case (currently a CRM case).
+31. The declared CLI per journey (D-014). [`compliance.cli_by_purpose`]

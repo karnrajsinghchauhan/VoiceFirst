@@ -112,7 +112,7 @@ def test_two_failed_attempts_hand_off() -> None:
 
 def test_refused_link_is_never_asked_again() -> None:
     r = run_text(settings(), scripted(["nahi, abhi nahi"]), "hinglish", 0)
-    assert r.result.outcome.outcome == "abandoned"
+    assert r.result.outcome.outcome == "declined"
     assert "send_payment_link" not in tools(r)
     assert sum("payment link bhej doon" in t for t in agent_texts(r)) == 1
 

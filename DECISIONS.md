@@ -189,3 +189,30 @@ Format: ID, date, decision, why, what would change it.
   cutoff come from a timing model of the pinned turn handling. Reports label them simulated.
 - Why: no keys and no LiveKit image (M8 blocked); 11.8 targets still need a number to gate on.
 - Would change it: M8 measurements on real audio.
+
+## D-013 (2026-11-23) import-linter forbids only direct imports of telephony.dial
+- Decision: `allow_indirect_imports = true` on the dial contract; the AST test in
+  test_static_proofs still pins every direct import to campaigns/dispatcher.py.
+- Why: the composition root (app/wiring) must build the Dispatcher, which imports
+  dial. The brief's rule is about who can call dial, which only a direct import allows.
+- Would change it: nothing short of moving composition out of the app package.
+
+## D-014 (2026-11-23) The CLI per journey is configuration
+- Decision: `compliance.cli_by_purpose` in Settings ([CD] placeholders); the seed
+  data, the dispatcher wiring and the demo all read it.
+- Why: the wiring test found two modules holding different CLI numbers (rule 6.5).
+- Would change it: DLT registration supplies the real CLIs.
+
+## D-015 (2026-11-23) No CCaaS human queue in this build
+- Decision: dev/test use InMemoryHumanQueue with nobody available, so every
+  handoff books a callback and says so (P2). Production boot raises
+  NotBuiltYetError("AV-CCAAS-1").
+- Why: Agoda's live-agent platform and queue API are unknown [CD].
+- Would change it: Agoda names the CCaaS platform and grants a sandbox.
+
+## D-016 (2026-11-23) Mock telephony carries a scripted cooperative caller
+- Decision: when telephony is `mock`, the dispatcher's CallRunner listens to the
+  C-01 scripted caller; any real telephony provider raises NotBuiltYetError("AV-M8")
+  at boot until the LiveKit media path is bridged.
+- Why: one path per configuration; no silent half-real calls.
+- Would change it: provider keys and the M8 media bridge.

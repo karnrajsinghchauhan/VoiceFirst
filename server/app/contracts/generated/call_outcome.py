@@ -96,6 +96,7 @@ class CallOutcome(BaseModel):
         "minor_on_line",
         "no_answer",
         "voicemail",
+        "declined",
         "abandoned",
         "error",
     ]
