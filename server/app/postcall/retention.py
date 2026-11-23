@@ -36,3 +36,20 @@ def purge_expired(session: Session, retention: RetentionSettings, clock: Clock) 
         extra={"audio_purged": counts.audio, "transcripts_purged": counts.transcripts},
     )
     return counts
+
+
+def main() -> None:
+    """Nightly CronJob entry point (deploy/helm cronjob-retention.yaml)."""
+    from app.core.clock import SystemClock
+    from app.core.config import get_settings
+    from app.core.db import make_engine, make_session_factory, transaction
+    from app.core.logging import configure_logging
+
+    configure_logging()
+    settings = get_settings()
+    with transaction(make_session_factory(make_engine(settings.database_url))) as session:
+        purge_expired(session, settings.retention, SystemClock())
+
+
+if __name__ == "__main__":
+    main()

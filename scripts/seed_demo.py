@@ -14,7 +14,7 @@ from typing import Literal
 
 from app.campaigns.dispatcher import Dispatcher
 from app.campaigns.journeys import JourneyRules
-from app.campaigns.seed_data import J1_CLI, J2_CLI, build_seed, seed_registry
+from app.campaigns.seed_data import build_seed, seed_registry
 from app.compliance.consent import mark_dnc
 from app.compliance.holdout import is_held_out
 from app.contracts.generated.booking_event import BookingEvent
@@ -71,7 +71,7 @@ def main() -> None:
         telephony=MockTelephony(),
         runner=no_calls,
         fallback=no_calls,
-        cli_by_purpose={"J1": J1_CLI, "J2": J2_CLI},
+        cli_by_purpose=settings.compliance.cli_by_purpose,
         rules=JourneyRules(),
     )
     for event in plan.events:

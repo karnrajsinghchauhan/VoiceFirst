@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 from app.core.config import Settings
 from app.core.errors import ProviderNotBuiltError
+from app.crm.factory import make_crm
 from app.providers.base import (
     CrmProvider,
     LlmProvider,
@@ -20,7 +21,6 @@ from app.providers.base import (
     TtsProvider,
     WhatsAppProvider,
 )
-from app.providers.crm.mock import MockCrm
 from app.providers.latency import LatencyModel, SimTimer
 from app.providers.llm.mock import MockLlm
 from app.providers.stt.mock import MockStt
@@ -103,15 +103,12 @@ def build_providers(settings: Settings, seed: int = 0) -> Providers:
         raise _not_built("telephony", settings.telephony, "telephony adapters are owned by W-A")
     if settings.whatsapp != "mock":
         raise _not_built("whatsapp", settings.whatsapp, "meta_cloud_api is owned by W-A")
-    # TODO(merge): the crm role is built by app.crm.factory.make_crm (W-E); call it here.
-    if settings.crm != "mock":
-        raise _not_built("crm", settings.crm, "use app.crm.factory.make_crm after merge")
     return Providers(
         stt=_stt(settings, timer, seed),
         tts=_tts(settings, timer, seed),
         llm=_llm(settings, timer, seed),
         telephony=MockTelephony(),
         whatsapp=MockWhatsApp(),
-        crm=MockCrm(),
+        crm=make_crm(settings),
         timer=timer,
     )

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.campaigns.dispatcher import Dispatcher, DispatchResult
 from app.campaigns.journeys import JourneyRules
-from app.campaigns.seed_data import J1_CLI, J2_CLI, SeedPlan, seed_registry
+from app.campaigns.seed_data import SeedPlan, seed_registry
 from app.core.bus import MemoryBus
 from app.core.clock import FrozenClock
 from app.core.config import Settings
@@ -46,7 +46,7 @@ def run_campaign(
         telephony=run.telephony,
         runner=run.runner,
         fallback=run.fallback,
-        cli_by_purpose={"J1": J1_CLI, "J2": J2_CLI},
+        cli_by_purpose=settings.compliance.cli_by_purpose,
         rules=JourneyRules(),
     )
     for event in plan.events:
