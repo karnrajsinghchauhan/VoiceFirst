@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from fastapi import FastAPI
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.admin.oidc import OidcVerifier, fetch_jwks
 from app.api.app import create_app
 from app.api.deps import ApiDeps, make_metrics
 from app.campaigns.dispatcher import Dispatcher
@@ -63,6 +64,12 @@ def _listener_factory(settings: Settings) -> ListenerFactory:
     return make
 
 
+def _oidc(settings: Settings) -> OidcVerifier | None:
+    if settings.oidc is None:
+        return None
+    return OidcVerifier(settings.oidc, fetch_jwks(settings.oidc.jwks_url))
+
+
 def build_runtime(settings: Settings) -> Runtime:
     postcall = PostcallSettings()
     if settings.environment == "production":
@@ -96,6 +103,7 @@ def build_api(rt: Runtime) -> FastAPI:
             human_queue=rt.human_queue,
             crm=rt.providers.crm,
             metrics=make_metrics(),
+            oidc=_oidc(rt.settings),
         )
     )
 

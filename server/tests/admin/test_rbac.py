@@ -1,6 +1,6 @@
 import pytest
 
-from app.admin.rbac import ROLE_PERMISSIONS, Principal, authorize, resolve_token
+from app.admin.rbac import ROLE_PERMISSIONS, authorize, principal_for, resolve_token
 from app.core.errors import AuthError, ForbiddenError
 
 TOKENS = {"t-admin": "admin", "t-ops": "ops", "t-aud": "auditor", "t-ro": "read_only"}
@@ -37,5 +37,5 @@ def test_least_privilege_matrix():
 
 def test_authorize_raises_forbidden():
     with pytest.raises(ForbiddenError):
-        authorize(Principal("ro:x", "read_only"), "killswitch:write")
-    authorize(Principal("ops:x", "ops"), "killswitch:write")
+        authorize(principal_for("ro:x", "read_only"), "killswitch:write")
+    authorize(principal_for("ops:x", "ops"), "killswitch:write")

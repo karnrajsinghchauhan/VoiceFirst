@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from pydantic import AwareDatetime, BeforeValidator, StrictBool
+from pydantic import AwareDatetime, BeforeValidator, Field, StrictBool
 
 
 def _iso_string(value: object) -> object:
@@ -22,5 +22,7 @@ def _json_number(value: object) -> object:
 
 IsoDatetime = Annotated[AwareDatetime, BeforeValidator(_iso_string)]
 JsonInt = Annotated[int, BeforeValidator(_json_number)]
+# Constraints must precede the validator, or pydantic emits them as unknown schema keys.
+DaysTtl = Annotated[int, Field(ge=1, le=730), BeforeValidator(_json_number)]
 
-__all__ = ["IsoDatetime", "JsonInt", "StrictBool"]
+__all__ = ["DaysTtl", "IsoDatetime", "JsonInt", "StrictBool"]
