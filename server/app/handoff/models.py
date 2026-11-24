@@ -28,6 +28,7 @@ class CallbackRow(Base):
     """A human callback promised to the customer. Dialling it still passes every gate."""
 
     __tablename__ = "callbacks"
+    tenant_id: Mapped[str] = mapped_column(String, index=True)
     callback_id: Mapped[str] = mapped_column(String, primary_key=True)
     call_id: Mapped[str] = mapped_column(String, index=True)
     queue: Mapped[str] = mapped_column(String)

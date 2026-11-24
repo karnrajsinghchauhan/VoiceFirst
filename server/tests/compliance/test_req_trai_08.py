@@ -69,7 +69,7 @@ class AttemptMachine(RuleBasedStateMachine):
     @initialize()
     def setup(self) -> None:
         self.settings = make_settings()
-        engine = make_engine("sqlite://")
+        engine = make_engine("sqlite://", "agoda-in")
         create_all(engine)
         self.session = make_session_factory(engine)()
         self.clock = FrozenClock(NOON_IST)

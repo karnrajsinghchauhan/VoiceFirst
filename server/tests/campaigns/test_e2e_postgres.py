@@ -19,7 +19,7 @@ pytestmark = pytest.mark.e2e
 @pytest.fixture
 def pg_factory():
     url = os.environ["AV_TEST_DATABASE_URL"]
-    engine = make_engine(url)
+    engine = make_engine(url, "agoda-in")
     Base.metadata.drop_all(engine)
     create_all(engine)
     yield make_session_factory(engine)

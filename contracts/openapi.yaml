@@ -1,5 +1,128 @@
 components:
   schemas:
+    ApiKeyIn:
+      additionalProperties: false
+      properties:
+        expires_in_days:
+          anyOf:
+          - maximum: 730.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Expires In Days
+        name:
+          maxLength: 80
+          minLength: 3
+          title: Name
+          type: string
+        reason:
+          maxLength: 500
+          minLength: 3
+          title: Reason
+          type: string
+        role:
+          enum:
+          - admin
+          - ops
+          - auditor
+          - read_only
+          title: Role
+          type: string
+        scopes:
+          anyOf:
+          - items:
+              enum:
+              - campaigns:read
+              - campaigns:write
+              - calls:read
+              - transcripts:read
+              - consent:read
+              - consent:write
+              - cli:read
+              - cli:write
+              - handoff:read
+              - handoff:write
+              - killswitch:read
+              - killswitch:write
+              - metrics:read
+              - simulate:run
+              - rights:read
+              - rights:write
+              - incidents:read
+              - incidents:write
+              - audit:read
+              - apikeys:write
+              type: string
+            type: array
+          - type: 'null'
+          title: Scopes
+      required:
+      - name
+      - role
+      - reason
+      title: ApiKeyIn
+      type: object
+    ApiKeyOut:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        created_by:
+          title: Created By
+          type: string
+        expires_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Expires At
+        key_id:
+          title: Key Id
+          type: string
+        last_used_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Last Used At
+        name:
+          title: Name
+          type: string
+        replaced_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Replaced By
+        revoked_at:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Revoked At
+        role:
+          title: Role
+          type: string
+        scopes:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Scopes
+      required:
+      - key_id
+      - name
+      - role
+      - scopes
+      - created_at
+      - created_by
+      - expires_at
+      - last_used_at
+      - revoked_at
+      - replaced_by
+      title: ApiKeyOut
+      type: object
     AuditEvent:
       additionalProperties: false
       description: One privileged action. Append-only.
@@ -874,6 +997,20 @@ components:
       - status
       title: IncidentView
       type: object
+    IssuedKeyOut:
+      properties:
+        key_id:
+          title: Key Id
+          type: string
+        token:
+          description: Shown once. Store it in your secret manager.
+          title: Token
+          type: string
+      required:
+      - key_id
+      - token
+      title: IssuedKeyOut
+      type: object
     KillSwitchIn:
       additionalProperties: false
       properties:
@@ -1231,6 +1368,286 @@ info:
   version: 1.0.0
 openapi: 3.1.0
 paths:
+  /api-keys:
+    get:
+      operationId: list_keys_api_keys_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ApiKeyOut'
+                title: Response List Keys Api Keys Get
+                type: array
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: List Keys
+      tags:
+      - api-keys
+    post:
+      operationId: issue_key_api_keys_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuedKeyOut'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Issue Key
+      tags:
+      - api-keys
+  /api-keys/{key_id}/revoke:
+    post:
+      operationId: revoke_key_api_keys__key_id__revoke_post
+      parameters:
+      - in: path
+        name: key_id
+        required: true
+        schema:
+          title: Key Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyOut'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Revoke Key
+      tags:
+      - api-keys
+  /api-keys/{key_id}/rotate:
+    post:
+      operationId: rotate_key_api_keys__key_id__rotate_post
+      parameters:
+      - in: path
+        name: key_id
+        required: true
+        schema:
+          title: Key Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuedKeyOut'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Rotate Key
+      tags:
+      - api-keys
   /audit:
     get:
       operationId: list_audit_audit_get
@@ -1305,6 +1722,81 @@ paths:
       security:
       - HTTPBearer: []
       summary: List Audit
+      tags:
+      - audit
+  /audit/export:
+    get:
+      description: Every privileged action, oldest first. The export itself is audit-logged.
+      operationId: export_audit_audit_export_get
+      parameters:
+      - in: query
+        name: format
+        required: false
+        schema:
+          default: csv
+          enum:
+          - csv
+          - json
+          title: Format
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+            text/csv: {}
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      security:
+      - HTTPBearer: []
+      summary: Export Audit
       tags:
       - audit
   /calls:

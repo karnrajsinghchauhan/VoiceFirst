@@ -85,6 +85,7 @@ def _send(
     session.add(
         WhatsAppSendRow(
             send_id=new_id("wa"),
+            tenant_id=event.tenant_id,
             booking_event_id=event.event_id,
             phone_hash=phone_hash(event.customer.phone_e164, settings.phone_pepper),
             template=template.name,
@@ -207,7 +208,9 @@ def send_privacy_notice(
 def record_inbound(session: Session, settings: Settings, phone_e164: str, clock: Clock) -> None:
     session.merge(
         InboundMessageRow(
-            phone_hash=phone_hash(phone_e164, settings.phone_pepper), last_inbound_at=clock.now()
+            tenant_id=settings.tenant_id,
+            phone_hash=phone_hash(phone_e164, settings.phone_pepper),
+            last_inbound_at=clock.now(),
         )
     )
     session.flush()
@@ -224,7 +227,7 @@ def send_free_form(
 ) -> SentMessage:
     """Free-form text only inside the 24 h window opened by the customer's last message."""
     _assert_not_paused(session, tenant_id)
-    row = session.get(InboundMessageRow, phone_hash(phone_e164, settings.phone_pepper))
+    row = session.get(InboundMessageRow, (tenant_id, phone_hash(phone_e164, settings.phone_pepper)))
     if row is None or clock.now() - row.last_inbound_at >= timedelta(hours=24):
         raise WhatsAppWindowClosedError("outside the 24 h customer-service window")
     return provider.send_text(phone_e164, text)

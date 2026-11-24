@@ -21,7 +21,7 @@ from app.core.db import make_engine, make_session_factory
 
 def main(out: Path) -> None:
     settings = Settings(environment="test", database_url="sqlite://")
-    factory = make_session_factory(make_engine(settings.database_url))
+    factory = make_session_factory(make_engine(settings.database_url, settings.tenant_id))
     app = create_app(build_stub_deps(settings, factory, MemoryBus(), SystemClock()))
     out.write_text(yaml.safe_dump(app.openapi(), sort_keys=True, allow_unicode=True))
 

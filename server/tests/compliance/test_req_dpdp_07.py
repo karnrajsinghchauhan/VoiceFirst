@@ -17,12 +17,15 @@ def _seed(session, at, call_id):
     store_transcript(
         session,
         cipher,
+        tenant_id="agoda-in",
         call_id=call_id,
         phone_hash="ph",
         at=at,
         turns=[TranscriptTurn("agent", "hi")],
     )
-    store_audio_ref(session, cipher, call_id=call_id, phone_hash="ph", at=at, uri="s3://x")
+    store_audio_ref(
+        session, cipher, tenant_id="agoda-in", call_id=call_id, phone_hash="ph", at=at, uri="s3://x"
+    )
 
 
 def test_defaults_are_30_and_180_days():

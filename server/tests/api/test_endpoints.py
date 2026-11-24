@@ -110,6 +110,7 @@ def test_calls_and_transcript(client, deps, session_factory, settings, clock):
         store_transcript(
             s,
             deps.cipher,
+            tenant_id="agoda-in",
             call_id=outcome.call_id,
             phone_hash=ph,
             at=clock.now(),

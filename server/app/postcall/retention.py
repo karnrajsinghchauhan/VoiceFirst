@@ -47,7 +47,9 @@ def main() -> None:
 
     configure_logging()
     settings = get_settings()
-    with transaction(make_session_factory(make_engine(settings.database_url))) as session:
+    with transaction(
+        make_session_factory(make_engine(settings.database_url, settings.tenant_id))
+    ) as session:
         purge_expired(session, settings.retention, SystemClock())
 
 

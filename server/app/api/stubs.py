@@ -127,4 +127,5 @@ def build_stub_deps(
         human_queue=InMemoryHumanQueue(),
         crm=MockCrm(),
         metrics=make_metrics(),
+        oidc=None,
     )
