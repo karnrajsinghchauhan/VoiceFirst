@@ -1,0 +1,1822 @@
+diff --git a/server/app/core/config.py b/server/app/core/config.py
+index 5afc943..36c9501 100644
+--- a/server/app/core/config.py
++++ b/server/app/core/config.py
+@@ -101,6 +101,8 @@ class Settings(BaseSettings):
+ 
+     environment: Literal["dev", "test", "production"] = "dev"
+     tenant_id: str = "agoda-in"
++    # Base URL of the console; CRM records link to /console/calls/{call_id} there.
++    console_base_url: str = "http://localhost:3000"
+     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/agoda_voice"
+     bus: BusName = "memory"
+     kafka_bootstrap: str = "localhost:19092"
+diff --git a/server/app/crm/factory.py b/server/app/crm/factory.py
+index 51a5d44..755acbf 100644
+--- a/server/app/crm/factory.py
++++ b/server/app/crm/factory.py
+@@ -1,17 +1,26 @@
+-"""Builds the one CRM provider named by config at boot (7.7). Unknown or unbuilt names fail startup."""
++"""Builds the one CRM provider named by config at boot (7.7). Its field mapping is loaded and
++validated here too, so a bad mapping fails startup, not the first call."""
+ 
+ from __future__ import annotations
+ 
+ from app.core.config import Settings
+-from app.core.errors import ProviderNotBuiltError
++from app.crm.mapping import load_mapping
+ from app.providers.base import CrmProvider
+ from app.providers.crm.mock import MockCrm
+-from app.providers.crm.zendesk import ZendeskCrm, ZendeskSettings
+ 
+ 
+ def make_crm(settings: Settings) -> CrmProvider:
++    mapping = load_mapping(settings.crm)
+     if settings.crm == "mock":
+         return MockCrm()
+     if settings.crm == "zendesk":
+-        return ZendeskCrm(ZendeskSettings())
+-    raise ProviderNotBuiltError(f"CRM provider {settings.crm!r} is not built yet (ticket AV-CRM-2)")
++        from app.providers.crm.zendesk import ZendeskCrm, ZendeskSettings
++
++        return ZendeskCrm(ZendeskSettings(), mapping)
++    if settings.crm == "salesforce":
++        from app.providers.crm.salesforce import SalesforceCrm, SalesforceSettings
++
++        return SalesforceCrm(SalesforceSettings(), mapping)
++    from app.providers.crm.hubspot import HubSpotCrm, HubSpotSettings
++
++    return HubSpotCrm(HubSpotSettings(), mapping)
+diff --git a/server/app/crm/mapping.py b/server/app/crm/mapping.py
+new file mode 100644
+index 0000000..b4c7674
+--- /dev/null
++++ b/server/app/crm/mapping.py
+@@ -0,0 +1,84 @@
++"""CRM field mapping, loaded from app/crm/mappings/<crm>.yaml and validated at boot.
++
++The mapping says where each mappable field of a CrmCallRecord lands in the client's CRM
++(a Zendesk custom field id, a Salesforce field API name, a HubSpot property). Field ids
++are the client's [CD]; the YAML is the only place they live.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from pathlib import Path
++
++import yaml
++
++from app.core.errors import MappingConfigError
++from app.providers.base import CrmCallRecord
++
++MAPPABLE: frozenset[str] = frozenset(
++    {
++        "outcome",
++        "booking_masked",
++        "qa_score",
++        "transcript_url",
++        "cost_paise",
++        "next_action",
++        "owner",
++    }
++)
++MAPPINGS_DIR = Path(__file__).parent / "mappings"
++
++
++@dataclass(frozen=True)
++class CrmMapping:
++    crm: str
++    object_name: str
++    external_id_field: str
++    fields: dict[str, str]
++
++
++def record_values(record: CrmCallRecord) -> dict[str, str | int | float | None]:
++    """The mappable fields of a record by canonical name; providers place them per mapping."""
++    return {
++        "outcome": record.outcome,
++        "booking_masked": record.booking_masked,
++        "qa_score": record.qa_score,
++        "transcript_url": record.transcript_url,
++        "cost_paise": record.cost_paise,
++        "next_action": record.next_action,
++        "owner": record.owner,
++    }
++
++
++def mapped_properties(record: CrmCallRecord, mapping: CrmMapping) -> dict[str, object]:
++    """Target field name -> value, for CRMs whose fields are flat named properties."""
++    values = record_values(record)
++    return {target: values[name] for name, target in mapping.fields.items()}
++
++
++def load_mapping(crm: str, directory: Path = MAPPINGS_DIR) -> CrmMapping:
++    path = directory / f"{crm}.yaml"
++    if not path.exists():
++        raise MappingConfigError(f"no CRM mapping file {path.name}")
++    raw = yaml.safe_load(path.read_text())
++    if not isinstance(raw, dict) or set(raw) != {"object", "external_id_field", "fields"}:
++        raise MappingConfigError(
++            f"{path.name} must have exactly: object, external_id_field, fields"
++        )
++    fields = raw["fields"]
++    if not isinstance(fields, dict):
++        raise MappingConfigError(f"{path.name}: fields must be a mapping")
++    unknown = set(fields) - MAPPABLE
++    if unknown:
++        raise MappingConfigError(f"{path.name}: unknown fields {sorted(unknown)}")
++    missing = MAPPABLE - set(fields)
++    if missing:
++        raise MappingConfigError(f"{path.name}: unmapped fields {sorted(missing)}")
++    if not all(isinstance(v, str) and v for v in fields.values()):
++        raise MappingConfigError(f"{path.name}: every target must be a non-empty string")
++    return CrmMapping(
++        crm=crm,
++        object_name=str(raw["object"]),
++        external_id_field=str(raw["external_id_field"]),
++        fields={str(k): str(v) for k, v in fields.items()},
++    )
+diff --git a/server/app/crm/mappings/hubspot.yaml b/server/app/crm/mappings/hubspot.yaml
+new file mode 100644
+index 0000000..5b6a3fc
+--- /dev/null
++++ b/server/app/crm/mappings/hubspot.yaml
+@@ -0,0 +1,12 @@
++# HubSpot ticket mapping. Properties are custom ticket properties [CD]; av_call_id must be
++# created as a unique-value property so batch upsert can key on it.
++object: tickets
++external_id_field: av_call_id
++fields:
++  outcome: av_outcome
++  booking_masked: av_booking_ref
++  qa_score: av_qa_score
++  transcript_url: av_transcript_url
++  cost_paise: av_cost_paise
++  next_action: av_next_action
++  owner: av_owner
+diff --git a/server/app/crm/mappings/mock.yaml b/server/app/crm/mappings/mock.yaml
+new file mode 100644
+index 0000000..7330dd5
+--- /dev/null
++++ b/server/app/crm/mappings/mock.yaml
+@@ -0,0 +1,11 @@
++# Test double mapping: field names map to themselves.
++object: record
++external_id_field: call_id
++fields:
++  outcome: outcome
++  booking_masked: booking_masked
++  qa_score: qa_score
++  transcript_url: transcript_url
++  cost_paise: cost_paise
++  next_action: next_action
++  owner: owner
+diff --git a/server/app/crm/mappings/salesforce.yaml b/server/app/crm/mappings/salesforce.yaml
+new file mode 100644
+index 0000000..a0c6c7d
+--- /dev/null
++++ b/server/app/crm/mappings/salesforce.yaml
+@@ -0,0 +1,12 @@
++# Salesforce Case mapping. Field API names are the client's custom fields [CD]; the
++# external id field AV_Call_Id__c must be created as an External ID, Unique field.
++object: Case
++external_id_field: AV_Call_Id__c
++fields:
++  outcome: AV_Outcome__c
++  booking_masked: AV_Booking_Ref__c
++  qa_score: AV_QA_Score__c
++  transcript_url: AV_Transcript_URL__c
++  cost_paise: AV_Cost_Paise__c
++  next_action: AV_Next_Action__c
++  owner: AV_Owner__c
+diff --git a/server/app/crm/mappings/zendesk.yaml b/server/app/crm/mappings/zendesk.yaml
+new file mode 100644
+index 0000000..53780fc
+--- /dev/null
++++ b/server/app/crm/mappings/zendesk.yaml
+@@ -0,0 +1,12 @@
++# Zendesk ticket mapping. Targets of the form custom_field:<id> are Agoda's Zendesk ticket
++# custom field ids [CD: Agoda to supply]; the ids below are placeholders.
++object: ticket
++external_id_field: external_id
++fields:
++  outcome: custom_field:9000000001
++  booking_masked: custom_field:9000000002
++  qa_score: custom_field:9000000003
++  transcript_url: custom_field:9000000004
++  cost_paise: custom_field:9000000005
++  next_action: custom_field:9000000006
++  owner: custom_field:9000000007
+diff --git a/server/app/crm/retry_dlq.py b/server/app/crm/retry_dlq.py
+new file mode 100644
+index 0000000..97785b1
+--- /dev/null
++++ b/server/app/crm/retry_dlq.py
+@@ -0,0 +1,57 @@
++"""Replays dead-lettered CRM records: `python -m app.crm.retry_dlq`. Safe to run repeatedly
++because every CRM write is an upsert by call_id."""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++
++from sqlalchemy.orm import Session
++
++from app.core.clock import Clock
++from app.core.errors import ProviderError
++from app.crm.sync import record_from_payload
++from app.delivery.dlq import open_items, resolve
++from app.providers.base import CrmProvider
++
++
++@dataclass(frozen=True)
++class RetryReport:
++    retried: int
++    resolved: int
++    still_failing: int
++
++
++def retry_crm(session: Session, crm: CrmProvider, clock: Clock) -> RetryReport:
++    resolved = failing = 0
++    items = [row for row in open_items(session, "crm") if row.target == crm.name]
++    for row in items:
++        try:
++            crm.upsert_call_record(record_from_payload(row.payload))
++        except ProviderError as exc:
++            row.attempts += 1
++            row.error = f"{exc.code}: {exc}"
++            row.last_attempt_at = clock.now()
++            failing += 1
++            continue
++        resolve(session, row, clock.now())
++        resolved += 1
++    session.flush()
++    return RetryReport(retried=len(items), resolved=resolved, still_failing=failing)
++
++
++def main() -> None:
++    from app.core.clock import SystemClock
++    from app.core.config import get_settings
++    from app.core.db import make_engine, make_session_factory, transaction
++    from app.core.logging import configure_logging, get_logger
++    from app.crm.factory import make_crm
++
++    configure_logging()
++    settings = get_settings()
++    with transaction(make_session_factory(make_engine(settings.database_url))) as session:
++        report = retry_crm(session, make_crm(settings), SystemClock())
++    get_logger(__name__).info("crm dlq retry", extra=report.__dict__)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/server/app/crm/sync.py b/server/app/crm/sync.py
+new file mode 100644
+index 0000000..5fd2429
+--- /dev/null
++++ b/server/app/crm/sync.py
+@@ -0,0 +1,136 @@
++"""Post-call CRM sync (S5): every handled call becomes one CRM record, keyed by call_id.
++
++A CRM failure never loses the record: it lands in the dead-letter queue and pages a human,
++and `python -m app.crm.retry_dlq` replays it. Retrying is safe because the write is an
++upsert by call_id.
++"""
++
++from __future__ import annotations
++
++from dataclasses import asdict
++from typing import Literal, Protocol
++
++from pydantic import TypeAdapter
++from sqlalchemy.orm import Session
++
++from app.contracts.generated.call_outcome import CallOutcome
++from app.contracts.generated.handoff_summary import HandoffSummary
++from app.core.clock import Clock
++from app.core.config import Settings
++from app.core.errors import ProviderError
++from app.crm.cases import priority_for
++from app.delivery.dlq import dead_letter
++from app.handoff.summary import render_lines
++from app.providers.base import CrmCallRecord, CrmProvider
++
++SyncResult = Literal["written", "dead_lettered"]
++# Outcomes where a person was on the line and the call was handled end to end.
++HANDLED: frozenset[str] = frozenset(
++    {
++        "link_sent",
++        "details_confirmed",
++        "callback_scheduled",
++        "handed_off",
++        "opted_out",
++        "wrong_person",
++        "minor_on_line",
++        "declined",
++        "abandoned",
++        "error",
++    }
++)
++_NEXT_ACTION = {
++    "link_sent": ("Watch for payment before the due date", "ai"),
++    "details_confirmed": ("None; stay details confirmed", "ai"),
++    "callback_scheduled": ("Call the customer back at the booked time", "cx_team"),
++    "handed_off": ("Human agent owns the case", "cx_team"),
++    "opted_out": ("None; number opted out", "compliance"),
++    "wrong_person": ("Verify the contact number on the booking", "cx_team"),
++    "minor_on_line": ("Call back for the booker; nothing was discussed", "cx_team"),
++    "declined": ("None; customer declined, do not repeat the ask", "ai"),
++    "abandoned": ("Review the transcript", "cx_team"),
++    "error": ("Review the error and call back if needed", "cx_team"),
++}
++
++
++class QaScoreSource(Protocol):
++    """Supplied by the QA scorecard (W-2). None until a scorecard exists for the call."""
++
++    def score_for(self, call_id: str) -> float | None: ...
++
++
++class NoQaScores:
++    def score_for(self, call_id: str) -> float | None:
++        return None
++
++
++def transcript_url(console_base_url: str, call_id: str) -> str:
++    # The console enforces the auditor role and serves only the redacted transcript.
++    return f"{console_base_url.rstrip('/')}/console/calls/{call_id}"
++
++
++def build_record(
++    outcome: CallOutcome,
++    summary: HandoffSummary | None,
++    booking_masked: str,
++    qa_score: float | None,
++    console_base_url: str,
++) -> CrmCallRecord:
++    next_action, owner = _NEXT_ACTION[outcome.outcome]
++    cost = outcome.cost
++    total = cost.telephony + cost.stt + cost.tts + cost.llm + cost.whatsapp
++    lines = render_lines(summary) if summary else [f"Outcome: {outcome.outcome}"]
++    url = transcript_url(console_base_url, outcome.call_id)
++    qa = "pending" if qa_score is None else f"{qa_score:.2f}"
++    body = "\n".join(
++        [
++            *lines,
++            f"QA score: {qa}",
++            f"Cost: {total} paise",
++            f"Transcript (redacted, access-controlled): {url}",
++            f"Grievance channel: {outcome.grievance_channel}",
++        ]
++    )
++    return CrmCallRecord(
++        call_id=outcome.call_id,
++        subject=f"Agoda Voice {outcome.purpose}: {outcome.outcome} ({booking_masked})",
++        body=body,
++        outcome=outcome.outcome,
++        booking_masked=booking_masked,
++        qa_score=qa_score,
++        transcript_url=url,
++        cost_paise=total,
++        next_action=next_action,
++        owner=owner,
++        priority=priority_for(summary) if summary else "normal",
++        tags=("agoda_voice", f"outcome_{outcome.outcome}", f"journey_{outcome.purpose}"),
++    )
++
++
++def deliver(
++    session: Session, crm: CrmProvider, settings: Settings, clock: Clock, record: CrmCallRecord
++) -> SyncResult:
++    try:
++        crm.upsert_call_record(record)
++    except ProviderError as exc:
++        payload = {k: (list(v) if isinstance(v, tuple) else v) for k, v in asdict(record).items()}
++        dead_letter(
++            session,
++            tenant_id=settings.tenant_id,
++            kind="crm",
++            key=record.call_id,
++            target=crm.name,
++            payload=payload,
++            error=f"{exc.code}: {exc}",
++            now=clock.now(),
++        )
++        return "dead_lettered"
++    return "written"
++
++
++_RECORD = TypeAdapter(CrmCallRecord)
++
++
++def record_from_payload(payload: dict[str, object]) -> CrmCallRecord:
++    """The DLQ payload is JSON from our own table, still validated: it is a storage edge."""
++    return _RECORD.validate_python(payload)
+diff --git a/server/app/delivery/__init__.py b/server/app/delivery/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/server/app/delivery/dlq.py b/server/app/delivery/dlq.py
+new file mode 100644
+index 0000000..c2e2f21
+--- /dev/null
++++ b/server/app/delivery/dlq.py
+@@ -0,0 +1,77 @@
++"""Writing to and reading from the dead-letter queue."""
++
++from __future__ import annotations
++
++from datetime import datetime
++from typing import Any
++
++from sqlalchemy import select
++from sqlalchemy.orm import Session
++
++from app.core.ids import new_id
++from app.delivery.models import DeadLetterRow, DeliveryKind
++from app.incidents.service import page_human
++
++
++def dead_letter(
++    session: Session,
++    *,
++    tenant_id: str,
++    kind: DeliveryKind,
++    key: str,
++    target: str,
++    payload: dict[str, Any],
++    error: str,
++    now: datetime,
++) -> DeadLetterRow:
++    """Records the failed delivery and pages a human. One open row per (kind, key, target)."""
++    row = session.scalar(
++        select(DeadLetterRow).where(
++            DeadLetterRow.kind == kind,
++            DeadLetterRow.key == key,
++            DeadLetterRow.target == target,
++            DeadLetterRow.resolved_at.is_(None),
++        )
++    )
++    if row is None:
++        row = DeadLetterRow(
++            dlq_id=new_id("dlq"),
++            kind=kind,
++            key=key,
++            target=target,
++            payload=payload,
++            error=error,
++            attempts=1,
++            created_at=now,
++            last_attempt_at=now,
++            resolved_at=None,
++        )
++        session.add(row)
++        page_human(
++            session,
++            tenant_id=tenant_id,
++            at=now,
++            severity="sev2",
++            summary=f"{kind} delivery to {target} failed for {key}: {error}",
++        )
++    else:
++        row.attempts += 1
++        row.error = error
++        row.last_attempt_at = now
++        row.payload = payload
++    session.flush()
++    return row
++
++
++def open_items(session: Session, kind: DeliveryKind) -> list[DeadLetterRow]:
++    stmt = (
++        select(DeadLetterRow)
++        .where(DeadLetterRow.kind == kind, DeadLetterRow.resolved_at.is_(None))
++        .order_by(DeadLetterRow.created_at)
++    )
++    return list(session.scalars(stmt))
++
++
++def resolve(session: Session, row: DeadLetterRow, now: datetime) -> None:
++    row.resolved_at = now
++    session.flush()
+diff --git a/server/app/delivery/models.py b/server/app/delivery/models.py
+new file mode 100644
+index 0000000..d549363
+--- /dev/null
++++ b/server/app/delivery/models.py
+@@ -0,0 +1,28 @@
++"""Dead-letter queue for outbound deliveries (CRM sync, outbound webhooks). Nothing is dropped:
++a failed delivery is a row here and a page to a human until someone resolves it."""
++
++from __future__ import annotations
++
++from datetime import datetime
++from typing import Any, Literal
++
++from sqlalchemy import JSON, Integer, String, Text
++from sqlalchemy.orm import Mapped, mapped_column
++
++from app.core.db import Base, UtcDateTime
++
++DeliveryKind = Literal["crm", "webhook"]
++
++
++class DeadLetterRow(Base):
++    __tablename__ = "delivery_dead_letters"
++    dlq_id: Mapped[str] = mapped_column(String, primary_key=True)
++    kind: Mapped[DeliveryKind] = mapped_column(String, index=True)
++    key: Mapped[str] = mapped_column(String, index=True)  # call_id, or event id for webhooks
++    target: Mapped[str] = mapped_column(String)  # crm name or subscription id
++    payload: Mapped[dict[str, Any]] = mapped_column(JSON)
++    error: Mapped[str] = mapped_column(Text)
++    attempts: Mapped[int] = mapped_column(Integer)
++    created_at: Mapped[datetime] = mapped_column(UtcDateTime, index=True)
++    last_attempt_at: Mapped[datetime] = mapped_column(UtcDateTime)
++    resolved_at: Mapped[datetime | None] = mapped_column(UtcDateTime, nullable=True)
+diff --git a/server/app/models.py b/server/app/models.py
+index 57ad9ba..e5ba6ab 100644
+--- a/server/app/models.py
++++ b/server/app/models.py
+@@ -3,9 +3,11 @@
+ from app.campaigns import models as campaigns_models  # noqa: F401
+ from app.compliance import models as compliance_models  # noqa: F401
+ from app.core import audit as core_audit  # noqa: F401
++from app.delivery import models as delivery_models  # noqa: F401
+ from app.handoff import models as handoff_models  # noqa: F401
+ from app.incidents import models as incidents_models  # noqa: F401
+ from app.messaging import models as messaging_models  # noqa: F401
+ from app.postcall import models as postcall_models  # noqa: F401
+ from app.rights import models as rights_models  # noqa: F401
+ from app.webhooks_in import models as webhooks_in_models  # noqa: F401
++from app.webhooks_out import models as webhooks_out_models  # noqa: F401
+diff --git a/server/app/providers/base.py b/server/app/providers/base.py
+index ce21a46..c5bd0e8 100644
+--- a/server/app/providers/base.py
++++ b/server/app/providers/base.py
+@@ -107,6 +107,24 @@ class CrmTicket:
+     url: str
+ 
+ 
++@dataclass(frozen=True)
++class CrmCallRecord:
++    """What every handled call writes to the client's CRM (S5). Keyed by call_id."""
++
++    call_id: str
++    subject: str
++    body: str
++    outcome: str
++    booking_masked: str
++    qa_score: float | None
++    transcript_url: str
++    cost_paise: int
++    next_action: str
++    owner: str
++    priority: str
++    tags: tuple[str, ...]
++
++
+ class CrmProvider(Protocol):
+     name: str
+ 
+@@ -115,3 +133,7 @@ class CrmProvider(Protocol):
+     ) -> CrmTicket: ...
+ 
+     def add_note(self, ticket_id: str, body: str) -> None: ...
++
++    def upsert_call_record(self, record: CrmCallRecord) -> CrmTicket:
++        """Creates or updates the one record for record.call_id. Safe to repeat."""
++        ...
+diff --git a/server/app/providers/crm/hubspot.py b/server/app/providers/crm/hubspot.py
+new file mode 100644
+index 0000000..c86f451
+--- /dev/null
++++ b/server/app/providers/crm/hubspot.py
+@@ -0,0 +1,144 @@
++"""HubSpot CRM adapter: CRM v3 tickets batch upsert keyed by a unique property (S5).
++
++Every call is one ticket keyed by the mapping's external id property (av_call_id, a
++unique-value custom property). Notes are engagements associated to the ticket. Auth is a
++private-app access token from the platform secret store.
++"""
++
++from __future__ import annotations
++
++from collections.abc import Mapping
++
++import httpx
++from pydantic import BaseModel, ConfigDict, ValidationError
++from pydantic_settings import BaseSettings, SettingsConfigDict
++
++from app.core.errors import ConfigError, ProviderError, ProviderTimeoutError
++from app.crm.mapping import CrmMapping, mapped_properties
++from app.providers.base import CrmCallRecord, CrmTicket
++
++API = "https://api.hubapi.com"
++_PRIORITY = {"low": "LOW", "normal": "MEDIUM", "high": "HIGH", "urgent": "HIGH"}
++# HubSpot's built-in note-to-ticket association type.
++NOTE_TO_TICKET_ASSOCIATION = 228
++
++
++class HubSpotSettings(BaseSettings):
++    model_config = SettingsConfigDict(env_prefix="AV_HUBSPOT_", extra="ignore", frozen=True)
++
++    access_token: str = ""
++    pipeline: str = "0"
++    pipeline_stage: str = "1"
++    portal_id: str = ""
++    timeout_seconds: float = 10.0
++
++    def require_complete(self) -> None:
++        missing = [k for k in ("access_token", "portal_id") if not getattr(self, k)]
++        if missing:
++            raise ConfigError(
++                f"hubspot settings missing: {['AV_HUBSPOT_' + m.upper() for m in missing]}"
++            )
++
++
++class _Result(BaseModel):
++    model_config = ConfigDict(extra="ignore")
++    id: str
++
++
++class _Batch(BaseModel):
++    model_config = ConfigDict(extra="ignore")
++    results: list[_Result]
++
++
++class HubSpotCrm:
++    name = "hubspot"
++
++    def __init__(
++        self,
++        settings: HubSpotSettings,
++        mapping: CrmMapping,
++        transport: httpx.BaseTransport | None = None,
++    ) -> None:
++        settings.require_complete()
++        self._settings = settings
++        self._mapping = mapping
++        self._client = httpx.Client(
++            base_url=API,
++            headers={"Authorization": f"Bearer {settings.access_token}"},
++            timeout=settings.timeout_seconds,
++            transport=transport,
++        )
++
++    def _request(self, method: str, path: str, body: Mapping[str, object]) -> httpx.Response:
++        try:
++            response = self._client.request(method, path, json=body)
++        except httpx.TimeoutException as exc:
++            raise ProviderTimeoutError(f"hubspot {method} {path} timed out") from exc
++        except httpx.HTTPError as exc:
++            raise ProviderError(f"hubspot {method} {path} failed: {exc}") from exc
++        if response.status_code not in (200, 201):
++            raise ProviderError(f"hubspot {method} {path} returned {response.status_code}")
++        return response
++
++    def _upsert(self, call_id: str, properties: dict[str, object]) -> CrmTicket:
++        body = {
++            "inputs": [
++                {
++                    "idProperty": self._mapping.external_id_field,
++                    "id": call_id,
++                    "properties": properties,
++                }
++            ]
++        }
++        response = self._request("POST", "/crm/v3/objects/tickets/batch/upsert", body)
++        try:
++            results = _Batch.model_validate_json(response.content).results
++        except ValidationError as exc:
++            raise ProviderError("hubspot returned an unexpected upsert body") from exc
++        if len(results) != 1:
++            raise ProviderError(f"hubspot upsert returned {len(results)} results for one call")
++        ticket_id = results[0].id
++        url = f"https://app.hubspot.com/contacts/{self._settings.portal_id}/ticket/{ticket_id}"
++        return CrmTicket(ticket_id=ticket_id, url=url)
++
++    def _base_properties(self, subject: str, body: str, priority: str) -> dict[str, object]:
++        return {
++            "subject": subject,
++            "content": body,
++            "hs_ticket_priority": _PRIORITY[priority],
++            "hs_pipeline": self._settings.pipeline,
++            "hs_pipeline_stage": self._settings.pipeline_stage,
++        }
++
++    def upsert_call_record(self, record: CrmCallRecord) -> CrmTicket:
++        properties = {
++            **self._base_properties(record.subject, record.body, record.priority),
++            **mapped_properties(record, self._mapping),
++        }
++        return self._upsert(record.call_id, properties)
++
++    def create_ticket(
++        self, subject: str, body: str, requester_ref: str, tags: list[str], priority: str
++    ) -> CrmTicket:
++        # Keyed by call_id like the post-call sync, so a handoff case is the same ticket.
++        return self._upsert(requester_ref, self._base_properties(subject, body, priority))
++
++    def add_note(self, ticket_id: str, body: str) -> None:
++        self._request(
++            "POST",
++            "/crm/v3/objects/notes",
++            {
++                "properties": {"hs_note_body": body},
++                "associations": [
++                    {
++                        "to": {"id": ticket_id},
++                        "types": [
++                            {
++                                "associationCategory": "HUBSPOT_DEFINED",
++                                "associationTypeId": NOTE_TO_TICKET_ASSOCIATION,
++                            }
++                        ],
++                    }
++                ],
++            },
++        )
+diff --git a/server/app/providers/crm/mock.py b/server/app/providers/crm/mock.py
+index c190dcb..eb3f672 100644
+--- a/server/app/providers/crm/mock.py
++++ b/server/app/providers/crm/mock.py
+@@ -4,13 +4,16 @@ from __future__ import annotations
+ 
+ from dataclasses import dataclass, field
+ 
+-from app.providers.base import CrmTicket
++from app.core.errors import ProviderError
++from app.providers.base import CrmCallRecord, CrmTicket
+ 
+ 
+ @dataclass
+ class MockCrm:
+     name: str = "mock"
+     tickets: dict[str, dict[str, object]] = field(default_factory=dict)
++    fail_upserts: bool = False
++    upserts: int = 0
+ 
+     def create_ticket(
+         self, subject: str, body: str, requester_ref: str, tags: list[str], priority: str
+@@ -30,3 +33,31 @@ class MockCrm:
+         notes = self.tickets[ticket_id]["notes"]
+         assert isinstance(notes, list)
+         notes.append(body)
++
++    def upsert_call_record(self, record: CrmCallRecord) -> CrmTicket:
++        if self.fail_upserts:
++            raise ProviderError("mock CRM outage")
++        existing = next(
++            (tid for tid, t in self.tickets.items() if t["requester"] == record.call_id), None
++        )
++        ticket_id = existing or f"T{len(self.tickets) + 1:05d}"
++        notes = self.tickets[ticket_id]["notes"] if existing else []
++        self.tickets[ticket_id] = {
++            "subject": record.subject,
++            "body": record.body,
++            "requester": record.call_id,
++            "tags": list(record.tags),
++            "priority": record.priority,
++            "notes": notes,
++            "fields": {
++                "outcome": record.outcome,
++                "booking_masked": record.booking_masked,
++                "qa_score": record.qa_score,
++                "transcript_url": record.transcript_url,
++                "cost_paise": record.cost_paise,
++                "next_action": record.next_action,
++                "owner": record.owner,
++            },
++        }
++        self.upserts += 1
++        return CrmTicket(ticket_id=ticket_id, url=f"mock://crm/{ticket_id}")
+diff --git a/server/app/providers/crm/salesforce.py b/server/app/providers/crm/salesforce.py
+new file mode 100644
+index 0000000..b22aadc
+--- /dev/null
++++ b/server/app/providers/crm/salesforce.py
+@@ -0,0 +1,118 @@
++"""Salesforce CRM adapter: REST API sObject upsert by external id (S5).
++
++Every call is one Case keyed by the external id field in the mapping (AV_Call_Id__c), so
++PATCH /sobjects/Case/AV_Call_Id__c/{call_id} creates it the first time and updates it after.
++Notes are FeedItems on the Case. Auth is an OAuth access token from the platform secret store;
++token refresh is the deployer's integration user setup [CD].
++"""
++
++from __future__ import annotations
++
++from collections.abc import Mapping
++
++import httpx
++from pydantic import BaseModel, ConfigDict, ValidationError
++from pydantic_settings import BaseSettings, SettingsConfigDict
++
++from app.core.errors import ConfigError, ProviderError, ProviderTimeoutError
++from app.crm.mapping import CrmMapping, mapped_properties
++from app.providers.base import CrmCallRecord, CrmTicket
++
++_PRIORITY = {"low": "Low", "normal": "Medium", "high": "High", "urgent": "High"}
++
++
++class SalesforceSettings(BaseSettings):
++    model_config = SettingsConfigDict(env_prefix="AV_SALESFORCE_", extra="ignore", frozen=True)
++
++    instance_url: str = ""
++    access_token: str = ""
++    api_version: str = "v61.0"
++    timeout_seconds: float = 10.0
++
++    def require_complete(self) -> None:
++        missing = [k for k in ("instance_url", "access_token") if not getattr(self, k)]
++        if missing:
++            raise ConfigError(
++                f"salesforce settings missing: {['AV_SALESFORCE_' + m.upper() for m in missing]}"
++            )
++
++
++class _Id(BaseModel):
++    model_config = ConfigDict(extra="ignore", populate_by_name=True)
++    id: str
++
++
++class _Record(BaseModel):
++    model_config = ConfigDict(extra="ignore")
++    Id: str
++
++
++class SalesforceCrm:
++    name = "salesforce"
++
++    def __init__(
++        self,
++        settings: SalesforceSettings,
++        mapping: CrmMapping,
++        transport: httpx.BaseTransport | None = None,
++    ) -> None:
++        settings.require_complete()
++        self._mapping = mapping
++        self._instance = settings.instance_url.rstrip("/")
++        self._client = httpx.Client(
++            base_url=f"{self._instance}/services/data/{settings.api_version}",
++            headers={"Authorization": f"Bearer {settings.access_token}"},
++            timeout=settings.timeout_seconds,
++            transport=transport,
++        )
++
++    def _request(
++        self, method: str, path: str, body: Mapping[str, object] | None = None
++    ) -> httpx.Response:
++        try:
++            response = self._client.request(method, path, json=body)
++        except httpx.TimeoutException as exc:
++            raise ProviderTimeoutError(f"salesforce {method} {path} timed out") from exc
++        except httpx.HTTPError as exc:
++            raise ProviderError(f"salesforce {method} {path} failed: {exc}") from exc
++        if response.status_code not in (200, 201, 204):
++            raise ProviderError(f"salesforce {method} {path} returned {response.status_code}")
++        return response
++
++    def _upsert(self, call_id: str, fields: dict[str, object]) -> CrmTicket:
++        path = f"/sobjects/{self._mapping.object_name}/{self._mapping.external_id_field}/{call_id}"
++        response = self._request("PATCH", path, fields)
++        try:
++            if response.status_code == 201:
++                record_id = _Id.model_validate_json(response.content).id
++            else:  # 200/204: updated an existing record; fetch its Id for the link
++                record_id = _Record.model_validate_json(self._request("GET", path).content).Id
++        except ValidationError as exc:
++            raise ProviderError("salesforce returned an unexpected upsert body") from exc
++        return CrmTicket(ticket_id=record_id, url=f"{self._instance}/lightning/r/{record_id}/view")
++
++    def upsert_call_record(self, record: CrmCallRecord) -> CrmTicket:
++        fields: dict[str, object] = {
++            "Subject": record.subject,
++            "Description": record.body,
++            "Priority": _PRIORITY[record.priority],
++            "Origin": "Agoda Voice",
++            **mapped_properties(record, self._mapping),
++        }
++        return self._upsert(record.call_id, fields)
++
++    def create_ticket(
++        self, subject: str, body: str, requester_ref: str, tags: list[str], priority: str
++    ) -> CrmTicket:
++        # requester_ref is the call_id: a case opened at handoff is the same record the
++        # post-call sync later updates.
++        fields: dict[str, object] = {
++            "Subject": subject,
++            "Description": body,
++            "Priority": _PRIORITY[priority],
++            "Origin": "Agoda Voice",
++        }
++        return self._upsert(requester_ref, fields)
++
++    def add_note(self, ticket_id: str, body: str) -> None:
++        self._request("POST", "/sobjects/FeedItem", {"ParentId": ticket_id, "Body": body})
+diff --git a/server/app/providers/crm/zendesk.py b/server/app/providers/crm/zendesk.py
+index b40acd5..633532a 100644
+--- a/server/app/providers/crm/zendesk.py
++++ b/server/app/providers/crm/zendesk.py
+@@ -15,7 +15,8 @@ from pydantic import BaseModel, ConfigDict, ValidationError
+ from pydantic_settings import BaseSettings, SettingsConfigDict
+ 
+ from app.core.errors import ConfigError, ProviderError, ProviderTimeoutError
+-from app.providers.base import CrmTicket
++from app.crm.mapping import CrmMapping, record_values
++from app.providers.base import CrmCallRecord, CrmTicket
+ 
+ ZendeskPriority = Literal["low", "normal", "high", "urgent"]
+ _PRIORITIES: frozenset[str] = frozenset({"low", "normal", "high", "urgent"})
+@@ -45,11 +46,22 @@ class _TicketResponse(BaseModel):
+     ticket: _TicketBody
+ 
+ 
++class _TicketList(BaseModel):
++    model_config = ConfigDict(extra="ignore")
++    tickets: list[_TicketBody]
++
++
+ class ZendeskCrm:
+     name = "zendesk"
+ 
+-    def __init__(self, settings: ZendeskSettings, transport: httpx.BaseTransport | None = None):
++    def __init__(
++        self,
++        settings: ZendeskSettings,
++        mapping: CrmMapping,
++        transport: httpx.BaseTransport | None = None,
++    ):
+         settings.require_complete()
++        self._mapping = mapping
+         self._base = f"https://{settings.subdomain}.zendesk.com"
+         self._client = httpx.Client(
+             base_url=self._base,
+@@ -79,6 +91,56 @@ class ZendeskCrm:
+             raise ProviderError("zendesk returned an unexpected ticket body") from exc
+         return CrmTicket(ticket_id=ticket_id, url=f"{self._base}/agent/tickets/{ticket_id}")
+ 
++    def _find_by_external_id(self, call_id: str) -> str | None:
++        """Zendesk's own index on external_id: the idempotency key for a call's ticket."""
++        try:
++            response = self._client.get("/api/v2/tickets.json", params={"external_id": call_id})
++        except httpx.TimeoutException as exc:
++            raise ProviderTimeoutError("zendesk ticket lookup timed out") from exc
++        except httpx.HTTPError as exc:
++            raise ProviderError(f"zendesk ticket lookup failed: {exc}") from exc
++        if response.status_code != 200:
++            raise ProviderError(f"zendesk ticket lookup returned {response.status_code}")
++        try:
++            tickets = _TicketList.model_validate_json(response.content).tickets
++        except ValidationError as exc:
++            raise ProviderError("zendesk returned an unexpected ticket list") from exc
++        if len(tickets) > 1:
++            raise ProviderError(f"zendesk has {len(tickets)} tickets for one call; fix by hand")
++        return str(tickets[0].id) if tickets else None
++
++    def _custom_fields(self, record: CrmCallRecord) -> list[dict[str, object]]:
++        values = record_values(record)
++        out: list[dict[str, object]] = []
++        for name, target in self._mapping.fields.items():
++            if not target.startswith("custom_field:"):
++                raise ProviderError(f"zendesk mapping for {name} must be custom_field:<id>")
++            out.append({"id": int(target.removeprefix("custom_field:")), "value": values[name]})
++        return out
++
++    def upsert_call_record(self, record: CrmCallRecord) -> CrmTicket:
++        if record.priority not in _PRIORITIES:
++            raise ProviderError(f"zendesk priority must be one of {sorted(_PRIORITIES)}")
++        ticket: dict[str, object] = {
++            "subject": record.subject,
++            "external_id": record.call_id,
++            "tags": list(record.tags),
++            "priority": record.priority,
++            "custom_fields": self._custom_fields(record),
++            "comment": {"body": record.body, "public": False},
++        }
++        existing = self._find_by_external_id(record.call_id)
++        if existing is None:
++            response = self._request("POST", "/api/v2/tickets.json", {"ticket": ticket})
++            try:
++                ticket_id = str(_TicketResponse.model_validate_json(response.content).ticket.id)
++            except ValidationError as exc:
++                raise ProviderError("zendesk returned an unexpected ticket body") from exc
++        else:
++            self._request("PUT", f"/api/v2/tickets/{existing}.json", {"ticket": ticket})
++            ticket_id = existing
++        return CrmTicket(ticket_id=ticket_id, url=f"{self._base}/agent/tickets/{ticket_id}")
++
+     def add_note(self, ticket_id: str, body: str) -> None:
+         payload = {"ticket": {"comment": {"body": body, "public": False}}}
+         self._request("PUT", f"/api/v2/tickets/{ticket_id}.json", payload)
+diff --git a/server/app/webhooks_out/__init__.py b/server/app/webhooks_out/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/server/app/webhooks_out/deliver.py b/server/app/webhooks_out/deliver.py
+new file mode 100644
+index 0000000..a80bf7f
+--- /dev/null
++++ b/server/app/webhooks_out/deliver.py
+@@ -0,0 +1,111 @@
++"""Delivers call_outcome events to every active subscriber. Failures dead-letter and page."""
++
++from __future__ import annotations
++
++import json
++import secrets
++from dataclasses import dataclass
++from typing import Any, Literal
++
++import httpx
++from sqlalchemy import select
++from sqlalchemy.orm import Session
++
++from app.contracts.generated.call_outcome import CallOutcome
++from app.core.clock import Clock
++from app.core.errors import AgodaVoiceError
++from app.core.ids import new_id
++from app.delivery.dlq import dead_letter
++from app.postcall.crypto import DataCipher
++from app.webhooks_out.models import WebhookSubscriptionRow
++from app.webhooks_out.signing import signed_headers
++
++EventName = Literal["call_outcome"]
++DeliveryResult = Literal["delivered", "dead_lettered"]
++TIMEOUT_SECONDS = 5.0
++
++
++@dataclass(frozen=True)
++class NewSubscription:
++    subscription_id: str
++    secret: str  # shown once to the subscriber, then only the ciphertext is kept
++
++
++def subscribe(
++    session: Session,
++    cipher: DataCipher,
++    clock: Clock,
++    *,
++    tenant_id: str,
++    url: str,
++    events: list[EventName],
++) -> NewSubscription:
++    if not url.startswith("https://"):
++        raise AgodaVoiceError("webhook URLs must be https")
++    secret = secrets.token_hex(32)
++    row = WebhookSubscriptionRow(
++        subscription_id=new_id("whs"),
++        tenant_id=tenant_id,
++        url=url,
++        events=list(events),
++        secret_ciphertext=cipher.encrypt_json(secret),
++        active=True,
++        created_at=clock.now(),
++    )
++    session.add(row)
++    session.flush()
++    return NewSubscription(subscription_id=row.subscription_id, secret=secret)
++
++
++def _body(outcome: CallOutcome, event_id: str) -> bytes:
++    payload: dict[str, Any] = {
++        "event": "call_outcome",
++        "event_id": event_id,
++        "data": json.loads(outcome.model_dump_json()),
++    }
++    return json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
++
++
++def publish_call_outcome(
++    session: Session,
++    cipher: DataCipher,
++    clock: Clock,
++    client: httpx.Client,
++    outcome: CallOutcome,
++) -> dict[str, DeliveryResult]:
++    """One signed POST per subscriber. Returns the result per subscription id."""
++    subs = session.scalars(
++        select(WebhookSubscriptionRow).where(
++            WebhookSubscriptionRow.tenant_id == outcome.tenant_id,
++            WebhookSubscriptionRow.active.is_(True),
++        )
++    )
++    results: dict[str, DeliveryResult] = {}
++    for sub in subs:
++        if "call_outcome" not in sub.events:
++            continue
++        # Stable per (call, subscription) so a retried delivery is recognisably the same event.
++        event_id = f"evt_{outcome.call_id}_{sub.subscription_id}"
++        body = _body(outcome, event_id)
++        secret = str(cipher.decrypt_json(sub.secret_ciphertext))
++        headers = signed_headers(secret, int(clock.now().timestamp()), event_id, body)
++        try:
++            response = client.post(sub.url, content=body, headers=headers, timeout=TIMEOUT_SECONDS)
++            failure = None if 200 <= response.status_code < 300 else f"HTTP {response.status_code}"
++        except httpx.HTTPError as exc:
++            failure = f"{type(exc).__name__}: {exc}"
++        if failure is None:
++            results[sub.subscription_id] = "delivered"
++            continue
++        dead_letter(
++            session,
++            tenant_id=outcome.tenant_id,
++            kind="webhook",
++            key=event_id,
++            target=sub.subscription_id,
++            payload={"url": sub.url, "body": body.decode()},
++            error=failure,
++            now=clock.now(),
++        )
++        results[sub.subscription_id] = "dead_lettered"
++    return results
+diff --git a/server/app/webhooks_out/models.py b/server/app/webhooks_out/models.py
+new file mode 100644
+index 0000000..bc3dc59
+--- /dev/null
++++ b/server/app/webhooks_out/models.py
+@@ -0,0 +1,21 @@
++"""Outbound webhook subscriptions. The signing secret is stored encrypted (DataCipher)."""
++
++from __future__ import annotations
++
++from datetime import datetime
++
++from sqlalchemy import JSON, Boolean, LargeBinary, String
++from sqlalchemy.orm import Mapped, mapped_column
++
++from app.core.db import Base, UtcDateTime
++
++
++class WebhookSubscriptionRow(Base):
++    __tablename__ = "webhook_subscriptions"
++    subscription_id: Mapped[str] = mapped_column(String, primary_key=True)
++    tenant_id: Mapped[str] = mapped_column(String, index=True)
++    url: Mapped[str] = mapped_column(String)
++    events: Mapped[list[str]] = mapped_column(JSON)
++    secret_ciphertext: Mapped[bytes] = mapped_column(LargeBinary)
++    active: Mapped[bool] = mapped_column(Boolean)
++    created_at: Mapped[datetime] = mapped_column(UtcDateTime)
+diff --git a/server/app/webhooks_out/signing.py b/server/app/webhooks_out/signing.py
+new file mode 100644
+index 0000000..bdd2f28
+--- /dev/null
++++ b/server/app/webhooks_out/signing.py
+@@ -0,0 +1,58 @@
++"""Signing for outbound webhooks, and the verifier receivers use (S5).
++
++Signature: hex HMAC-SHA256 under the subscription secret over "<timestamp>.<raw body>".
++Headers: X-AV-Signature (v1=<hex>), X-AV-Timestamp (unix seconds), X-AV-Event-Id.
++A receiver rejects a bad signature, a timestamp outside the tolerance, and an event id it
++has already processed; together these stop tampering and replay.
++"""
++
++from __future__ import annotations
++
++import hashlib
++import hmac
++from collections.abc import Callable, Mapping
++
++from app.core.errors import WebhookReplayError, WebhookSignatureError
++
++SIGNATURE_HEADER = "X-AV-Signature"
++TIMESTAMP_HEADER = "X-AV-Timestamp"
++EVENT_ID_HEADER = "X-AV-Event-Id"
++TOLERANCE_SECONDS = 300
++
++
++def sign(secret: str, timestamp: int, body: bytes) -> str:
++    mac = hmac.new(secret.encode(), f"{timestamp}.".encode() + body, hashlib.sha256)
++    return f"v1={mac.hexdigest()}"
++
++
++def signed_headers(secret: str, timestamp: int, event_id: str, body: bytes) -> dict[str, str]:
++    return {
++        SIGNATURE_HEADER: sign(secret, timestamp, body),
++        TIMESTAMP_HEADER: str(timestamp),
++        EVENT_ID_HEADER: event_id,
++        "Content-Type": "application/json",
++    }
++
++
++def verify(
++    secret: str,
++    headers: Mapping[str, str],
++    body: bytes,
++    now_unix: int,
++    seen: Callable[[str], bool],
++) -> str:
++    """Receiver-side check. Returns the event id; `seen(event_id)` must also record it."""
++    # HTTP header names are case-insensitive and most frameworks lower-case them.
++    lowered = {k.lower(): v for k, v in headers.items()}
++    signature = lowered.get(SIGNATURE_HEADER.lower())
++    ts_raw = lowered.get(TIMESTAMP_HEADER.lower())
++    event_id = lowered.get(EVENT_ID_HEADER.lower())
++    if not signature or not ts_raw or not event_id or not ts_raw.isdigit():
++        raise WebhookSignatureError("missing Agoda Voice signature headers")
++    if not hmac.compare_digest(sign(secret, int(ts_raw), body), signature):
++        raise WebhookSignatureError("signature does not match the body")
++    if abs(now_unix - int(ts_raw)) > TOLERANCE_SECONDS:
++        raise WebhookReplayError("timestamp outside tolerance")
++    if seen(event_id):
++        raise WebhookReplayError(f"event {event_id} already processed")
++    return event_id
+diff --git a/server/app/wiring/main.py b/server/app/wiring/main.py
+index 399ffef..87dfe97 100644
+--- a/server/app/wiring/main.py
++++ b/server/app/wiring/main.py
+@@ -4,6 +4,7 @@ from __future__ import annotations
+ 
+ from dataclasses import dataclass
+ 
++import httpx
+ from fastapi import FastAPI
+ from sqlalchemy.orm import Session, sessionmaker
+ 
+@@ -19,6 +20,7 @@ from app.core.config import Settings, get_settings
+ from app.core.db import make_engine, make_session_factory
+ from app.core.errors import NotBuiltYetError
+ from app.core.logging import configure_logging
++from app.crm.sync import NoQaScores
+ from app.handoff.transfer import HumanQueue, InMemoryHumanQueue
+ from app.incidents.api_port import IncidentPort
+ from app.messaging.fallback import WhatsAppFallback
+@@ -136,6 +138,9 @@ def build_dispatcher(rt: Runtime) -> Dispatcher:
+         cipher=rt.cipher,
+         listener_factory=_listener_factory(rt.settings),
+         model_ids=p.model_ids(),
++        # The QA scorecard (W-2) replaces NoQaScores; until then records say "QA: pending".
++        qa_scores=NoQaScores(),
++        webhook_client=httpx.Client(),
+     )
+     return Dispatcher(
+         session_factory=rt.session_factory,
+diff --git a/server/app/wiring/runner.py b/server/app/wiring/runner.py
+index ee0f127..f94030d 100644
+--- a/server/app/wiring/runner.py
++++ b/server/app/wiring/runner.py
+@@ -5,6 +5,7 @@ from __future__ import annotations
+ import time
+ from collections.abc import Callable
+ 
++import httpx
+ from sqlalchemy.orm import Session, sessionmaker
+ 
+ from app.compliance.killswitch import is_engaged
+@@ -14,14 +15,16 @@ from app.core.bus import EventBus
+ from app.core.clock import Clock
+ from app.core.config import Settings
+ from app.core.db import transaction
+-from app.core.ids import phone_hash
++from app.core.ids import mask_booking_id, phone_hash
+ from app.core.types import Purpose
++from app.crm.sync import HANDLED, QaScoreSource, build_record, deliver
+ from app.handoff.transfer import HumanQueue
+ from app.postcall.crypto import DataCipher
+ from app.postcall.store import TranscriptTurn, record_outcome, store_transcript
+ from app.providers.base import CrmProvider, LlmProvider, TelephonyProvider, WhatsAppProvider
+ from app.telephony.handle import CallHandle
+ from app.voice.agent import CallSetup, Listener, run_conversation
++from app.webhooks_out.deliver import publish_call_outcome
+ from app.wiring.backend import LiveToolBackend
+ 
+ ListenerFactory = Callable[[CallHandle, BookingEvent], Listener]
+@@ -43,7 +46,11 @@ class AgentCallRunner:
+         cipher: DataCipher,
+         listener_factory: ListenerFactory,
+         model_ids: dict[str, str],
++        qa_scores: QaScoreSource,
++        webhook_client: httpx.Client,
+     ) -> None:
++        self._qa = qa_scores
++        self._webhooks = webhook_client
+         self._factory = session_factory
+         self._bus = bus
+         self._settings = settings
+@@ -101,4 +108,18 @@ class AgentCallRunner:
+                 at=self._clock.now(),
+                 turns=[TranscriptTurn(t.speaker, t.text) for t in result.transcript],
+             )
++        # Separate units of work: a CRM or subscriber outage must not undo the recorded
++        # outcome, and its dead-letter row must commit even though the delivery failed.
++        if result.outcome.outcome in HANDLED:
++            record = build_record(
++                result.outcome,
++                result.handoff_summary,
++                mask_booking_id(event.booking_id),
++                self._qa.score_for(handle.call_id),
++                self._settings.console_base_url,
++            )
++            with transaction(self._factory) as s:
++                deliver(s, self._crm, self._settings, self._clock, record)
++        with transaction(self._factory) as s:
++            publish_call_outcome(s, self._cipher, self._clock, self._webhooks, result.outcome)
+         return result.outcome
+diff --git a/server/migrations/versions/b71b3c384d32_delivery_dead_letters_and_webhook_.py b/server/migrations/versions/b71b3c384d32_delivery_dead_letters_and_webhook_.py
+new file mode 100644
+index 0000000..8ef4a41
+--- /dev/null
++++ b/server/migrations/versions/b71b3c384d32_delivery_dead_letters_and_webhook_.py
+@@ -0,0 +1,63 @@
++"""delivery dead letters and webhook subscriptions
++
++Revision ID: b71b3c384d32
++Revises: 08ac0d9fff67
++Create Date: 2026-11-23 23:21:44.610552
++
++"""
++from typing import Sequence, Union
++
++from alembic import op
++import sqlalchemy as sa
++
++import app.core.db
++
++
++# revision identifiers, used by Alembic.
++revision: str = 'b71b3c384d32'
++down_revision: Union[str, None] = '08ac0d9fff67'
++branch_labels: Union[str, Sequence[str], None] = None
++depends_on: Union[str, Sequence[str], None] = None
++
++
++def upgrade() -> None:
++    # ### commands auto generated by Alembic - please adjust! ###
++    op.create_table('delivery_dead_letters',
++    sa.Column('dlq_id', sa.String(), nullable=False),
++    sa.Column('kind', sa.String(), nullable=False),
++    sa.Column('key', sa.String(), nullable=False),
++    sa.Column('target', sa.String(), nullable=False),
++    sa.Column('payload', sa.JSON(), nullable=False),
++    sa.Column('error', sa.Text(), nullable=False),
++    sa.Column('attempts', sa.Integer(), nullable=False),
++    sa.Column('created_at', app.core.db.UtcDateTime(timezone=True), nullable=False),
++    sa.Column('last_attempt_at', app.core.db.UtcDateTime(timezone=True), nullable=False),
++    sa.Column('resolved_at', app.core.db.UtcDateTime(timezone=True), nullable=True),
++    sa.PrimaryKeyConstraint('dlq_id')
++    )
++    op.create_index(op.f('ix_delivery_dead_letters_created_at'), 'delivery_dead_letters', ['created_at'], unique=False)
++    op.create_index(op.f('ix_delivery_dead_letters_key'), 'delivery_dead_letters', ['key'], unique=False)
++    op.create_index(op.f('ix_delivery_dead_letters_kind'), 'delivery_dead_letters', ['kind'], unique=False)
++    op.create_table('webhook_subscriptions',
++    sa.Column('subscription_id', sa.String(), nullable=False),
++    sa.Column('tenant_id', sa.String(), nullable=False),
++    sa.Column('url', sa.String(), nullable=False),
++    sa.Column('events', sa.JSON(), nullable=False),
++    sa.Column('secret_ciphertext', sa.LargeBinary(), nullable=False),
++    sa.Column('active', sa.Boolean(), nullable=False),
++    sa.Column('created_at', app.core.db.UtcDateTime(timezone=True), nullable=False),
++    sa.PrimaryKeyConstraint('subscription_id')
++    )
++    op.create_index(op.f('ix_webhook_subscriptions_tenant_id'), 'webhook_subscriptions', ['tenant_id'], unique=False)
++    # ### end Alembic commands ###
++
++
++def downgrade() -> None:
++    # ### commands auto generated by Alembic - please adjust! ###
++    op.drop_index(op.f('ix_webhook_subscriptions_tenant_id'), table_name='webhook_subscriptions')
++    op.drop_table('webhook_subscriptions')
++    op.drop_index(op.f('ix_delivery_dead_letters_kind'), table_name='delivery_dead_letters')
++    op.drop_index(op.f('ix_delivery_dead_letters_key'), table_name='delivery_dead_letters')
++    op.drop_index(op.f('ix_delivery_dead_letters_created_at'), table_name='delivery_dead_letters')
++    op.drop_table('delivery_dead_letters')
++    # ### end Alembic commands ###
+diff --git a/server/tests/crm/test_crm_upsert.py b/server/tests/crm/test_crm_upsert.py
+new file mode 100644
+index 0000000..4d2234c
+--- /dev/null
++++ b/server/tests/crm/test_crm_upsert.py
+@@ -0,0 +1,168 @@
++"""Idempotent upserts keyed by call_id, for every CRM, against documented request shapes."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++import httpx
++import pytest
++
++from app.core.errors import MappingConfigError, ProviderError
++from app.crm.mapping import MAPPABLE, load_mapping
++from app.providers.base import CrmCallRecord
++from app.providers.crm.hubspot import HubSpotCrm, HubSpotSettings
++from app.providers.crm.mock import MockCrm
++from app.providers.crm.salesforce import SalesforceCrm, SalesforceSettings
++from app.providers.crm.zendesk import ZendeskCrm, ZendeskSettings
++
++RECORD = CrmCallRecord(
++    call_id="call_abc",
++    subject="Agoda Voice J1: link_sent (******1234)",
++    body="5 lines",
++    outcome="link_sent",
++    booking_masked="******1234",
++    qa_score=0.92,
++    transcript_url="https://console.example.invalid/console/calls/call_abc",
++    cost_paise=310,
++    next_action="Watch for payment",
++    owner="ai",
++    priority="normal",
++    tags=("agoda_voice", "outcome_link_sent"),
++)
++
++
++@pytest.mark.parametrize("crm", ["mock", "zendesk", "salesforce", "hubspot"])
++def test_every_shipped_mapping_is_complete(crm: str) -> None:
++    assert set(load_mapping(crm).fields) == MAPPABLE
++
++
++@pytest.mark.parametrize(
++    "text",
++    [
++        "object: x\nexternal_id_field: y\nfields: {outcome: a}\n",
++        "object: x\nexternal_id_field: y\nfields: {nonsense: a, "
++        + ", ".join(f"{f}: a" for f in sorted(MAPPABLE))
++        + "}\n",
++        "object: x\nfields: {}\n",
++    ],
++)
++def test_bad_mappings_fail_at_boot(tmp_path: Path, text: str) -> None:
++    (tmp_path / "bad.yaml").write_text(text)
++    with pytest.raises(MappingConfigError):
++        load_mapping("bad", tmp_path)
++
++
++def test_mock_upsert_is_idempotent() -> None:
++    crm = MockCrm()
++    first = crm.upsert_call_record(RECORD)
++    second = crm.upsert_call_record(RECORD)
++    assert first.ticket_id == second.ticket_id and len(crm.tickets) == 1
++
++
++def _zendesk(handler):
++    zs = ZendeskSettings(subdomain="agoda-test", email="bot@example.invalid", api_token="t")
++    return ZendeskCrm(zs, load_mapping("zendesk"), transport=httpx.MockTransport(handler))
++
++
++def test_zendesk_creates_then_updates_the_same_ticket():
++    store: dict[str, int] = {}
++    calls: list[tuple[str, str]] = []
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        calls.append((request.method, request.url.path))
++        if request.method == "GET":
++            ext = request.url.params["external_id"]
++            found = [{"id": store[ext]}] if ext in store else []
++            return httpx.Response(200, json={"tickets": found})
++        body = json.loads(request.content)["ticket"]
++        if request.method == "POST":
++            store[body["external_id"]] = 4242
++            return httpx.Response(201, json={"ticket": {"id": 4242}})
++        return httpx.Response(200, json={"ticket": {"id": 4242}})
++
++    crm = _zendesk(handler)
++    assert crm.upsert_call_record(RECORD).ticket_id == "4242"
++    assert crm.upsert_call_record(RECORD).ticket_id == "4242"
++    assert [m for m, _ in calls] == ["GET", "POST", "GET", "PUT"]
++
++
++def test_zendesk_writes_mapped_custom_fields_and_internal_comment():
++    seen: list[dict[str, object]] = []
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        if request.method == "GET":
++            return httpx.Response(200, json={"tickets": []})
++        seen.append(json.loads(request.content)["ticket"])
++        return httpx.Response(201, json={"ticket": {"id": 1}})
++
++    _zendesk(handler).upsert_call_record(RECORD)
++    ticket = seen[0]
++    fields = {f["id"]: f["value"] for f in ticket["custom_fields"]}  # type: ignore[union-attr]
++    assert fields[9000000001] == "link_sent" and fields[9000000005] == 310
++    assert ticket["comment"] == {"body": "5 lines", "public": False}
++    assert ticket["external_id"] == "call_abc"
++
++
++def test_zendesk_duplicate_tickets_for_a_call_raise():
++    crm = _zendesk(lambda r: httpx.Response(200, json={"tickets": [{"id": 1}, {"id": 2}]}))
++    with pytest.raises(ProviderError):
++        crm.upsert_call_record(RECORD)
++
++
++def _salesforce(handler):
++    s = SalesforceSettings(instance_url="https://agoda.my.salesforce.com", access_token="x")
++    return SalesforceCrm(s, load_mapping("salesforce"), transport=httpx.MockTransport(handler))
++
++
++def test_salesforce_upserts_by_external_id():
++    seen: list[httpx.Request] = []
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        seen.append(request)
++        return httpx.Response(201, json={"id": "500xx000001", "success": True, "created": True})
++
++    ticket = _salesforce(handler).upsert_call_record(RECORD)
++    req = seen[0]
++    assert req.method == "PATCH"
++    assert req.url.path == "/services/data/v61.0/sobjects/Case/AV_Call_Id__c/call_abc"
++    body = json.loads(req.content)
++    assert body["AV_Outcome__c"] == "link_sent" and body["Priority"] == "Medium"
++    assert ticket.ticket_id == "500xx000001"
++
++
++def test_salesforce_update_fetches_existing_id():
++    def handler(request: httpx.Request) -> httpx.Response:
++        if request.method == "PATCH":
++            return httpx.Response(204)
++        return httpx.Response(200, json={"Id": "500xx000009"})
++
++    assert _salesforce(handler).upsert_call_record(RECORD).ticket_id == "500xx000009"
++
++
++def _hubspot(handler):
++    s = HubSpotSettings(access_token="pat-x", portal_id="123")
++    return HubSpotCrm(s, load_mapping("hubspot"), transport=httpx.MockTransport(handler))
++
++
++def test_hubspot_batch_upsert_keyed_by_call_id():
++    seen: list[httpx.Request] = []
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        seen.append(request)
++        return httpx.Response(200, json={"status": "COMPLETE", "results": [{"id": "88"}]})
++
++    ticket = _hubspot(handler).upsert_call_record(RECORD)
++    body = json.loads(seen[0].content)
++    assert seen[0].url.path == "/crm/v3/objects/tickets/batch/upsert"
++    assert body["inputs"][0]["idProperty"] == "av_call_id" and body["inputs"][0]["id"] == "call_abc"
++    assert body["inputs"][0]["properties"]["av_qa_score"] == 0.92
++    assert ticket.url == "https://app.hubspot.com/contacts/123/ticket/88"
++
++
++@pytest.mark.parametrize("status", [400, 401, 429, 500])
++def test_crm_errors_are_typed(status: int):
++    bad = lambda r: httpx.Response(status, json={})  # noqa: E731
++    for client in (_salesforce(bad), _hubspot(bad)):
++        with pytest.raises(ProviderError):
++            client.upsert_call_record(RECORD)
+diff --git a/server/tests/crm/test_sync_dlq.py b/server/tests/crm/test_sync_dlq.py
+new file mode 100644
+index 0000000..e3d184f
+--- /dev/null
++++ b/server/tests/crm/test_sync_dlq.py
+@@ -0,0 +1,61 @@
++"""Post-call sync: one record per handled call; an outage dead-letters, pages, and replays."""
++
++from __future__ import annotations
++
++from app.core.ids import mask_booking_id
++from app.crm.retry_dlq import retry_crm
++from app.crm.sync import HANDLED, build_record, deliver
++from app.delivery.dlq import open_items
++from app.incidents.service import list_open
++from app.providers.crm.mock import MockCrm
++from app.simulator.caller import load_personas
++from app.simulator.scenario import run_text
++
++
++def _outcome(settings, persona_id: str = "C-01"):
++    persona = next(p for p in load_personas() if p.id == persona_id)
++    run = run_text(settings, persona, "hinglish", 0)
++    return run.result.outcome, run.result.handoff_summary, run.event
++
++
++def test_record_carries_everything_the_brief_lists(settings):
++    outcome, summary, event = _outcome(settings, "C-05")
++    # The simulator derives call ids from booking ids; production call ids are random.
++    outcome = outcome.model_copy(update={"call_id": "call_0f9e"})
++    record = build_record(
++        outcome, summary, mask_booking_id(event.booking_id), 0.8, "https://console.example.invalid"
++    )
++    assert record.call_id == outcome.call_id and record.outcome == outcome.outcome
++    assert record.booking_masked.endswith(event.booking_id[-4:])
++    assert event.booking_id not in record.body
++    assert record.transcript_url.endswith(f"/console/calls/{outcome.call_id}")
++    assert record.qa_score == 0.8 and record.next_action and record.owner
++    assert "Grievance channel" in record.body
++
++
++def test_outage_dead_letters_pages_then_replays(session, settings, clock):
++    outcome, summary, event = _outcome(settings)
++    assert outcome.outcome in HANDLED
++    record = build_record(
++        outcome, summary, mask_booking_id(event.booking_id), None, "https://console.example.invalid"
++    )
++    crm = MockCrm(fail_upserts=True)
++    assert deliver(session, crm, settings, clock, record) == "dead_lettered"
++    assert deliver(session, crm, settings, clock, record) == "dead_lettered"
++    [row] = open_items(session, "crm")
++    assert row.attempts == 2 and row.key == outcome.call_id
++    assert sum("crm delivery" in i.summary for i in list_open(session, settings.tenant_id)) == 1
++    crm.fail_upserts = False
++    report = retry_crm(session, crm, clock)
++    assert (report.retried, report.resolved, report.still_failing) == (1, 1, 0)
++    assert open_items(session, "crm") == [] and crm.upserts == 1
++
++
++def test_written_when_crm_is_up(session, settings, clock):
++    outcome, summary, event = _outcome(settings)
++    record = build_record(
++        outcome, summary, mask_booking_id(event.booking_id), None, "https://console.example.invalid"
++    )
++    crm = MockCrm()
++    assert deliver(session, crm, settings, clock, record) == "written"
++    assert open_items(session, "crm") == []
+diff --git a/server/tests/crm/test_zendesk.py b/server/tests/crm/test_zendesk.py
+index bf254bb..a3fec3e 100644
+--- a/server/tests/crm/test_zendesk.py
++++ b/server/tests/crm/test_zendesk.py
+@@ -7,11 +7,11 @@ import pytest
+ from app.core.errors import (
+     ConfigError,
+     ProviderError,
+-    ProviderNotBuiltError,
+     ProviderTimeoutError,
+ )
+ from app.crm.cases import open_case, priority_for
+ from app.crm.factory import make_crm
++from app.crm.mapping import load_mapping
+ from app.providers.crm.mock import MockCrm
+ from app.providers.crm.zendesk import ZendeskCrm, ZendeskSettings
+ from tests.factories import make_settings
+@@ -21,7 +21,7 @@ ZS = ZendeskSettings(subdomain="acme", email="bot@example.invalid", api_token="t
+ 
+ 
+ def _crm(handler):
+-    return ZendeskCrm(ZS, transport=httpx.MockTransport(handler))
++    return ZendeskCrm(ZS, load_mapping("zendesk"), transport=httpx.MockTransport(handler))
+ 
+ 
+ def test_create_ticket_payload_and_auth(clock):
+@@ -87,14 +87,15 @@ def test_bad_priority_rejected_before_network():
+ 
+ def test_incomplete_settings_fail_at_construction():
+     with pytest.raises(ConfigError):
+-        ZendeskCrm(ZendeskSettings())
++        ZendeskCrm(ZendeskSettings(), load_mapping("zendesk"))
+ 
+ 
+ def test_factory_builds_one_provider_by_name():
+     assert isinstance(make_crm(make_settings()), MockCrm)
+-    with pytest.raises(ProviderNotBuiltError):
++    # Built, but refuses to boot without its keys.
++    with pytest.raises(ConfigError):
+         make_crm(make_settings(crm="salesforce"))
+-    with pytest.raises(ProviderNotBuiltError):
++    with pytest.raises(ConfigError):
+         make_crm(make_settings(crm="hubspot"))
+ 
+ 
+diff --git a/server/tests/test_webhooks_out.py b/server/tests/test_webhooks_out.py
+new file mode 100644
+index 0000000..6b77948
+--- /dev/null
++++ b/server/tests/test_webhooks_out.py
+@@ -0,0 +1,104 @@
++"""Outbound webhooks: HMAC over timestamp.body, receiver rejects tamper, stale and replay."""
++
++from __future__ import annotations
++
++import httpx
++import pytest
++
++from app.core.errors import AgodaVoiceError, WebhookReplayError, WebhookSignatureError
++from app.delivery.dlq import open_items
++from app.postcall.crypto import DataCipher
++from app.postcall.settings import PostcallSettings
++from app.simulator.caller import load_personas
++from app.simulator.scenario import run_text
++from app.webhooks_out.deliver import publish_call_outcome, subscribe
++from app.webhooks_out.signing import signed_headers, verify
++
++CIPHER = DataCipher(PostcallSettings().data_key)
++
++
++def _outcome(settings):
++    persona = next(p for p in load_personas() if p.id == "C-01")
++    return run_text(settings, persona, "hinglish", 0).result.outcome
++
++
++def test_receiver_accepts_a_fresh_signed_event_once():
++    body = b'{"event":"call_outcome"}'
++    headers = signed_headers("s3cret", 1_800_000_000, "evt_1", body)
++    seen: set[str] = set()
++
++    def seen_before(event_id: str) -> bool:
++        if event_id in seen:
++            return True
++        seen.add(event_id)
++        return False
++
++    assert verify("s3cret", headers, body, 1_800_000_010, seen_before) == "evt_1"
++    with pytest.raises(WebhookReplayError):
++        verify("s3cret", headers, body, 1_800_000_020, seen_before)
++
++
++def test_receiver_rejects_tamper_wrong_secret_and_stale():
++    body = b'{"event":"call_outcome"}'
++    headers = signed_headers("s3cret", 1_800_000_000, "evt_1", body)
++    with pytest.raises(WebhookSignatureError):
++        verify("s3cret", headers, body + b" ", 1_800_000_000, lambda _: False)
++    with pytest.raises(WebhookSignatureError):
++        verify("other", headers, body, 1_800_000_000, lambda _: False)
++    with pytest.raises(WebhookReplayError):
++        verify("s3cret", headers, body, 1_800_000_301, lambda _: False)
++    with pytest.raises(WebhookSignatureError):
++        verify("s3cret", {}, body, 1_800_000_000, lambda _: False)
++
++
++def test_publish_signs_with_the_subscription_secret(session, settings, clock):
++    sub = subscribe(
++        session,
++        CIPHER,
++        clock,
++        tenant_id=settings.tenant_id,
++        url="https://hooks.example.invalid/av",
++        events=["call_outcome"],
++    )
++    received: list[httpx.Request] = []
++
++    def handler(request: httpx.Request) -> httpx.Response:
++        received.append(request)
++        return httpx.Response(204)
++
++    client = httpx.Client(transport=httpx.MockTransport(handler))
++    outcome = _outcome(settings)
++    assert publish_call_outcome(session, CIPHER, clock, client, outcome) == {
++        sub.subscription_id: "delivered"
++    }
++    req = received[0]
++    verify(
++        sub.secret, dict(req.headers), req.content, int(clock.now().timestamp()), lambda _: False
++    )
++
++
++def test_failed_delivery_dead_letters(session, settings, clock):
++    subscribe(
++        session,
++        CIPHER,
++        clock,
++        tenant_id=settings.tenant_id,
++        url="https://hooks.example.invalid/av",
++        events=["call_outcome"],
++    )
++    client = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(503)))
++    result = publish_call_outcome(session, CIPHER, clock, client, _outcome(settings))
++    assert list(result.values()) == ["dead_lettered"]
++    assert len(open_items(session, "webhook")) == 1
++
++
++def test_http_urls_are_refused(session, settings, clock):
++    with pytest.raises(AgodaVoiceError):
++        subscribe(
++            session,
++            CIPHER,
++            clock,
++            tenant_id=settings.tenant_id,
++            url="http://hooks.example.invalid",
++            events=["call_outcome"],
++        )
+diff --git a/server/tests/voice/test_prompts_tools_registry.py b/server/tests/voice/test_prompts_tools_registry.py
+index 0ac9d37..7f8cf42 100644
+--- a/server/tests/voice/test_prompts_tools_registry.py
++++ b/server/tests/voice/test_prompts_tools_registry.py
+@@ -71,7 +71,6 @@ def test_registry_builds_one_mock_per_role() -> None:
+         ("stt", "selfhosted"),
+         ("tts", "elevenlabs"),
+         ("llm", "vllm"),
+-        ("crm", "hubspot"),
+     ],
+ )
+ def test_unbuilt_provider_fails_at_boot(role: str, name: str) -> None:
+@@ -101,14 +100,29 @@ def test_livekit_turn_handling_is_pinned() -> None:
+ 
+ @pytest.mark.parametrize(
+     ("role", "name"),
+-    [("telephony", "plivo"), ("telephony", "exotel"), ("whatsapp", "meta_cloud_api")],
++    [
++        ("telephony", "plivo"),
++        ("telephony", "exotel"),
++        ("whatsapp", "meta_cloud_api"),
++        ("crm", "zendesk"),
++        ("crm", "salesforce"),
++        ("crm", "hubspot"),
++    ],
+ )
+ def test_real_channel_without_keys_fails_at_boot(
+     role: str, name: str, monkeypatch: pytest.MonkeyPatch
+ ) -> None:
+     from app.core.errors import ConfigError
+ 
+-    for var in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET", "AV_META_ACCESS_TOKEN"):
++    for var in (
++        "LIVEKIT_URL",
++        "LIVEKIT_API_KEY",
++        "LIVEKIT_API_SECRET",
++        "AV_META_ACCESS_TOKEN",
++        "AV_ZENDESK_API_TOKEN",
++        "AV_SALESFORCE_ACCESS_TOKEN",
++        "AV_HUBSPOT_ACCESS_TOKEN",
++    ):
+         monkeypatch.delenv(var, raising=False)
+     with pytest.raises(ConfigError):
+         build_providers(settings().model_copy(update={role: name}))
