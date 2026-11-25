@@ -1,0 +1,24 @@
+id: C-05
+title: angry, paise kat gaye
+journey: J1
+languages:
+- hinglish
+- en
+- hi
+turns:
+  hinglish:
+  - Kya bakwaas hai! Mere paise kat gaye aur booking pending dikha rahe ho!
+  en:
+  - This is ridiculous! The money was deducted and you still show it pending!
+  hi:
+  - क्या बकवास है! मेरे पैसे कट गए और बुकिंग पेंडिंग दिखा रहे हो!
+expect:
+  outcome:
+  - handed_off
+  tools_required:
+  - log_case
+  - warm_transfer
+  tools_forbidden:
+  - send_payment_link
+  handoff: true
+preferred_language: hinglish

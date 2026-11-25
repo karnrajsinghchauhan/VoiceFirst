@@ -1,0 +1,22 @@
+id: C-29
+title: VIP flag
+journey: J1
+languages:
+- hinglish
+- en
+flags:
+  vip: true
+turns:
+  hinglish:
+  - haan ji boliye
+  en:
+  - Yes, go on.
+expect:
+  outcome:
+  - handed_off
+  tools_required:
+  - warm_transfer
+  tools_forbidden:
+  - send_payment_link
+  handoff: true
+preferred_language: hinglish

@@ -1,0 +1,24 @@
+id: C-09
+title: wants a human in line one
+journey: J1
+languages:
+- hinglish
+- en
+- hi
+turns:
+  hinglish:
+  - mujhe kisi insaan se baat karni hai
+  en:
+  - Let me speak to a human please.
+  hi:
+  - मुझे किसी इंसान से बात करनी है
+expect:
+  outcome:
+  - handed_off
+  tools_required:
+  - log_case
+  - warm_transfer
+  tools_forbidden:
+  - send_payment_link
+  handoff: true
+preferred_language: hinglish

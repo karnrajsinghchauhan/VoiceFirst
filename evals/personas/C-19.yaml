@@ -1,0 +1,21 @@
+id: C-19
+title: wrong number
+journey: J1
+languages:
+- hinglish
+- en
+- hi
+turns:
+  hinglish:
+  - yahan koi Priya nahi rehti, galat number hai
+  en:
+  - Sorry, wrong number.
+  hi:
+  - गलत नंबर है
+expect:
+  outcome:
+  - wrong_person
+  tools_forbidden:
+  - send_payment_link
+  handoff: false
+preferred_language: hinglish

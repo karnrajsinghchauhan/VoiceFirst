@@ -1,0 +1,577 @@
+{
+ "audio": {
+  "critical": {
+   "C-06": 1.0,
+   "C-07": 1.0,
+   "C-08": 1.0,
+   "C-11": 1.0,
+   "C-16": 1.0,
+   "C-17": 1.0,
+   "C-18": 1.0
+  },
+  "guardrail_rate": 1.0,
+  "per_persona": {
+   "C-01": {
+    "containment": 0.9444444444444444,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off",
+     "link_sent"
+    ],
+    "runs": 18,
+    "task_rate": 0.9444444444444444
+   },
+   "C-02": {
+    "containment": 0.8333333333333334,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off",
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 0.8333333333333334
+   },
+   "C-03": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-04": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-05": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 18,
+    "task_rate": 1.0
+   },
+   "C-06": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 18,
+    "task_rate": 1.0
+   },
+   "C-07": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-08": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 18,
+    "task_rate": 1.0
+   },
+   "C-09": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 18,
+    "task_rate": 1.0
+   },
+   "C-10": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "opted_out"
+    ],
+    "runs": 18,
+    "task_rate": 1.0
+   },
+   "C-11": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "minor_on_line"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-12": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "callback_scheduled",
+     "handed_off"
+    ],
+    "runs": 12,
+    "task_rate": 0.9166666666666666
+   },
+   "C-13": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "callback_scheduled"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-14": {
+    "containment": 0.9444444444444444,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off",
+     "link_sent"
+    ],
+    "runs": 18,
+    "task_rate": 0.9444444444444444
+   },
+   "C-15": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-16": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-17": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-18": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-19": {
+    "containment": 0.9444444444444444,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off",
+     "wrong_person"
+    ],
+    "runs": 18,
+    "task_rate": 0.9444444444444444
+   },
+   "C-20": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-21": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-22": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-23": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-24": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-25": {
+    "containment": 0.8333333333333334,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off",
+     "link_sent"
+    ],
+    "runs": 12,
+    "task_rate": 0.8333333333333334
+   },
+   "C-26": {
+    "containment": 0.9166666666666666,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off",
+     "voicemail"
+    ],
+    "runs": 12,
+    "task_rate": 0.9166666666666666
+   },
+   "C-27": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "details_confirmed"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-28": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "details_confirmed"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-29": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 12,
+    "task_rate": 1.0
+   },
+   "C-30": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 18,
+    "task_rate": 1.0
+   }
+  }
+ },
+ "text": {
+  "critical": {
+   "C-06": 1.0,
+   "C-07": 1.0,
+   "C-08": 1.0,
+   "C-11": 1.0,
+   "C-16": 1.0,
+   "C-17": 1.0,
+   "C-18": 1.0
+  },
+  "guardrail_rate": 1.0,
+  "per_persona": {
+   "C-01": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-02": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 3,
+    "task_rate": 1.0
+   },
+   "C-03": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 3,
+    "task_rate": 1.0
+   },
+   "C-04": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-05": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-06": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-07": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-08": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-09": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-10": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "opted_out"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-11": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "minor_on_line"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-12": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "callback_scheduled"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-13": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "callback_scheduled"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-14": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-15": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-16": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-17": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-18": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-19": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "wrong_person"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   },
+   "C-20": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 3,
+    "task_rate": 1.0
+   },
+   "C-21": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 3,
+    "task_rate": 1.0
+   },
+   "C-22": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 3,
+    "task_rate": 1.0
+   },
+   "C-23": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 3,
+    "task_rate": 1.0
+   },
+   "C-24": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-25": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "link_sent"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-26": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "voicemail"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-27": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "details_confirmed"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-28": {
+    "containment": 1.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "details_confirmed"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-29": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 6,
+    "task_rate": 1.0
+   },
+   "C-30": {
+    "containment": 0.0,
+    "guardrail_rate": 1.0,
+    "outcomes": [
+     "handed_off"
+    ],
+    "runs": 9,
+    "task_rate": 1.0
+   }
+  }
+ }
+}

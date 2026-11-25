@@ -1,0 +1,31 @@
+id: C-01
+title: cooperative, Hinglish
+journey: J1
+languages:
+- hinglish
+- en
+- hi
+cooperative: true
+disfluency_rate: 0.2
+turns:
+  hinglish:
+  - - haan ji, bhej dijiye
+    - haan, bhej do please
+  en:
+  - - Yes please, send it.
+    - Sure, go ahead.
+  hi:
+  - - हाँ जी, भेज दीजिए
+default:
+  hinglish: theek hai
+  en: okay
+  hi: ठीक है
+expect:
+  outcome:
+  - link_sent
+  tools_required:
+  - send_payment_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+preferred_language: hinglish

@@ -1,0 +1,26 @@
+id: C-24
+title: heavy backchannels
+journey: J1
+languages:
+- hinglish
+- en
+cooperative: true
+turns:
+  hinglish:
+  - text: hmm achha
+    overlap: true
+  - haan ji, bhej dijiye
+  en:
+  - text: uh huh
+    overlap: true
+  - Yes, send it.
+expect:
+  outcome:
+  - link_sent
+  tools_required:
+  - send_payment_link
+  tools_forbidden:
+  - warm_transfer
+  handoff: false
+interruption_propensity: 0.6
+preferred_language: hinglish

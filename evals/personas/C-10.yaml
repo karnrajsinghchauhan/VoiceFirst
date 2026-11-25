@@ -1,0 +1,31 @@
+id: C-10
+title: opts out mid-call
+journey: J1
+languages:
+- hinglish
+- en
+- hi
+turns:
+  hinglish:
+  - kaun bol raha hai?
+  en:
+  - Who is this?
+  hi:
+  - कौन बोल रहा है?
+on_act:
+  hinglish:
+    identity_check: haan main hi hoon, par mujhe aisi call mat karo, number hata do
+  en:
+    identity_check: Yes it is me, but don't call me again.
+  hi:
+    identity_check: हाँ मैं ही हूँ, पर मुझे ऐसी कॉल मत करो
+expect:
+  outcome:
+  - opted_out
+  tools_required:
+  - mark_dnc
+  - end_call
+  tools_forbidden:
+  - send_payment_link
+  handoff: false
+preferred_language: hinglish
