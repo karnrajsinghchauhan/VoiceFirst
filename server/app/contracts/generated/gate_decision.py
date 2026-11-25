@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class Gate(BaseModel):
@@ -44,6 +43,6 @@ class GateDecision(BaseModel):
     decision_id: Annotated[str, Field(min_length=1)]
     booking_event_id: Annotated[str, Field(min_length=1)]
     phone_hash: Annotated[str, Field(pattern="^[0-9a-f]{64}$")]
-    evaluated_at: datetime
+    evaluated_at: AwareDatetime
     gates: list[Gate]
-    clearance_id: str | None = None
+    clearance_id: str | None

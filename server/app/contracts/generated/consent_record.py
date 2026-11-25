@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class ConsentRecord(BaseModel):
@@ -21,18 +20,18 @@ class ConsentRecord(BaseModel):
     basis: Literal["transaction", "explicit", "inquiry"]
     purpose: Literal["J1", "J2"]
     channel: Literal["voice", "whatsapp", "sms", "web", "dca"]
-    obtained_at: datetime
+    obtained_at: AwareDatetime
     expires_at: Annotated[
-        datetime | None,
+        AwareDatetime | None,
         Field(
             description="Null only for basis=transaction, which lasts while the booking is live."
         ),
-    ] = None
-    revoked_at: datetime | None = None
+    ]
+    revoked_at: AwareDatetime | None
     source_ref: Annotated[str, Field(min_length=1)]
     consent_manager_id: Annotated[
         str | None,
         Field(description="REQ-DPDP-08: placeholder for a DPDP Consent Manager."),
-    ] = None
-    artefact_ref: str | None = None
-    evidence_uri: str | None = None
+    ]
+    artefact_ref: str | None
+    evidence_uri: str | None

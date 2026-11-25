@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class Cli(BaseModel):
@@ -21,7 +20,7 @@ class Cli(BaseModel):
     purpose: Literal["service", "transactional", "promotional"]
     oap: Annotated[str, Field(min_length=1)]
     a2p_declared: bool
-    declaration_ref: str | None = None
-    dlt_recorded_at: datetime | None = None
+    declaration_ref: str | None
+    dlt_recorded_at: AwareDatetime | None
     status: Literal["active", "paused", "retired"]
-    paused_reason: str | None = None
+    paused_reason: str | None

@@ -7,9 +7,7 @@ import pytest
 import schemathesis
 from hypothesis import HealthCheck, settings
 
-# FastAPI emits OpenAPI 3.1, which schemathesis 3.x supports behind a flag.
-schemathesis.experimental.OPEN_API_3_1.enable()
-schema = schemathesis.from_pytest_fixture("api_schema")
+schema = schemathesis.pytest.from_fixture("api_schema")
 
 
 @schemathesis.auth()
@@ -25,7 +23,7 @@ class AdminToken:
 
 @pytest.fixture
 def api_schema(app):
-    return schemathesis.from_asgi("/openapi.json", app)
+    return schemathesis.openapi.from_asgi("/openapi.json", app)
 
 
 @schema.parametrize()

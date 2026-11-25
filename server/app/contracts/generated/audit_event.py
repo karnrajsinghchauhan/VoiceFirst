@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class AuditEvent(BaseModel):
@@ -21,7 +20,7 @@ class AuditEvent(BaseModel):
     tenant_id: Annotated[str, Field(pattern="^[a-z0-9][a-z0-9-]{1,62}$")]
     trace_id: Annotated[str, Field(pattern="^[0-9a-f]{32}$")]
     audit_id: Annotated[str, Field(min_length=1)]
-    at: datetime
+    at: AwareDatetime
     actor: Annotated[str, Field(min_length=1)]
     role: Literal["admin", "ops", "auditor", "read_only", "system"]
     action: Annotated[str, Field(min_length=1)]

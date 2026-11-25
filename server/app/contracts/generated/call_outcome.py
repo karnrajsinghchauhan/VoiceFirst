@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class ToolsCalledItem(BaseModel):
@@ -73,7 +72,7 @@ class CallOutcome(BaseModel):
     booking_id: Annotated[str, Field(min_length=4)]
     purpose: Literal["J1", "J2"]
     cli: Annotated[str, Field(pattern="^\\+[1-9][0-9]{6,14}$")]
-    started_at: datetime
+    started_at: AwareDatetime
     answered: bool
     amd_result: Literal[
         "human",
@@ -84,7 +83,7 @@ class CallOutcome(BaseModel):
         "not_run",
     ]
     language_detected: Literal["hi", "en", "hinglish", "unknown"]
-    disclosure_played_at: datetime | None = None
+    disclosure_played_at: AwareDatetime | None
     turns: Annotated[int, Field(ge=0)]
     tools_called: list[ToolsCalledItem]
     outcome: Literal[
@@ -100,7 +99,7 @@ class CallOutcome(BaseModel):
         "abandoned",
         "error",
     ]
-    handoff: Handoff | None = None
+    handoff: Handoff | None
     latency_ms: LatencyMs
     cost: Annotated[Cost, Field(description="Minor units (paise).")]
     redaction_applied: bool

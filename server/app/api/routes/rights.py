@@ -19,6 +19,7 @@ _E164 = r"^\+[1-9][0-9]{6,14}$"
 
 
 class _In(BaseModel):
+    # Strict: a request that violates the documented schema is refused, never coerced.
     model_config = ConfigDict(extra="forbid")
 
 

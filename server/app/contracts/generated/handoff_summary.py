@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class HandoffSummary(BaseModel):
@@ -31,8 +30,8 @@ class HandoffSummary(BaseModel):
     reason: Annotated[str, Field(min_length=1)]
     queue: Annotated[str, Field(min_length=1)]
     sla_ack_due_at: Annotated[
-        datetime, Field(description="48 h acknowledgement (REQ-CP-03).")
+        AwareDatetime, Field(description="48 h acknowledgement (REQ-CP-03).")
     ]
     sla_resolve_due_at: Annotated[
-        datetime, Field(description="30-day resolution (REQ-CP-03).")
+        AwareDatetime, Field(description="30-day resolution (REQ-CP-03).")
     ]

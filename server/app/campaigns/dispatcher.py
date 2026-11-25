@@ -23,7 +23,13 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.campaigns.journeys import JourneyRules, plan_journey
-from app.campaigns.models import BookingEventRow, HoldoutMemberRow, QueueItemRow, QueueState
+from app.campaigns.models import (
+    BookingEventRow,
+    CampaignStateRow,
+    HoldoutMemberRow,
+    QueueItemRow,
+    QueueState,
+)
 from app.compliance.evaluate import evaluate
 from app.compliance.killswitch import is_engaged
 from app.contracts.generated.booking_event import BookingEvent
@@ -173,12 +179,16 @@ class Dispatcher:
             if is_engaged(session, tenant):
                 self._drop_all_queued(session, tenant)
                 return None
+            paused = select(CampaignStateRow.purpose).where(
+                CampaignStateRow.tenant_id == tenant, CampaignStateRow.paused.is_(True)
+            )
             return session.scalar(
                 select(QueueItemRow.item_id)
                 .where(
                     QueueItemRow.tenant_id == tenant,
                     QueueItemRow.state == "queued",
                     QueueItemRow.due_at <= self._clock.now(),
+                    QueueItemRow.purpose.not_in(paused),
                 )
                 .order_by(QueueItemRow.due_at, QueueItemRow.item_id)
                 .limit(1)

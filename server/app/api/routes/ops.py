@@ -12,8 +12,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 
 from app.admin.rbac import Principal
-from app.api.deps import Db, Deps, require
+from app.api.deps import Db, Deps, get_principal, require
 from app.api.ports import CampaignView, IncidentKind, IncidentView, SimulationResult
+from app.api.types import IsoDatetime, JsonInt, StrictBool
 from app.compliance import killswitch
 from app.compliance.models import KillSwitchRow
 from app.contracts.generated.audit_event import AuditEvent
@@ -25,6 +26,7 @@ router = APIRouter()
 
 
 class _In(BaseModel):
+    # Strict: a request that violates the documented schema is refused, never coerced.
     model_config = ConfigDict(extra="forbid")
 
 
@@ -45,12 +47,12 @@ def metrics(
 
 
 class KillSwitchIn(_In):
-    engaged: bool
+    engaged: StrictBool
     reason: str = Field(min_length=3, max_length=500)
 
 
 class KillSwitchState(BaseModel):
-    engaged: bool
+    engaged: StrictBool
     actor: str | None
     reason: str | None
     changed_at: datetime | None
@@ -62,6 +64,17 @@ def _kill_state(row: KillSwitchRow | None) -> KillSwitchState:
     return KillSwitchState(
         engaged=row.engaged, actor=row.actor, reason=row.reason, changed_at=row.changed_at
     )
+
+
+class WhoAmI(BaseModel):
+    actor: str
+    role: str
+
+
+@router.get("/whoami", tags=["ops"])
+def whoami(principal: Annotated[Principal, Depends(get_principal)]) -> WhoAmI:
+    """The console derives what to show from the caller's role."""
+    return WhoAmI(actor=principal.actor, role=principal.role)
 
 
 @router.get("/killswitch", tags=["killswitch"])
@@ -146,7 +159,7 @@ def resume_campaign(
 
 class SimulateIn(_In):
     persona: str = Field(pattern=r"^C-[0-9]{2}$")
-    seed: int = Field(ge=0, le=2**31 - 1)
+    seed: JsonInt = Field(ge=0, le=2**31 - 1)
     purpose: Purpose
     language: Language = "hinglish"
 
@@ -168,7 +181,7 @@ def list_incidents(
 class IncidentIn(_In):
     kind: IncidentKind
     summary: str = Field(min_length=3, max_length=2000)
-    detected_at: datetime
+    detected_at: IsoDatetime
 
 
 @router.post("/incidents", tags=["incidents"])

@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal
 
-from sqlalchemy import JSON, Integer, String
+from sqlalchemy import JSON, Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base, UtcDateTime
@@ -61,3 +61,15 @@ class HoldoutMemberRow(Base):
     purpose: Mapped[str] = mapped_column(String)
     experiment_salt: Mapped[str] = mapped_column(String)
     recorded_at: Mapped[datetime] = mapped_column(UtcDateTime)
+
+
+class CampaignStateRow(Base):
+    """Per-journey pause set by an operator. The kill switch and the complaint pause sit above it."""
+
+    __tablename__ = "campaign_state"
+    tenant_id: Mapped[str] = mapped_column(String, primary_key=True)
+    purpose: Mapped[Literal["J1", "J2"]] = mapped_column(String, primary_key=True)
+    paused: Mapped[bool] = mapped_column(Boolean)
+    actor: Mapped[str] = mapped_column(String)
+    reason: Mapped[str] = mapped_column(String)
+    changed_at: Mapped[datetime] = mapped_column(UtcDateTime)
