@@ -1,6 +1,6 @@
 # Next steps (local session)
 
-Repo: github.com/karnrajsinghchauhan/VoiceFirst. The full spec is brief v3 (ask Karn for the text if it isn't in your notes); state is in STATUS.md, DECISIONS.md and handoff/README.md.
+Repo: github.com/karnrajsinghchauhan/VoiceFirst. The full spec is docs/briefs/brief-v3.md; state is in STATUS.md, DECISIONS.md and handoff/README.md.
 
 ## 0. Setup and verify
 ```bash
