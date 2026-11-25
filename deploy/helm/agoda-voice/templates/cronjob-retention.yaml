@@ -1,0 +1,22 @@
+# Nightly retention purge (REQ-DPDP-07); logs counts.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-retention
+  labels:
+    {{- include "av.labels" . | nindent 4 }}
+spec:
+  schedule: "37 20 * * *"   # 02:07 IST
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext: {runAsNonRoot: true, runAsUser: 65534}
+          containers:
+            - name: purge
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              command: ["python", "-m", "app.postcall.retention"]
+              env:
+                {{- include "av.env" . | nindent 16 }}

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-voice-worker
+  labels:
+    {{- include "av.labels" . | nindent 4 }}
+    app.kubernetes.io/component: voice-worker
+spec:
+  replicas: {{ .Values.voiceWorker.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: voice-worker
+  template:
+    metadata:
+      labels:
+        {{- include "av.labels" . | nindent 8 }}
+        app.kubernetes.io/component: voice-worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: voice-worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "-m", "app.voice.livekit_worker", "start"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: ["ALL"]}
+          env:
+            {{- include "av.env" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.voiceWorker.resources | nindent 12 }}

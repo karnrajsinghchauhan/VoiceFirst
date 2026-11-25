@@ -15,6 +15,7 @@ down:
 
 gen:
 	scripts/gen_contracts.sh "$(CURDIR)/server/app/contracts/generated" "$(CURDIR)/web/src/contracts"
+	$(UV) python ../scripts/export_openapi.py ../contracts/openapi.yaml
 
 lint:
 	$(UV) ruff check app tests ../evals ../scripts

@@ -44,7 +44,7 @@ def test_bucket_is_identical_in_another_process(settings):
         "import json,sys; from app.compliance.holdout import bucket; "
         "ids=json.loads(sys.argv[2]); print(json.dumps([bucket(sys.argv[1], b) for b in ids]))"
     )
-    out = subprocess.run(  # noqa: S603 - fixed argv built from this test
+    out = subprocess.run(
         [sys.executable, "-c", code, settings.holdout.experiment_salt, json.dumps(ids)],
         cwd=SERVER,
         capture_output=True,

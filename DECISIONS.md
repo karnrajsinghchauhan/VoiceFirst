@@ -109,3 +109,39 @@ Format: ID, date, decision, why, what would change it.
 - Why: a paid, cancelled or changed booking must not get a stale call; Kafka delivers at
   least once.
 - Would change it: nothing expected.
+
+## D-011 (2026-11-23) Merge order D, E, F before B/C
+- Decision: merge W-D, W-E and W-F as they finish; merge W-BC last, then wire.
+- Why: W-BC (voice + tester) is the largest stream; the others touch disjoint
+  files, so waiting would only delay `make check` on the integrated tree.
+- Would change it: a file overlap between W-BC and an earlier merge.
+
+## D-012 (2026-11-23) Helm chart not linted in this session
+- Decision: ship the chart without `helm lint`/`helm template` output.
+- Why: get.helm.sh is blocked by the session's network policy.
+- Would change it: run `helm lint deploy/helm/agoda-voice` in CI (added to the
+  next-tasks list).
+## D-301 (2026-11-23) Data key for encryption at rest is postcall-owned
+- Decision: `app/postcall/settings.py` reads `AV_DATA_KEY` (a Fernet key). Transcripts
+  and audio references are redacted first, then encrypted. A fixed dev key exists for
+  tests; `validate_postcall_for_production` rejects it.
+- Why: one owner for the key; core config stays untouched by W-E.
+- Would change it: Agoda's KMS (envelope encryption) once storage vendors are known [CD].
+
+## D-302 (2026-11-23) Erasure pseudonymises outcomes and keeps consent and opt-out rows
+- Decision: erasure deletes transcripts and audio, pseudonymises call outcomes
+  (phone hash and booking id replaced), and keeps consent records and opt-outs.
+- Why: outcomes feed the holdout lift measurement; consent records prove the lawful
+  basis of past calls; opt-outs are what stops the number being called again.
+- Would change it: counsel's view on consent-record retention [CD 15].
+
+## D-303 (2026-11-23) Generic domain errors are HTTP 400; 422 stays request validation
+- Decision: one exception handler maps typed errors to statuses (401/403/404/409/
+  502/500, else 400). FastAPI's own 422 is the only request-validation response.
+- Why: two error shapes must never share a status code in the OpenAPI document.
+- Would change it: nothing.
+
+## D-304 (2026-11-23) Rights-request SLAs default to 48 h ack and 30 days
+- Decision: `AV_RIGHTS_ACK_HOURS=48`, `AV_RIGHTS_RESOLVE_DAYS=30` as house defaults.
+- Why: statutory DPDP timelines for each right are [CD]; we pick the stricter house target.
+- Would change it: counsel's confirmation of the statutory periods.
