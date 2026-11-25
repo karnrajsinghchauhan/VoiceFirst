@@ -10,7 +10,7 @@ Two independent locks make it unforgeable:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import InitVar, dataclass
 from datetime import datetime
 
 from app.compliance.context import CallPurpose
@@ -31,10 +31,12 @@ class GateClearance:
     purpose: CallPurpose
     issued_at: datetime
     expires_at: datetime
-    _mint: object = field(repr=False, compare=False, default=None)
+    # An InitVar, not a field: dataclasses.replace() cannot copy it, so a minted
+    # clearance cannot be laundered into a modified one.
+    _mint: InitVar[object] = None
 
-    def __post_init__(self) -> None:
-        if self._mint is not _MINT:
+    def __post_init__(self, _mint: object) -> None:
+        if _mint is not _MINT:
             raise ClearanceForgeryError("GateClearance can only be minted by compliance.evaluate")
 
 

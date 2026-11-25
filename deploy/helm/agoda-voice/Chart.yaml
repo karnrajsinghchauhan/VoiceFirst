@@ -1,0 +1,6 @@
+apiVersion: v2
+name: agoda-voice
+description: Agoda Voice (independent ProsperOps product; not affiliated with or endorsed by Agoda). Private Kubernetes, no cloud-vendor dependencies.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
