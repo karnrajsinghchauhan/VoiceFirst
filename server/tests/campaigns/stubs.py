@@ -10,7 +10,7 @@ from app.contracts.generated.booking_event import BookingEvent
 from app.contracts.generated.call_outcome import CallOutcome
 from app.core.clock import Clock
 from app.core.errors import FallbackCapError
-from app.telephony.dial import CallHandle
+from app.telephony.handle import CallHandle
 
 OutcomeName = Literal["link_sent", "details_confirmed", "no_answer", "handed_off"]
 

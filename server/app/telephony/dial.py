@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 
@@ -14,13 +12,7 @@ from app.core.clock import Clock
 from app.core.errors import ClearanceInvalidError, KillSwitchEngagedError
 from app.core.ids import new_id, phone_hash
 from app.providers.base import TelephonyProvider
-
-
-@dataclass(frozen=True)
-class CallHandle:
-    call_id: str
-    provider_call_id: str
-    clearance: GateClearance
+from app.telephony.handle import CallHandle
 
 
 def dial(

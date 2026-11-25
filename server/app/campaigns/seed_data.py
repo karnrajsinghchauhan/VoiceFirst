@@ -21,9 +21,6 @@ from app.contracts.generated.booking_event import BookingEvent
 from app.core.config import Settings
 from app.core.ids import phone_hash
 
-J1_CLI = "+911600200001"
-J2_CLI = "+911601200001"
-
 # (city, state, tier, property names)
 _CITIES: tuple[tuple[str, str, int, tuple[str, ...]], ...] = (
     ("Varanasi", "Uttar Pradesh", 2, ("Ganga View Homestay", "Assi Ghat Residency")),
@@ -174,7 +171,11 @@ def _event_payload(
 def seed_registry(session: Session, settings: Settings, plan: SeedPlan) -> None:
     """CLI rows, a transaction-basis consent per booking and purpose, and DND numbers."""
     declared = datetime(2026, 10, 1, tzinfo=UTC)
-    for cli, series, purpose in ((J1_CLI, "1600", "transactional"), (J2_CLI, "1601", "service")):
+    clis = settings.compliance.cli_by_purpose
+    for cli, series, purpose in (
+        (clis["J1"], "1600", "transactional"),
+        (clis["J2"], "1601", "service"),
+    ):
         session.merge(
             CliRow(
                 cli_e164=cli,

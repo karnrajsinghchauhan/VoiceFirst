@@ -33,7 +33,7 @@
         }
       }
     },
-    "outcome": {"type": "string", "enum": ["link_sent", "details_confirmed", "callback_scheduled", "handed_off", "opted_out", "wrong_person", "minor_on_line", "no_answer", "voicemail", "abandoned", "error"]},
+    "outcome": {"type": "string", "enum": ["link_sent", "details_confirmed", "callback_scheduled", "handed_off", "opted_out", "wrong_person", "minor_on_line", "no_answer", "voicemail", "declined", "abandoned", "error"]},
     "handoff": {
       "oneOf": [
         {"type": "null"},

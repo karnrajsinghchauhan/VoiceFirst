@@ -66,6 +66,7 @@ Outcome = Literal[
     "minor_on_line",
     "no_answer",
     "voicemail",
+    "declined",
     "abandoned",
     "error",
 ]
@@ -548,8 +549,8 @@ class Conversation:
             self.asks.append(("payment_link", True))
             return _Step(
                 ("j1_declined", "close"),
-                (ToolCall("end_call", {"outcome": "abandoned"}),),
-                end="abandoned",
+                (ToolCall("end_call", {"outcome": "declined"}),),
+                end="declined",
             )
         if sig.clarify:
             return _Step(("identity_check",))
@@ -565,7 +566,7 @@ class Conversation:
             if sig.no:
                 self.asks.append(("confirm_details", True))
                 return _Step(
-                    ("close",), (ToolCall("end_call", {"outcome": "abandoned"}),), end="abandoned"
+                    ("close",), (ToolCall("end_call", {"outcome": "declined"}),), end="declined"
                 )
         elif self.stage == "confirm_stay":
             if sig.yes:

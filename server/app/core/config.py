@@ -38,6 +38,10 @@ class CallWindow(BaseModel):
         return self
 
 
+def _default_clis() -> dict[Literal["J1", "J2"], str]:
+    return {"J1": "+911600200001", "J2": "+911601200001"}
+
+
 class ComplianceSettings(BaseModel):
     # [CD] which series applies to Agoda's sender category.
     service_series: frozenset[Literal["1600", "1601"]] = frozenset({"1600", "1601"})
@@ -54,6 +58,8 @@ class ComplianceSettings(BaseModel):
     # [CD] counsel sign-off reference that lets J1 dial a DND number on a transaction basis.
     dnd_j1_transaction_signoff_ref: str | None = None
     enabled_country_codes: frozenset[str] = frozenset({"+91"})
+    # [CD] the DLT-declared CLI each journey dials from. Placeholders until registration.
+    cli_by_purpose: dict[Literal["J1", "J2"], str] = Field(default_factory=_default_clis)
     clearance_ttl_seconds: int = Field(default=60, ge=1, le=60)
 
 

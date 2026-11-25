@@ -47,7 +47,8 @@ from app.core.errors import (
 )
 from app.core.ids import new_id
 from app.providers.base import TelephonyProvider
-from app.telephony.dial import CallHandle, dial
+from app.telephony.dial import dial
+from app.telephony.handle import CallHandle
 
 Purpose = Literal["J1", "J2"]
 

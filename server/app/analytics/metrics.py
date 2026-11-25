@@ -27,6 +27,7 @@ REACHED = frozenset(
         "handed_off",
         "opted_out",
         "minor_on_line",
+        "declined",
         "abandoned",
         "error",
     }

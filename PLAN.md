@@ -18,3 +18,5 @@ Milestones from the build brief section 14. Status is tracked in STATUS.md.
 | M11 | Load 200, chaos, scans, threat model, tabletop scripts | W-C |
 
 Order: contracts and core on main first; then workstreams; merge A-F; `make check` after each merge.
+
+All milestones merged on main; see STATUS.md for state and evidence.
