@@ -1,0 +1,10 @@
+# Private deployment
+
+Build, operate, transfer: ProsperOps operates the service first, and the same Helm chart (`deploy/helm/agoda-voice`) then installs on the client's Kubernetes.
+
+- No cloud-vendor dependencies in the chart: Postgres, a Kafka-API bus, LiveKit and the application images.
+- Provider regions are validated at boot against an allowlist; India is the default. Every out-of-India processor is listed in `docs/subprocessors.md`.
+- Sizing comes from measured CPU and memory per session in load tests.
+- Every model and voice has a row in the licence table (`docs/licences.md`).
+
+`docker-compose` in `deploy/` runs the same services locally.

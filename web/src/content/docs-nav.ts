@@ -1,0 +1,20 @@
+// Single owner of the docs table of contents; the sidebar and the tests both read it.
+export const DOCS: readonly { slug: string; title: string }[] = [
+  { slug: "", title: "Overview" },
+  { slug: "quickstart", title: "Quickstart" },
+  { slug: "architecture", title: "Architecture" },
+  { slug: "contracts", title: "Contracts and API" },
+  { slug: "kafka", title: "Kafka topics" },
+  { slug: "providers", title: "Providers" },
+  { slug: "compliance", title: "Compliance" },
+  { slug: "guardrails", title: "Guardrails" },
+  { slug: "holdout", title: "Holdout method" },
+  { slug: "tester", title: "The tester" },
+  { slug: "console", title: "Console" },
+  { slug: "crm", title: "CRM" },
+  { slug: "handoff", title: "Handoff and CCaaS" },
+  { slug: "private-deployment", title: "Private deployment" },
+  { slug: "security", title: "Security" },
+  { slug: "runbooks", title: "Runbooks" },
+  { slug: "sources", title: "Sources" },
+];

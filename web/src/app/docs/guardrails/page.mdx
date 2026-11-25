@@ -1,0 +1,12 @@
+# Guardrails
+
+Guardrails run outside the model, before and after every turn, so they hold even when the model misbehaves.
+
+- **Tool allowlist.** `get_booking_summary`, `send_payment_link`, `confirm_details`, `record_special_request`, `log_case`, `schedule_callback`, `warm_transfer`, `mark_dnc`, `end_call`. Anything else raises `ToolNotAllowedError`.
+- **Payment credentials.** A detector on speech-to-text output finds card numbers (Luhn), OTPs and CVVs, including digits spoken as Hindi or English words, and redacts them before the model or storage sees them. The agent interrupts: "Ruk jaiye ji, card ya OTP kabhi phone par mat bataiye."
+- **Handoff triggers.** Requests for a human ("insaan se baat", "manager"), disputes, legal, chargeback, fraud, police, consumer court, two turns with anger at or above 0.7, VIP, two failed attempts at a step, medical emergency, death or safety.
+- **Opt-out.** "Don't call", "call mat karo", "band karo".
+- **Consent.** Only explicit consent counts ("haan", "bhej do"); backchannels such as "hmm" or "achha" are not consent.
+- **Read-back.** Amounts and dates are normalised in the customer's language and must equal the booking record: 4,250 INR is read as "chaar hazaar do sau pachaas rupaye".
+- **Dark patterns.** A lexicon and regex pass and a rubric judge covering all 13 CCPA patterns run on every utterance and template; any hit fails the build.
+- **Identity.** At most the last four characters of a booking ID are spoken; never an email or card detail. The agent never claims to be human.

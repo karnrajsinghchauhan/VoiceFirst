@@ -1,0 +1,22 @@
+# Contracts and API
+
+`contracts/schemas/*.json` (JSON Schema 2020-12) is the single source of truth. `make gen` generates pydantic models (`server/app/contracts/generated`) and TypeScript types (`web/src/contracts`); `make check` fails on drift.
+
+Every record carries `schema_version`, `tenant_id` and `trace_id`.
+
+| Record | Purpose |
+|---|---|
+| `booking_event` | booking state change; every field tagged with the purposes allowed to read it (`x-purposes`) |
+| `consent_record` | basis (transaction, explicit, inquiry), channel, expiry, revocation; Consent Manager placeholders |
+| `cli` | declared calling number: series, purpose, OAP, A2P declaration, status |
+| `gate_decision` | immutable per-gate results, written before any dial |
+| `call_outcome` | outcome, tools called (hashed args), handoff, latency, cost in paise, AI provenance |
+| `handoff_summary` | five-line case summary with 48 h and 30-day SLA fields |
+| `complaint` | UCC complaint, including DLT-forwarded app spam reports |
+| `audit_event` | one privileged action |
+
+No contract has a card, CVV, UPI PIN or OTP field.
+
+## HTTP API
+
+Bearer tokens map to roles (admin, ops, auditor, read_only). Endpoints: `/campaigns`, `/calls`, `/consent`, `/cli`, `/handoff`, `/killswitch`, `/metrics` (Prometheus), `/simulate`, `/rights-requests`, `/incidents`. The OpenAPI document lives at `contracts/openapi.yaml`, and conformance is tested with schemathesis.

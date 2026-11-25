@@ -1,0 +1,17 @@
+# Console
+
+`/console` is role-based; the role comes from the bearer token.
+
+| Area | admin | ops | auditor | read-only |
+|---|---|---|---|---|
+| Campaigns | yes | yes | yes | yes |
+| Live calls, outcomes, handoffs | yes | yes | yes | yes |
+| Kill switch | operate | operate | no | no |
+| Audit log | yes | yes | yes | no |
+| Eval report | yes | yes | yes | yes |
+
+The kill switch requires a reason and a confirmation. Engaging it pauses every campaign, drops queued dials within five seconds and ends live calls politely; the action is written to the audit log with actor and reason.
+
+Every call shows its trace id, which also appears in logs and transcripts.
+
+The console client has one interface with two implementations, selected at build time by `NEXT_PUBLIC_AV_API_MODE`: `http` (requires `NEXT_PUBLIC_AV_API`) or `mock`, a deterministic data layer for development and tests. There is no runtime fallback between them. The UI hides actions a role lacks and the client refuses them; the server enforces the same rules.

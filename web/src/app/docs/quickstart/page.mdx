@@ -1,0 +1,26 @@
+# Quickstart
+
+Requirements: Python 3.12 with `uv`, Node 22, Postgres 16, Docker (for Redpanda and LiveKit in `make up`).
+
+```bash
+cd server && uv sync --extra voice
+cd web && npm install
+make up      # Postgres, Redpanda, LiveKit dev server
+make check   # ruff, mypy --strict, pytest, tsc, eslint, contract drift
+make demo    # text-mode J1 call against mock providers
+make eval    # personas x seeds; writes reports/<ts>/index.html
+```
+
+All providers default to `mock`: deterministic, seeded test doubles. Production configuration refuses to boot with any mock provider, the memory bus, SQLite or dev tokens.
+
+## Configuration
+
+Every setting is an `AV_*` environment variable, nested with `__`, for example `AV_COMPLIANCE__CALL_WINDOW__END=20:00`. Items still to be confirmed with the client are configuration with safe defaults, never hard-coded truths; see `docs/discovery-questions.md`.
+
+## Console
+
+```bash
+cd web && npm run build && npm start
+```
+
+Unless built with `NEXT_PUBLIC_AV_API_MODE=http`, the console uses its mock data layer. Sign in with `dev-ops-token`, `dev-admin-token`, `dev-auditor-token` or `dev-ro-token`.
