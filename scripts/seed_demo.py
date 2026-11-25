@@ -46,7 +46,7 @@ def main() -> None:
     args = parser.parse_args()
 
     settings = get_settings()
-    engine = make_engine(settings.database_url)
+    engine = make_engine(settings.database_url, settings.tenant_id)
     create_all(engine)
     factory = make_session_factory(engine)
     clock = FrozenClock(datetime(2026, 11, 23, 6, 30, tzinfo=UTC))

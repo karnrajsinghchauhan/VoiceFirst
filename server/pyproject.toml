@@ -20,6 +20,7 @@ dependencies = [
   "numpy",
   "jinja2",
   "cryptography",
+  "pyjwt[crypto]",
 ]
 
 [project.optional-dependencies]

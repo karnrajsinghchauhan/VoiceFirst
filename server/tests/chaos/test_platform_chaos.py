@@ -86,7 +86,9 @@ def test_postgres_down_raises_and_dials_nothing(settings, clock, bus):
     from app.providers.telephony.mock import MockTelephony
 
     dead = make_session_factory(
-        make_engine("postgresql+psycopg://postgres:postgres@127.0.0.1:1/none?connect_timeout=1")
+        make_engine(
+            "postgresql+psycopg://postgres:postgres@127.0.0.1:1/none?connect_timeout=1", "agoda-in"
+        )
     )
     event = make_event(settings)
     tel = MockTelephony()

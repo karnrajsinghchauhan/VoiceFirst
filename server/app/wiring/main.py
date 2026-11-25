@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from fastapi import FastAPI
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.admin.oidc import OidcVerifier, fetch_jwks
 from app.api.app import create_app
 from app.api.deps import ApiDeps, make_metrics
 from app.campaigns.dispatcher import Dispatcher
@@ -16,7 +17,7 @@ from app.contracts.generated.booking_event import BookingEvent
 from app.core.bus import EventBus, make_bus
 from app.core.clock import Clock, SystemClock
 from app.core.config import Settings, get_settings
-from app.core.db import make_engine, make_session_factory
+from app.core.db import assert_not_superuser, make_engine, make_session_factory
 from app.core.errors import NotBuiltYetError
 from app.core.logging import configure_logging
 from app.handoff.transfer import HumanQueue, InMemoryHumanQueue
@@ -63,11 +64,19 @@ def _listener_factory(settings: Settings) -> ListenerFactory:
     return make
 
 
+def _oidc(settings: Settings) -> OidcVerifier | None:
+    if settings.oidc is None:
+        return None
+    return OidcVerifier(settings.oidc, fetch_jwks(settings.oidc.jwks_url))
+
+
 def build_runtime(settings: Settings) -> Runtime:
     postcall = PostcallSettings()
     if settings.environment == "production":
         validate_postcall_for_production(postcall)
-    engine = make_engine(settings.database_url)
+    engine = make_engine(settings.database_url, settings.tenant_id)
+    if settings.environment == "production":
+        assert_not_superuser(engine)
     return Runtime(
         settings=settings,
         session_factory=make_session_factory(engine),
@@ -94,6 +103,7 @@ def build_api(rt: Runtime) -> FastAPI:
             human_queue=rt.human_queue,
             crm=rt.providers.crm,
             metrics=make_metrics(),
+            oidc=_oidc(rt.settings),
         )
     )
 

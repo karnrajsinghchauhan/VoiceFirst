@@ -113,6 +113,7 @@ class LiveToolBackend:
         with transaction(self._factory) as s:
             row = CallbackRow(
                 callback_id=new_id("cb"),
+                tenant_id=self._settings.tenant_id,
                 call_id=call_id,
                 queue="booker_callback",
                 requested_at=now,
