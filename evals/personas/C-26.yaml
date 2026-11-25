@@ -17,3 +17,5 @@ expect:
   - warm_transfer
   handoff: false
 preferred_language: hinglish
+# Answers the opening from its own script (not a plain booker yes).
+confirms_identity: false

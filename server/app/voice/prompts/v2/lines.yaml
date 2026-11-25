@@ -1,0 +1,216 @@
+# Every sentence the agent may speak, per act and language (hinglish, hi, en).
+# Voice: female (settings.voice_gender). REQ-AI-02 lint checks verb gender.
+# Placeholders: {first_name} {city} {property_name} {check_in_date} {check_out_date}
+# {guests} {amount} {due_date} {booking_tail}
+# v2: identity-first opening (brief v3 S1); the purpose lines carry the brief 10.2/10.3 content after confirmation.
+
+opening:
+  # S1 (brief v3): disclosure, then identity. Nothing about the booking until the person confirms.
+  hinglish: "Namaste ji, main Agoda ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main {first_name} ji se baat kar rahi hoon?"
+  hi: "नमस्ते जी, मैं Agoda की तरफ़ से एक AI असिस्टेंट बोल रही हूँ, और यह कॉल रिकॉर्ड हो रही है। क्या मैं {first_name} जी से बात कर रही हूँ?"
+  en: "Hello, this is an AI assistant calling on behalf of Agoda, and this call is recorded. Am I speaking with {first_name}?"
+
+j1_purpose:
+  hinglish: "Dhanyavaad ji. Aapki {city} wali booking ka payment pending hai — kya main aapko WhatsApp par payment link bhej doon?"
+  hi: "धन्यवाद जी। आपकी {city} वाली बुकिंग का पेमेंट अभी बाकी है — क्या मैं आपको WhatsApp पर पेमेंट लिंक भेज दूँ?"
+  en: "Thank you. The payment for your {city} booking is still pending. Shall I send a payment link to your WhatsApp?"
+
+j2_purpose:
+  hinglish: "Dhanyavaad ji. Aapka {check_in_date} ko {property_name} mein check-in hai — bas do minute mein details confirm kar loon?"
+  hi: "धन्यवाद जी। आपका {check_in_date} को {property_name} में चेक-इन है — बस दो मिनट में डिटेल्स कन्फ़र्म कर लूँ?"
+  en: "Thank you. Your check-in at {property_name} is on {check_in_date}. May I take two minutes to confirm the details?"
+
+identity_check:
+  hinglish: "Kya main {first_name} ji se baat kar rahi hoon?"
+  hi: "क्या मैं {first_name} जी से बात कर रही हूँ?"
+  en: "Am I speaking with {first_name}?"
+
+j1_reask:
+  hinglish: "Maaf kijiye ji, main theek se samajh nahi paayi. Kya main aapko WhatsApp par payment link bhej doon? Haan ya nahi bataiye."
+  hi: "माफ़ कीजिए जी, मैं ठीक से समझ नहीं पाई। क्या मैं आपको WhatsApp पर पेमेंट लिंक भेज दूँ? हाँ या नहीं बताइए।"
+  en: "Sorry, I did not quite catch that. Shall I send the payment link to your WhatsApp? Please say yes or no."
+
+j1_ask:
+  hinglish: "Kya main aapko WhatsApp par payment link bhej doon?"
+  hi: "क्या मैं आपको WhatsApp पर पेमेंट लिंक भेज दूँ?"
+  en: "Shall I send the payment link to your WhatsApp?"
+
+j2_resume:
+  hinglish: "Kya main do minute mein aapki booking details confirm kar loon?"
+  hi: "क्या मैं दो मिनट में आपकी बुकिंग डिटेल्स कन्फ़र्म कर लूँ?"
+  en: "May I take two minutes to confirm your booking details?"
+
+j1_link_sent:
+  hinglish: "Theek hai ji, link WhatsApp par bhej diya hai. Kul {amount} ka payment {due_date} tak aap link se khud surakshit page par kar sakte hain."
+  hi: "ठीक है जी, लिंक WhatsApp पर भेज दिया है। कुल {amount} का पेमेंट {due_date} तक आप लिंक से खुद सुरक्षित पेज पर कर सकते हैं।"
+  en: "Done, the link is on your WhatsApp. The total of {amount} can be paid on the secure page through that link by {due_date}."
+
+j1_link_sent_nodue:
+  hinglish: "Theek hai ji, link WhatsApp par bhej diya hai. Kul {amount} ka payment aap link se khud surakshit page par kar sakte hain."
+  hi: "ठीक है जी, लिंक WhatsApp पर भेज दिया है। कुल {amount} का पेमेंट आप लिंक से खुद सुरक्षित पेज पर कर सकते हैं।"
+  en: "Done, the link is on your WhatsApp. The total of {amount} can be paid on the secure page through that link."
+
+j1_no_whatsapp:
+  hinglish: "Aapke number par WhatsApp updates ki anumati nahi hai, isliye main link nahi bhej sakti. Aap Agoda app mein jaakar payment kar sakte hain."
+  hi: "आपके नंबर पर WhatsApp अपडेट्स की अनुमति नहीं है, इसलिए मैं लिंक नहीं भेज सकती। आप Agoda ऐप में जाकर पेमेंट कर सकते हैं।"
+  en: "Your number has not opted in to WhatsApp updates, so I cannot send the link. You can pay in the Agoda app."
+
+j1_declined:
+  hinglish: "Koi baat nahi ji. Aap chahein to Agoda app mein bhi payment kar sakte hain."
+  hi: "कोई बात नहीं जी। आप चाहें तो Agoda ऐप में भी पेमेंट कर सकते हैं।"
+  en: "No problem. You can also pay in the Agoda app whenever you like."
+
+bnpl_explain:
+  hinglish: "Aapki booking Book Now, Pay Later wali hai, yaani payment {due_date} tak India mein jaari card ya account se karna hai. Kya main link bhej doon?"
+  hi: "आपकी बुकिंग Book Now, Pay Later वाली है, यानी पेमेंट {due_date} तक भारत में जारी कार्ड या अकाउंट से करना है। क्या मैं लिंक भेज दूँ?"
+  en: "Your booking is Book Now, Pay Later, so the payment is due by {due_date} with an India-issued card or account. Shall I send the link?"
+
+j2_confirm_stay:
+  hinglish: "Aapki booking {check_in_date} se {check_out_date} tak, {guests} mehmaanon ke liye hai — kya yeh sahi hai?"
+  hi: "आपकी बुकिंग {check_in_date} से {check_out_date} तक, {guests} मेहमानों के लिए है — क्या यह सही है?"
+  en: "Your booking is from {check_in_date} to {check_out_date} for {guests} guests. Is that right?"
+
+j2_reask_stay:
+  hinglish: "Maaf kijiye ji, main samajh nahi paayi. Kya booking {check_in_date} se {check_out_date} tak, {guests} mehmaanon ke liye sahi hai? Haan ya nahi bataiye."
+  hi: "माफ़ कीजिए जी, मैं समझ नहीं पाई। क्या बुकिंग {check_in_date} से {check_out_date} तक, {guests} मेहमानों के लिए सही है? हाँ या नहीं बताइए।"
+  en: "Sorry, I did not catch that. Is the booking from {check_in_date} to {check_out_date} for {guests} guests correct? Please say yes or no."
+
+j2_ask_arrival:
+  hinglish: "Aap lagbhag kitne baje pahunchenge, taaki property ko bata sakein?"
+  hi: "आप लगभग कितने बजे पहुँचेंगे, ताकि प्रॉपर्टी को बता सकें?"
+  en: "Roughly what time will you arrive, so we can let the property know?"
+
+j2_ask_request:
+  hinglish: "Koi khaas request hai, jaise early check-in ya extra bed?"
+  hi: "कोई खास रिक्वेस्ट है, जैसे जल्दी चेक-इन या एक्स्ट्रा बेड?"
+  en: "Any special request, such as early check-in or an extra bed?"
+
+j2_request_noted:
+  hinglish: "Theek hai ji, maine aapki request property ke liye note kar li hai. Request property ki uplabdhta par nirbhar hai."
+  hi: "ठीक है जी, मैंने आपकी रिक्वेस्ट प्रॉपर्टी के लिए नोट कर ली है। रिक्वेस्ट प्रॉपर्टी की उपलब्धता पर निर्भर है।"
+  en: "Noted, I have passed your request to the property. Requests depend on the property's availability."
+
+j2_mismatch:
+  hinglish: "Samajh gayi ji. Booking badalne ke liye main aapko hamari team se jod rahi hoon — unhe poori baat bata di hai."
+  hi: "समझ गई जी। बुकिंग बदलने के लिए मैं आपको हमारी टीम से जोड़ रही हूँ — उन्हें पूरी बात बता दी है।"
+  en: "Understood. I am connecting you to our team to change the booking; they have the full details."
+
+close:
+  hinglish: "Dhanyavaad ji, aapka din shubh ho."
+  hi: "धन्यवाद जी, आपका दिन शुभ हो।"
+  en: "Thank you, have a good day."
+
+refund_cancel:
+  hinglish: "Yeh main khud nahi kar sakti, lekin abhi aapko hamare team se jod rahi hoon — unhe poori baat bata di hai."
+  hi: "यह मैं खुद नहीं कर सकती, लेकिन अभी आपको हमारी टीम से जोड़ रही हूँ — उन्हें पूरी बात बता दी है।"
+  en: "I cannot do that myself, but I am connecting you to our team right now; they have the full details."
+
+handoff:
+  hinglish: "Main aapko abhi hamare team ke saathi se jod rahi hoon — unhe poori baat bata di hai."
+  hi: "मैं आपको अभी हमारी टीम के साथी से जोड़ रही हूँ — उन्हें पूरी बात बता दी है।"
+  en: "I am connecting you to a colleague from our team now; they have the full details."
+
+emergency:
+  hinglish: "Main samajh sakti hoon ji. Aapko turant hamare team ke saathi se jod rahi hoon."
+  hi: "मैं समझ सकती हूँ जी। आपको तुरंत हमारी टीम के साथी से जोड़ रही हूँ।"
+  en: "I understand. I am connecting you to a colleague from our team immediately."
+
+vip:
+  hinglish: "Aapke liye main hamari dedicated team ke saathi ko jod rahi hoon — unhe poori baat bata di hai."
+  hi: "आपके लिए मैं हमारी डेडिकेटेड टीम के साथी को जोड़ रही हूँ — उन्हें पूरी बात बता दी है।"
+  en: "I am connecting you to a colleague from our dedicated team; they have the full details."
+
+no_human:
+  hinglish: "Maaf kijiye ji, abhi koi saathi uplabdh nahi hai. Main aapke liye callback schedule kar rahi hoon, hamari team aapko call karegi."
+  hi: "माफ़ कीजिए जी, अभी कोई साथी उपलब्ध नहीं है। मैं आपके लिए कॉलबैक शेड्यूल कर रही हूँ, हमारी टीम आपको कॉल करेगी।"
+  en: "I am sorry, no colleague is available right now. I am scheduling a callback and our team will call you."
+
+opt_out:
+  hinglish: "Bilkul ji, aapka number hata diya hai, ab aapko aisi call nahi aayegi. Dhanyavaad."
+  hi: "बिल्कुल जी, आपका नंबर हटा दिया है, अब आपको ऐसी कॉल नहीं आएगी। धन्यवाद।"
+  en: "Of course, your number has been removed and you will not get calls like this again. Thank you."
+
+wrong_person:
+  hinglish: "Maaf kijiye, galat number lag gaya. Aapka din shubh ho."
+  hi: "माफ़ कीजिए, गलत नंबर लग गया। आपका दिन शुभ हो।"
+  en: "Sorry, I have the wrong number. Have a good day."
+
+third_party:
+  hinglish: "Koi baat nahi ji. {first_name} ji se baat karne ke liye kab call karna theek rahega?"
+  hi: "कोई बात नहीं जी। {first_name} जी से बात करने के लिए कब कॉल करना ठीक रहेगा?"
+  en: "No problem. When would be a good time to call {first_name}?"
+
+third_party_close:
+  hinglish: "Dhanyavaad ji, hum tab dobara call karenge."
+  hi: "धन्यवाद जी, हम तब दोबारा कॉल करेंगे।"
+  en: "Thank you, we will call back then."
+
+minor_ask_booker:
+  hinglish: "Beta, kya aap ghar ke kisi bade ko phone de sakte hain, jinke naam par booking hai?"
+  hi: "बेटा, क्या आप घर के किसी बड़े को फ़ोन दे सकते हैं, जिनके नाम पर बुकिंग है?"
+  en: "Could you please hand the phone to the adult who made the booking?"
+
+minor_end:
+  hinglish: "Koi baat nahi beta, hum baad mein call kar lenge. Dhanyavaad."
+  hi: "कोई बात नहीं बेटा, हम बाद में कॉल कर लेंगे। धन्यवाद।"
+  en: "That is fine, we will call another time. Thank you."
+
+credential_warning:
+  hinglish: "Ruk jaiye ji — card ya OTP kabhi phone par mat bataiye. Main sirf link bhejti hoon, payment aap khud surakshit page par karenge."
+  hi: "रुक जाइए जी — कार्ड या OTP कभी फ़ोन पर मत बताइए। मैं सिर्फ़ लिंक भेजती हूँ, पेमेंट आप खुद सुरक्षित पेज पर करेंगे।"
+  en: "Please stop there — never share card details or an OTP on a call. I only send a link; you pay yourself on the secure page."
+
+introduce:
+  hinglish: "Main Agoda ki taraf se AI assistant bol rahi hoon."
+  hi: "मैं Agoda की तरफ़ से AI असिस्टेंट बोल रही हूँ।"
+  en: "I am an AI assistant calling on behalf of Agoda."
+
+bot_answer:
+  hinglish: "Ji haan, main AI assistant hoon. Aap chahein to main aapko insaan se jod sakti hoon."
+  hi: "जी हाँ, मैं AI असिस्टेंट हूँ। आप चाहें तो मैं आपको इंसान से जोड़ सकती हूँ।"
+  en: "Yes, I am an AI assistant. If you prefer, I can connect you to a person."
+
+injection_once:
+  hinglish: "Main sirf aapki booking mein madad kar sakti hoon, aur keemat ya chhoot badal nahi sakti."
+  hi: "मैं सिर्फ़ आपकी बुकिंग में मदद कर सकती हूँ, और कीमत या छूट बदल नहीं सकती।"
+  en: "I can only help with your booking, and I cannot change prices or discounts."
+
+filler:
+  hinglish: "Ek second ji, dekh rahi hoon."
+  hi: "एक सेकंड जी, देख रही हूँ।"
+  en: "One second, I am checking."
+
+addon_app_link:
+  hinglish: "Ji, add-ons ki jaankari Agoda app mein hai. Maine app ka link WhatsApp par bhej diya hai."
+  hi: "जी, ऐड-ऑन की जानकारी Agoda ऐप में है। मैंने ऐप का लिंक WhatsApp पर भेज दिया है।"
+  en: "Information on add-ons is in the Agoda app. I have sent the app link to your WhatsApp."
+
+addon_no_whatsapp:
+  hinglish: "Ji, add-ons ki jaankari aapko Agoda app mein mil jayegi."
+  hi: "जी, ऐड-ऑन की जानकारी आपको Agoda ऐप में मिल जाएगी।"
+  en: "You will find information on add-ons in the Agoda app."
+
+unknown_question:
+  hinglish: "Yeh jaankari meri booking details mein nahi hai. Aap Agoda app mein property se seedhe pooch sakte hain."
+  hi: "यह जानकारी मेरी बुकिंग डिटेल्स में नहीं है। आप Agoda ऐप में प्रॉपर्टी से सीधे पूछ सकते हैं।"
+  en: "That information is not in the booking details I have. You can ask the property directly in the Agoda app."
+
+line_unclear:
+  hinglish: "Maaf kijiye ji, awaaz saaf nahi aayi. Kya aap dobara bol sakte hain?"
+  hi: "माफ़ कीजिए जी, आवाज़ साफ़ नहीं आई। क्या आप दोबारा बोल सकते हैं?"
+  en: "Sorry, the line was not clear. Could you say that again?"
+
+reprompt_silence:
+  hinglish: "Hello ji, kya aap meri awaaz sun pa rahe hain?"
+  hi: "हैलो जी, क्या आप मेरी आवाज़ सुन पा रहे हैं?"
+  en: "Hello, can you hear me?"
+
+error_apology:
+  hinglish: "Maaf kijiye ji, technical dikkat aa gayi hai. Hamari team ka saathi aapko call karega. Dhanyavaad."
+  hi: "माफ़ कीजिए जी, तकनीकी दिक्कत आ गई है। हमारी टीम का साथी आपको कॉल करेगा। धन्यवाद।"
+  en: "I am sorry, we have a technical problem. A colleague from our team will call you. Thank you."
+
+kill_close:
+  hinglish: "Maaf kijiye ji, humein yeh call abhi yahin rokni hogi. Dhanyavaad, aapka din shubh ho."
+  hi: "माफ़ कीजिए जी, हमें यह कॉल अभी यहीं रोकनी होगी। धन्यवाद, आपका दिन शुभ हो।"
+  en: "I am sorry, we have to end this call now. Thank you, and have a good day."
