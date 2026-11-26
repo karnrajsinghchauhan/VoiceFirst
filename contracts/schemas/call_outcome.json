@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "call_outcome.json",
+  "title": "CallOutcome",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tenant_id", "trace_id", "call_id", "clearance_id", "booking_id", "purpose", "cli", "started_at", "answered", "amd_result", "language_detected", "disclosure_played_at", "turns", "tools_called", "outcome", "handoff", "latency_ms", "cost", "redaction_applied", "sensitive_data_spoken", "grievance_channel", "ai_generated", "model_ids", "provenance_hash"],
+  "properties": {
+    "schema_version": {"$ref": "common.json#/$defs/SchemaVersion"},
+    "tenant_id": {"$ref": "common.json#/$defs/TenantId"},
+    "trace_id": {"$ref": "common.json#/$defs/TraceId"},
+    "call_id": {"type": "string", "minLength": 1},
+    "clearance_id": {"type": "string", "minLength": 1},
+    "booking_id": {"type": "string", "minLength": 4},
+    "purpose": {"$ref": "common.json#/$defs/Purpose"},
+    "cli": {"$ref": "common.json#/$defs/PhoneE164"},
+    "started_at": {"type": "string", "format": "date-time"},
+    "answered": {"type": "boolean"},
+    "amd_result": {"type": "string", "enum": ["human", "machine-ivr", "machine-vm", "machine-unavailable", "uncertain", "not_run"]},
+    "language_detected": {"$ref": "common.json#/$defs/Language"},
+    "disclosure_played_at": {"type": ["string", "null"], "format": "date-time"},
+    "turns": {"type": "integer", "minimum": 0},
+    "tools_called": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "args_hash", "result_code"],
+        "properties": {
+          "name": {"type": "string", "enum": ["get_booking_summary", "send_payment_link", "confirm_details", "record_special_request", "log_case", "schedule_callback", "warm_transfer", "mark_dnc", "end_call", "send_app_link"]},
+          "args_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "result_code": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "outcome": {"type": "string", "enum": ["link_sent", "details_confirmed", "callback_scheduled", "handed_off", "opted_out", "wrong_person", "minor_on_line", "no_answer", "voicemail", "abandoned", "error"]},
+    "handoff": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reason", "summary", "queue"],
+          "properties": {
+            "reason": {"type": "string", "minLength": 1},
+            "summary": {"type": "string", "minLength": 1},
+            "queue": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "latency_ms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["p50", "p95"],
+      "properties": {"p50": {"type": "integer", "minimum": 0}, "p95": {"type": "integer", "minimum": 0}}
+    },
+    "cost": {
+      "type": "object",
+      "description": "Minor units (paise).",
+      "additionalProperties": false,
+      "required": ["telephony", "stt", "tts", "llm", "whatsapp"],
+      "properties": {
+        "telephony": {"type": "integer", "minimum": 0},
+        "stt": {"type": "integer", "minimum": 0},
+        "tts": {"type": "integer", "minimum": 0},
+        "llm": {"type": "integer", "minimum": 0},
+        "whatsapp": {"type": "integer", "minimum": 0}
+      }
+    },
+    "redaction_applied": {"type": "boolean"},
+    "sensitive_data_spoken": {"type": "boolean"},
+    "grievance_channel": {"type": "string", "minLength": 1, "description": "REQ-CP-03."},
+    "ai_generated": {"type": "boolean", "const": true, "description": "REQ-AI-01."},
+    "model_ids": {"type": "object", "additionalProperties": {"type": "string"}},
+    "provenance_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "consent_record.json",
+  "title": "ConsentRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tenant_id", "trace_id", "consent_id", "phone_e164", "basis", "purpose", "channel", "obtained_at", "expires_at", "revoked_at", "source_ref", "consent_manager_id", "artefact_ref", "evidence_uri"],
+  "properties": {
+    "schema_version": {"$ref": "common.json#/$defs/SchemaVersion"},
+    "tenant_id": {"$ref": "common.json#/$defs/TenantId"},
+    "trace_id": {"$ref": "common.json#/$defs/TraceId"},
+    "consent_id": {"type": "string", "minLength": 1},
+    "phone_e164": {"$ref": "common.json#/$defs/PhoneE164"},
+    "basis": {"type": "string", "enum": ["transaction", "explicit", "inquiry"]},
+    "purpose": {"$ref": "common.json#/$defs/Purpose"},
+    "channel": {"type": "string", "enum": ["voice", "whatsapp", "sms", "web", "dca"]},
+    "obtained_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": ["string", "null"], "format": "date-time", "description": "Null only for basis=transaction, which lasts while the booking is live."},
+    "revoked_at": {"type": ["string", "null"], "format": "date-time"},
+    "source_ref": {"type": "string", "minLength": 1},
+    "consent_manager_id": {"type": ["string", "null"], "description": "REQ-DPDP-08: placeholder for a DPDP Consent Manager."},
+    "artefact_ref": {"type": ["string", "null"]},
+    "evidence_uri": {"type": ["string", "null"]}
+  }
+}

@@ -1,0 +1,84 @@
+[project]
+name = "agoda-voice"
+version = "0.1.0"
+description = "Hindi, English and Hinglish compliant outbound service calling. An independent ProsperOps product; not affiliated with or endorsed by Agoda."
+requires-python = "==3.12.*"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "pydantic-settings",
+  "sqlalchemy",
+  "alembic",
+  "psycopg[binary]",
+  "confluent-kafka",
+  "httpx",
+  "prometheus-client",
+  "opentelemetry-api",
+  "opentelemetry-sdk",
+  "pyyaml",
+  "numpy",
+  "jinja2",
+  "cryptography",
+]
+
+[project.optional-dependencies]
+voice = ["livekit-agents[turn-detector]==1.8.13"]
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "pytest-asyncio",
+  "hypothesis",
+  "mypy",
+  "ruff",
+  "import-linter",
+  "datamodel-code-generator",
+  "types-pyyaml",
+  "schemathesis",
+]
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["app/contracts/generated"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "S", "RUF", "PL", "SIM"]
+ignore = ["E501", "S101", "PLR2004", "PLR0913", "RUF001", "RUF002", "RUF003", "S311", "PLR0911", "PLR0912"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+exclude = ["app/contracts/generated/"]
+
+[[tool.mypy.overrides]]
+module = ["confluent_kafka.*", "schemathesis.*", "importlinter.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = ["ignore::DeprecationWarning:schemathesis.*"]
+
+[tool.importlinter]
+root_package = "app"
+
+[[tool.importlinter.contracts]]
+name = "Only the dispatcher may import telephony.dial"
+type = "forbidden"
+source_modules = [
+  "app.voice", "app.messaging", "app.handoff", "app.postcall", "app.crm",
+  "app.analytics", "app.incidents", "app.rights", "app.admin", "app.simulator",
+  "app.compliance", "app.providers", "app.core", "app.api",
+]
+forbidden_modules = ["app.telephony.dial"]

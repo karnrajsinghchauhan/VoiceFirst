@@ -30,7 +30,7 @@ Format: ID, date, decision, why, what would change it.
 - Would change it: nothing; this is the standard provider pattern.
 
 ## D-004 (2026-11-23) LiveKit pinned at 1.8.x, voice path not exercised
-- Decision: pin `livekit-agents` to the 1.8 line in `pyproject` optional
+- Decision: pin `livekit-agents==1.8.13` (latest 1.8.x on PyPI 2026-11-23; 2.0.0b2 is beta) in `pyproject` optional
   extra `voice`. The text-mode agent (M3) is independent of LiveKit; the
   LiveKit worker adapter is a thin module that is only imported in the voice
   extra.

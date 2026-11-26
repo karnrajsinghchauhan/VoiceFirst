@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gate_decision.json",
+  "title": "GateDecision",
+  "description": "Immutable; written before any dial, whether or not the call is cleared.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tenant_id", "trace_id", "decision_id", "booking_event_id", "phone_hash", "evaluated_at", "gates", "clearance_id"],
+  "properties": {
+    "schema_version": {"$ref": "common.json#/$defs/SchemaVersion"},
+    "tenant_id": {"$ref": "common.json#/$defs/TenantId"},
+    "trace_id": {"$ref": "common.json#/$defs/TraceId"},
+    "decision_id": {"type": "string", "minLength": 1},
+    "booking_event_id": {"type": "string", "minLength": 1},
+    "phone_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "passed", "reason_code"],
+        "properties": {
+          "name": {"type": "string", "enum": ["holdout", "jurisdiction", "kill_switch", "consent", "dnd", "opt_out_lock", "cli_declared", "series", "cli_status", "window", "cap_cooldown"]},
+          "passed": {"type": "boolean"},
+          "reason_code": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "clearance_id": {"type": ["string", "null"]}
+  }
+}
