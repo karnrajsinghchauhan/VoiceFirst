@@ -53,7 +53,15 @@ def test_transcript_redacted_before_encryption(session, clock):
         TranscriptTurn("agent", "Namaste ji"),
         TranscriptTurn("customer", "mera card 4111 1111 1111 1111 hai aur OTP 4 5 8 2 9 1"),
     ]
-    store_transcript(session, cipher, call_id="c1", phone_hash="ph", at=clock.now(), turns=turns)
+    store_transcript(
+        session,
+        cipher,
+        tenant_id="agoda-in",
+        call_id="c1",
+        phone_hash="ph",
+        at=clock.now(),
+        turns=turns,
+    )
     row = session.get(TranscriptRow, "c1")
     assert b"4111" not in row.ciphertext and b"Namaste" not in row.ciphertext
     back = read_transcript(session, cipher, "c1")
@@ -66,6 +74,7 @@ def test_wrong_key_cannot_read(session, clock):
     store_transcript(
         session,
         DataCipher(DEV_DATA_KEY),
+        tenant_id="agoda-in",
         call_id="c1",
         phone_hash="ph",
         at=clock.now(),

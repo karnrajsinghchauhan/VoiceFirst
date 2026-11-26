@@ -11,6 +11,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from prometheus_client import CollectorRegistry, Counter, Gauge
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.admin import apikeys
+from app.admin.oidc import OidcVerifier
 from app.admin.rbac import Permission, Principal, authorize, resolve_token
 from app.api.ports import CampaignService, IncidentService, Simulator
 from app.core.bus import EventBus
@@ -59,6 +61,7 @@ class ApiDeps:
     human_queue: HumanQueue
     crm: CrmProvider
     metrics: Metrics
+    oidc: OidcVerifier | None
 
 
 def get_deps(request: Request) -> ApiDeps:
@@ -86,7 +89,15 @@ def get_principal(
 ) -> Principal:
     if credentials is None:
         raise AuthError("missing bearer token")
-    return resolve_token(deps.settings.api_tokens, credentials.credentials)
+    token = credentials.credentials
+    if token.startswith(apikeys.PREFIX):
+        with transaction(deps.session_factory) as session:
+            return apikeys.authenticate(session, token, deps.clock.now())
+    if token.count(".") == 2:
+        if deps.oidc is None:
+            raise AuthError("SSO is not configured for this tenant")
+        return deps.oidc.verify(token)
+    return resolve_token(deps.settings.api_tokens, token)
 
 
 def require(permission: Permission) -> Callable[[Principal], Principal]:

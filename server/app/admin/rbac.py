@@ -30,6 +30,7 @@ Permission = Literal[
     "incidents:read",
     "incidents:write",
     "audit:read",
+    "apikeys:write",
 ]
 
 _READ_ONLY: frozenset[Permission] = frozenset(
@@ -73,6 +74,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
         "incidents:read",
         "incidents:write",
         "audit:read",
+        "apikeys:write",
     },
 }
 
@@ -81,18 +83,31 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
 class Principal:
     actor: str
     role: Role
+    # Effective permissions: the role's set, narrowed by an API key's scopes.
+    permissions: frozenset[Permission]
+
+
+def principal_for(actor: str, role: str, scopes: frozenset[Permission] | None = None) -> Principal:
+    if role not in ROLE_PERMISSIONS:
+        raise AuthError(f"credential mapped to unknown role {role!r}")
+    granted = ROLE_PERMISSIONS[role]  # type: ignore[index]
+    if scopes is not None and not scopes <= granted:
+        raise AuthError("API key scopes exceed its role")
+    return Principal(
+        actor=actor,
+        role=role,  # type: ignore[arg-type]
+        permissions=granted if scopes is None else scopes,
+    )
 
 
 def resolve_token(api_tokens: dict[str, str], token: str) -> Principal:
     for known, role in api_tokens.items():
         # Constant-time compare so token prefixes cannot be guessed by timing.
         if hmac.compare_digest(known.encode(), token.encode()):
-            if role not in ROLE_PERMISSIONS:
-                raise AuthError(f"token mapped to unknown role {role!r}")
-            return Principal(actor=f"{role}:{sha256_hex(token)[:8]}", role=role)  # type: ignore[arg-type]
+            return principal_for(f"{role}:{sha256_hex(token)[:8]}", role)
     raise AuthError("unknown API token")
 
 
 def authorize(principal: Principal, permission: Permission) -> None:
-    if permission not in ROLE_PERMISSIONS[principal.role]:
-        raise ForbiddenError(f"role {principal.role} lacks {permission}")
+    if permission not in principal.permissions:
+        raise ForbiddenError(f"{principal.actor} ({principal.role}) lacks {permission}")

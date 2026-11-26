@@ -96,6 +96,7 @@ class AgentCallRunner:
             store_transcript(
                 s,
                 self._cipher,
+                tenant_id=self._settings.tenant_id,
                 call_id=handle.call_id,
                 phone_hash=ph,
                 at=self._clock.now(),

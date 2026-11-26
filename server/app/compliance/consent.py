@@ -100,6 +100,7 @@ def mark_dnc(
     )
     session.merge(
         OptOutRow(
+            tenant_id=settings.tenant_id,
             phone_hash=phone_hash(phone_e164, settings.phone_pepper),
             opted_out_at=at,
             channel=channel,
@@ -113,7 +114,9 @@ def assert_may_request_consent(
     session: Session, settings: Settings, *, phone_e164: str, now: datetime
 ) -> None:
     """Raises OptOutLockoutError within 90 days of an opt-out (Second Amendment)."""
-    row = session.get(OptOutRow, phone_hash(phone_e164, settings.phone_pepper))
+    row = session.get(
+        OptOutRow, (settings.tenant_id, phone_hash(phone_e164, settings.phone_pepper))
+    )
     if row is None:
         return
     if now < row.opted_out_at + timedelta(days=settings.compliance.opt_out_lock_days):

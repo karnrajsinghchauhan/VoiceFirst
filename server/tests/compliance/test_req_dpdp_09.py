@@ -17,7 +17,7 @@ def _prod(**overrides):
         database_url="postgresql+psycopg://u:p@db/av",
         bus="kafka",
         phone_pepper="from-secret-store",
-        api_tokens={"tok-admin": "admin"},
+        api_tokens={},
         stt="sarvam",
         tts="sarvam_bulbul",
         llm="openai",

@@ -48,6 +48,7 @@ class PreferenceRow(Base):
     """NCPR / DND state as last synced from the operator registry."""
 
     __tablename__ = "preference_registry"
+    tenant_id: Mapped[str] = mapped_column(String, primary_key=True)
     phone_hash: Mapped[str] = mapped_column(String, primary_key=True)
     state: Mapped[Literal["none", "block_promo", "partial", "fully_blocked"]] = mapped_column(
         String
@@ -57,6 +58,7 @@ class PreferenceRow(Base):
 
 class OptOutRow(Base):
     __tablename__ = "opt_outs"
+    tenant_id: Mapped[str] = mapped_column(String, primary_key=True)
     phone_hash: Mapped[str] = mapped_column(String, primary_key=True)
     opted_out_at: Mapped[datetime] = mapped_column(UtcDateTime)
     channel: Mapped[str] = mapped_column(String)
@@ -105,6 +107,7 @@ class ClearanceRow(Base):
 
 class DialAttemptRow(Base):
     __tablename__ = "dial_attempts"
+    tenant_id: Mapped[str] = mapped_column(String, index=True)
     attempt_id: Mapped[str] = mapped_column(String, primary_key=True)
     clearance_id: Mapped[str] = mapped_column(ForeignKey("clearances.clearance_id"), unique=True)
     booking_event_id: Mapped[str] = mapped_column(String, index=True)
@@ -144,6 +147,7 @@ class CampaignPauseRow(Base):
 
 class WhatsAppSendRow(Base):
     __tablename__ = "whatsapp_sends"
+    tenant_id: Mapped[str] = mapped_column(String, index=True)
     send_id: Mapped[str] = mapped_column(String, primary_key=True)
     booking_event_id: Mapped[str] = mapped_column(String, index=True)
     phone_hash: Mapped[str] = mapped_column(String)

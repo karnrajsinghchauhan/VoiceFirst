@@ -34,7 +34,7 @@ def bus() -> MemoryBus:
 
 @pytest.fixture
 def session_factory() -> Iterator[sessionmaker[Session]]:
-    engine = make_engine("sqlite://")
+    engine = make_engine("sqlite://", "agoda-in")
     create_all(engine)
     yield make_session_factory(engine)
     engine.dispose()

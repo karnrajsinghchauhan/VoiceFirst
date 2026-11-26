@@ -207,6 +207,7 @@ def seed_registry(session: Session, settings: Settings, plan: SeedPlan) -> None:
     for phone in plan.dnd_phones:
         session.merge(
             PreferenceRow(
+                tenant_id=settings.tenant_id,
                 phone_hash=phone_hash(phone, settings.phone_pepper),
                 state="fully_blocked",
                 synced_at=declared,

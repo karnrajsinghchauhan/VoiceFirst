@@ -94,6 +94,19 @@ class PaymentLinkSettings(BaseModel):
     expiry_hours: int = 24
 
 
+class OidcSettings(BaseModel):
+    """Console SSO (brief v3 S7). Absent means SSO is not configured for this tenant."""
+
+    issuer: str
+    audience: str
+    jwks_url: str
+    role_claim: str = "groups"
+    group_roles: dict[str, Literal["admin", "ops", "auditor", "read_only"]] = Field(
+        default_factory=dict
+    )
+    leeway_seconds: int = 30
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="AV_", env_nested_delimiter="__", extra="forbid", frozen=True
@@ -127,6 +140,7 @@ class Settings(BaseSettings):
     whatsapp_utility_rate_paise: Decimal = Decimal("11.50")
     gst_rate: Decimal = Decimal("0.18")
 
+    oidc: OidcSettings | None = None
     compliance: ComplianceSettings = ComplianceSettings()
     holdout: HoldoutSettings = HoldoutSettings()
     retention: RetentionSettings = RetentionSettings()
@@ -151,8 +165,9 @@ def validate_for_environment(settings: Settings) -> None:
         raise ProductionConfigError("sqlite is not allowed in production")
     if settings.phone_pepper.startswith("dev-"):
         raise ProductionConfigError("phone_pepper must be set from the secret store")
-    if any(token.startswith("dev-") for token in settings.api_tokens):
-        raise ProductionConfigError("dev API tokens are not allowed in production")
+    if settings.api_tokens:
+        # Production authenticates with hashed API keys and SSO only; static tokens are dev-only.
+        raise ProductionConfigError("static api_tokens are not allowed in production")
     allowed = settings.residency.allowed_regions
     for role in _MOCK_ROLES:
         region = settings.residency.provider_regions.get(role)

@@ -82,8 +82,8 @@ def load_context(
 ) -> GateContext:
     phone = event.customer.phone_e164
     ph = phone_hash(phone, settings.phone_pepper)
-    pref = session.get(PreferenceRow, ph)
-    opt_out = session.get(OptOutRow, ph)
+    pref = session.get(PreferenceRow, (event.tenant_id, ph))
+    opt_out = session.get(OptOutRow, (event.tenant_id, ph))
     attempts = session.scalar(
         select(func.count())
         .select_from(DialAttemptRow)

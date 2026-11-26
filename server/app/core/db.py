@@ -6,10 +6,12 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, Engine, TypeDecorator, create_engine, event
+from sqlalchemy import DateTime, Engine, TypeDecorator, create_engine, event, text
 from sqlalchemy.engine.interfaces import Dialect
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from sqlalchemy.pool import StaticPool
+
+from app.core.errors import ProductionConfigError
 
 
 class UtcDateTime(TypeDecorator[datetime]):
@@ -35,7 +37,10 @@ class Base(DeclarativeBase):
     pass
 
 
-def make_engine(url: str) -> Engine:
+def make_engine(url: str, tenant_id: str) -> Engine:
+    """One engine serves one tenant. On Postgres every connection declares its tenant, and
+    row-level security (migration b2c3d4e5f6a7) filters every table by it. SQLite (unit
+    tests only, D-005) has no RLS; isolation is proven on Postgres in tests/e2e."""
     if url.startswith("sqlite"):
         engine = create_engine(url, connect_args={"check_same_thread": False}, poolclass=StaticPool)
 
@@ -44,7 +49,15 @@ def make_engine(url: str) -> Engine:
             dbapi_conn.execute("PRAGMA foreign_keys=ON")
 
         return engine
-    return create_engine(url, pool_pre_ping=True)
+    engine = create_engine(url, pool_pre_ping=True)
+
+    @event.listens_for(engine, "connect")
+    def _declare_tenant(dbapi_conn, _record):  # type: ignore[no-untyped-def]
+        with dbapi_conn.cursor() as cur:
+            cur.execute("SELECT set_config('app.tenant_id', %s, false)", (tenant_id,))
+        dbapi_conn.commit()
+
+    return engine
 
 
 def make_session_factory(engine: Engine) -> sessionmaker[Session]:
@@ -70,3 +83,13 @@ def create_all(engine: Engine) -> None:
     import app.models  # noqa: F401
 
     Base.metadata.create_all(engine)
+
+
+def assert_not_superuser(engine: Engine) -> None:
+    """Superusers bypass row-level security, so production must never connect as one."""
+    with engine.connect() as conn:
+        is_super = conn.execute(
+            text("SELECT rolsuper FROM pg_roles WHERE rolname = current_user")
+        ).scalar_one()
+    if is_super:
+        raise ProductionConfigError("the database role is a superuser; RLS would not apply")

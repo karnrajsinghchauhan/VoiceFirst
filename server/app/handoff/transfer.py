@@ -96,6 +96,7 @@ def warm_transfer(
         session.add(
             CallbackRow(
                 callback_id=new_id("cb"),
+                tenant_id=summary.tenant_id,
                 call_id=summary.call_id,
                 queue=summary.queue,
                 requested_at=now,
