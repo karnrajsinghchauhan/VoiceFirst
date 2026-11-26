@@ -1,4 +1,4 @@
-# Status (2026-11-23, end of session)
+# Status (2026-11-27)
 
 Real-provider test calls used: 0 / 20 (no provider keys in the environment).
 
@@ -18,3 +18,12 @@ Real-provider test calls used: 0 / 20 (no provider keys in the environment).
 | M11 | done for mock scope | `make load` 200 sessions; `make chaos` 11 tests (STT/TTS/LLM/telephony/WhatsApp/bus/Postgres); `make scan` green; threat model; tabletop scripts |
 
 Latest report: reports/<ts>-text/index.html (gitignored; regenerate with `make eval`).
+
+## Brief v3 (local session, 2026-11-27)
+
+CI: GitHub Actions does not run on this repo (D-026); every gate below was run locally before push.
+
+| Item | State | Evidence |
+|------|-------|----------|
+| S10 /demo | done (text mode) | 6 scenarios on the real engine, paced live timeline, kill switch (D-022..D-024). `server/tests/demo` 12 tests; `web/tests/demo` 8 Playwright tests against uvicorn + `next start` |
+| Gates | green | `make check` (lint, mypy, 604 tests, tsc, eslint, no contract drift), `make e2e` 8 passed on local Postgres 16 |

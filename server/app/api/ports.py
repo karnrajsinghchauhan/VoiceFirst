@@ -75,3 +75,92 @@ class IncidentService(Protocol):
     def open_incident(
         self, kind: IncidentKind, summary: str, detected_at: datetime, actor: str
     ) -> IncidentView: ...
+
+
+DemoScenario = Literal[
+    "failed_upi", "confirmation", "angry_refund", "stop_calling", "child_answers", "card_number"
+]
+DemoEventKind = Literal[
+    "holdout", "gate", "clearance", "disclosure", "tool", "whatsapp", "crm", "qa", "cost", "end"
+]
+
+
+class DemoEvent(_View):
+    t_ms: int
+    kind: DemoEventKind
+    label: str
+    status: Literal["pass", "fail", "info"]
+    detail: dict[str, str | int | None]
+
+
+class DemoTurn(_View):
+    speaker: Literal["agent", "customer"]
+    text: str
+    t_ms: int
+
+
+class DemoWhatsApp(_View):
+    template: str
+    language: str
+    body: str
+
+
+class DemoTicket(_View):
+    ticket_id: str
+    subject: str
+    priority: str
+
+
+class DemoCheck(_View):
+    name: str
+    passed: bool
+
+
+class DemoQa(_View):
+    score: int
+    checks: list[DemoCheck]
+
+
+class DemoCost(_View):
+    telephony: int
+    stt: int
+    tts: int
+    llm: int
+    whatsapp: int
+    total: int
+
+
+class DemoLatency(_View):
+    p50: int
+    p95: int
+    per_turn: list[int]
+
+
+class DemoRun(_View):
+    run_id: str
+    scenario: DemoScenario
+    mode: Literal["text"]
+    method: str
+    events: list[DemoEvent]
+    transcript: list[DemoTurn]
+    whatsapp_preview: DemoWhatsApp | None
+    crm_ticket: DemoTicket | None
+    qa: DemoQa
+    cost_paise: DemoCost
+    latency_ms: DemoLatency
+
+
+class KillSwitchResult(_View):
+    engaged: bool
+    # Engine time from the engage request to the dispatcher refusing the next dial.
+    stopped_in_ms: int
+
+
+class Demo(Protocol):
+    def run(self, scenario: DemoScenario) -> DemoRun: ...
+
+    def kill(self) -> KillSwitchResult: ...
+
+    def release(self) -> KillSwitchResult: ...
+
+    def check_passcode(self, presented: str) -> None: ...

@@ -4,12 +4,15 @@ import { defineConfig } from "@playwright/test";
 // so they exercise the same bundle `npm run build` produces.
 export default defineConfig({
   testDir: "./tests",
+  // The live demo runs against the real engine: playwright.demo.config.ts.
+  testIgnore: ["demo/**"],
   timeout: 30_000,
   retries: 0,
   use: {
     baseURL: "http://localhost:3100",
     trace: "off",
-    launchOptions: { executablePath: process.env.AV_CHROMIUM ?? "/opt/pw-browsers/chromium" },
+    // CI images ship Chromium at a fixed path; locally Playwright's own download is used.
+    launchOptions: process.env.AV_CHROMIUM ? { executablePath: process.env.AV_CHROMIUM } : {},
   },
   webServer: {
     command: "npx next start -p 3100",

@@ -28,6 +28,12 @@ jobs:
           AV_PROOF_EXAMPLES: ${{ github.event_name == 'schedule' && '100000' || '10000' }}
         run: make check
       - run: make e2e
+      - name: /demo on the real engine (Playwright)
+        run: |
+          cd web
+          npx playwright install --with-deps chromium
+          AV_API_MODE=mock npx next build
+          npx playwright test -c playwright.demo.config.ts
       - name: eval gate
         run: make eval
       - uses: actions/upload-artifact@v4

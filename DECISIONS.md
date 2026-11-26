@@ -241,3 +241,28 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `get_principal` resolves `avk_` API keys (sha256 of a 32-byte secret at rest, scoped, rotatable, last-used), OIDC ID tokens (RS256 against the issuer JWKS; group claim to role, most privileged wins), or static dev tokens. Production refuses any static token. A Principal carries its effective permissions (role narrowed by scopes); scopes beyond the role are refused at issue.
 - Why: brief v3 S7 (SSO, scoped keys, RBAC); one authorisation check (`authorize`) whatever the credential.
 - Would change it: SAML via the same group-to-role table when a client requires it.
+
+## D-022 (2026-11-27) /demo runs the real engine on an isolated in-memory store per call
+- Decision: `POST /demo/run` builds a fresh SQLite engine, memory bus and frozen clock (11:00 IST today) per call, seeds one CLI and consent row, ingests one booking event and runs the real dispatcher: holdout, every gate, single-use clearance, dial, agent, tools, post-call. The timeline is read from what the engine published. The demo kill switch engages `compliance.killswitch` on the dispatcher and times the first refused dial. Endpoints need `x-demo-passcode` (`AV_DEMO_PASSCODE`); without it they return 404.
+- Why: brief v3 S10 says the demo uses the real engine, and a demo must never touch tenant data or the shared kill switch.
+- Would change it: a hosted demo that should show a real tenant's console; then it runs as its own tenant.
+
+## D-023 (2026-11-27) The demo's human queue has one free human per queue
+- Decision: the demo engine models a staffed queue, so a dispute ends in a real warm transfer with its summary (`handed_off`). Dev and production keep D-015.
+- Why: the eval persona C-05 expects a handoff; with nobody free the agent correctly books a callback, which hides the warm-transfer path the demo is meant to show.
+- Would change it: Agoda's CCaaS sandbox (AV-CCAAS-1).
+
+## D-024 (2026-11-27) One code path for live and recorded demo runs; paced display only in the browser
+- Decision: `web/scripts/record_demo.py` now records by calling `DemoService`, replacing its own copy of the pipeline. Gate labels live in `app/demo/timeline.py`. Engine times are real milliseconds; `web/src/lib/playback.ts` spaces items out for reading without changing order or content. The angry-refund scenario uses persona C-05 ("angry, paise kat gaye").
+- Why: rule 6.5 (no shadow copies); a mock call finishes in milliseconds, which nobody can read.
+- Would change it: real provider latency (M8), when the timeline can play at real speed.
+
+## D-025 (2026-11-27) `app/wiring/runtime.py` owns the runtime builders
+- Decision: `Runtime`, `build_runtime` and `build_dispatcher` moved from `wiring/main.py` to `wiring/runtime.py`; `main.py` keeps the API composition and re-exports the old names. `build_dispatcher` takes an optional caller and result hook.
+- Why: the demo service needs the dispatcher and the API needs the demo service; one module holding both was an import cycle.
+- Would change it: nothing.
+
+## D-026 (2026-11-27) CI runs locally until GitHub Actions runs on this repo
+- Decision: `make check`, `make e2e` and `npx playwright test -c playwright.demo.config.ts` run locally before each push, and their results go in the PR description.
+- Why: the repo's Actions page reports "GitHub Actions is not currently enabled on this repository" although the setting allows all actions; no run has ever been created.
+- Would change it: GitHub support re-enabling Actions; then `ci.yml` is the gate again.

@@ -27,6 +27,7 @@ export interface Engine {
   console(method: string, path: string, token: string, body: unknown): Promise<EngineResponse>;
   demoRun(scenario: ScenarioId, passcode: string): Promise<DemoRun>;
   demoKill(passcode: string): Promise<KillSwitchResult>;
+  demoRelease(passcode: string): Promise<KillSwitchResult>;
   ask(sessionId: string, message: string): Promise<ConciergeAnswer>;
   slots(): Promise<{ slots: string[] }>;
   book(req: BookingRequest): Promise<{ booking_id: string; slot: string }>;
@@ -76,6 +77,10 @@ class HttpEngine implements Engine {
     return this.ok(this.call("POST", "/demo/killswitch", { "x-demo-passcode": passcode }, {}));
   }
 
+  demoRelease(passcode: string): Promise<KillSwitchResult> {
+    return this.ok(this.call("POST", "/demo/killswitch/release", { "x-demo-passcode": passcode }, {}));
+  }
+
   ask(sessionId: string, message: string): Promise<ConciergeAnswer> {
     return this.ok(this.call("POST", "/concierge/ask", {}, { session_id: sessionId, message }));
   }
@@ -107,6 +112,24 @@ const NEEDS: Record<string, Action> = {
   "GET /killswitch": "view_console",
   "POST /killswitch": "operate_kill_switch",
 };
+
+// What the engine returns for any scenario while the kill switch is engaged: no gates, no dial.
+function stoppedRun(scenario: ScenarioId): DemoRun {
+  return {
+    ...RECORDED_RUNS[scenario],
+    run_id: `stopped_${scenario}`,
+    events: [
+      { t_ms: 0, kind: "gate", label: "kill switch engaged", status: "fail", detail: { reason: "queue dropped, no dial" } },
+      { t_ms: 0, kind: "end", label: "No call placed", status: "info", detail: { reason: "kill_switch_engaged" } },
+    ],
+    transcript: [],
+    whatsapp_preview: null,
+    crm_ticket: null,
+    qa: { score: 0, checks: [] },
+    cost_paise: { telephony: 0, stt: 0, tts: 0, llm: 0, whatsapp: 0, total: 0 },
+    latency_ms: { p50: 0, p95: 0, per_turn: [] },
+  };
+}
 
 class MockEngine implements Engine {
   readonly mode = "mock" as const;
@@ -152,13 +175,21 @@ class MockEngine implements Engine {
   }
 
   // The mock replays runs recorded from the engine (web/scripts/record_demo.py).
+  private killed = false;
+
   async demoRun(scenario: ScenarioId): Promise<DemoRun> {
-    return RECORDED_RUNS[scenario];
+    return this.killed ? stoppedRun(scenario) : RECORDED_RUNS[scenario];
   }
 
-  // The mock has no dispatcher to stop; the demo page measures its own round trip.
+  // The mock has no dispatcher to time; the demo page measures its own round trip.
   async demoKill(): Promise<KillSwitchResult> {
+    this.killed = true;
     return { engaged: true, stopped_in_ms: 0 };
+  }
+
+  async demoRelease(): Promise<KillSwitchResult> {
+    this.killed = false;
+    return { engaged: false, stopped_in_ms: 0 };
   }
 
   async ask(_sessionId: string, message: string): Promise<ConciergeAnswer> {

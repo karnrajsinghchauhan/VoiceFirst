@@ -722,6 +722,250 @@ components:
       - whatsapp
       title: Cost
       type: object
+    DemoCheck:
+      additionalProperties: false
+      properties:
+        name:
+          title: Name
+          type: string
+        passed:
+          title: Passed
+          type: boolean
+      required:
+      - name
+      - passed
+      title: DemoCheck
+      type: object
+    DemoCost:
+      additionalProperties: false
+      properties:
+        llm:
+          title: Llm
+          type: integer
+        stt:
+          title: Stt
+          type: integer
+        telephony:
+          title: Telephony
+          type: integer
+        total:
+          title: Total
+          type: integer
+        tts:
+          title: Tts
+          type: integer
+        whatsapp:
+          title: Whatsapp
+          type: integer
+      required:
+      - telephony
+      - stt
+      - tts
+      - llm
+      - whatsapp
+      - total
+      title: DemoCost
+      type: object
+    DemoEvent:
+      additionalProperties: false
+      properties:
+        detail:
+          additionalProperties:
+            anyOf:
+            - type: string
+            - type: integer
+            - type: 'null'
+          title: Detail
+          type: object
+        kind:
+          enum:
+          - holdout
+          - gate
+          - clearance
+          - disclosure
+          - tool
+          - whatsapp
+          - crm
+          - qa
+          - cost
+          - end
+          title: Kind
+          type: string
+        label:
+          title: Label
+          type: string
+        status:
+          enum:
+          - pass
+          - fail
+          - info
+          title: Status
+          type: string
+        t_ms:
+          title: T Ms
+          type: integer
+      required:
+      - t_ms
+      - kind
+      - label
+      - status
+      - detail
+      title: DemoEvent
+      type: object
+    DemoLatency:
+      additionalProperties: false
+      properties:
+        p50:
+          title: P50
+          type: integer
+        p95:
+          title: P95
+          type: integer
+        per_turn:
+          items:
+            type: integer
+          title: Per Turn
+          type: array
+      required:
+      - p50
+      - p95
+      - per_turn
+      title: DemoLatency
+      type: object
+    DemoQa:
+      additionalProperties: false
+      properties:
+        checks:
+          items:
+            $ref: '#/components/schemas/DemoCheck'
+          title: Checks
+          type: array
+        score:
+          title: Score
+          type: integer
+      required:
+      - score
+      - checks
+      title: DemoQa
+      type: object
+    DemoRun:
+      additionalProperties: false
+      properties:
+        cost_paise:
+          $ref: '#/components/schemas/DemoCost'
+        crm_ticket:
+          anyOf:
+          - $ref: '#/components/schemas/DemoTicket'
+          - type: 'null'
+        events:
+          items:
+            $ref: '#/components/schemas/DemoEvent'
+          title: Events
+          type: array
+        latency_ms:
+          $ref: '#/components/schemas/DemoLatency'
+        method:
+          title: Method
+          type: string
+        mode:
+          const: text
+          title: Mode
+          type: string
+        qa:
+          $ref: '#/components/schemas/DemoQa'
+        run_id:
+          title: Run Id
+          type: string
+        scenario:
+          enum:
+          - failed_upi
+          - confirmation
+          - angry_refund
+          - stop_calling
+          - child_answers
+          - card_number
+          title: Scenario
+          type: string
+        transcript:
+          items:
+            $ref: '#/components/schemas/DemoTurn'
+          title: Transcript
+          type: array
+        whatsapp_preview:
+          anyOf:
+          - $ref: '#/components/schemas/DemoWhatsApp'
+          - type: 'null'
+      required:
+      - run_id
+      - scenario
+      - mode
+      - method
+      - events
+      - transcript
+      - whatsapp_preview
+      - crm_ticket
+      - qa
+      - cost_paise
+      - latency_ms
+      title: DemoRun
+      type: object
+    DemoTicket:
+      additionalProperties: false
+      properties:
+        priority:
+          title: Priority
+          type: string
+        subject:
+          title: Subject
+          type: string
+        ticket_id:
+          title: Ticket Id
+          type: string
+      required:
+      - ticket_id
+      - subject
+      - priority
+      title: DemoTicket
+      type: object
+    DemoTurn:
+      additionalProperties: false
+      properties:
+        speaker:
+          enum:
+          - agent
+          - customer
+          title: Speaker
+          type: string
+        t_ms:
+          title: T Ms
+          type: integer
+        text:
+          title: Text
+          type: string
+      required:
+      - speaker
+      - text
+      - t_ms
+      title: DemoTurn
+      type: object
+    DemoWhatsApp:
+      additionalProperties: false
+      properties:
+        body:
+          title: Body
+          type: string
+        language:
+          title: Language
+          type: string
+        template:
+          title: Template
+          type: string
+      required:
+      - template
+      - language
+      - body
+      title: DemoWhatsApp
+      type: object
     ErrorBody:
       properties:
         detail:
@@ -1027,6 +1271,20 @@ components:
       - reason
       title: KillSwitchIn
       type: object
+    KillSwitchResult:
+      additionalProperties: false
+      properties:
+        engaged:
+          title: Engaged
+          type: boolean
+        stopped_in_ms:
+          title: Stopped In Ms
+          type: integer
+      required:
+      - engaged
+      - stopped_in_ms
+      title: KillSwitchResult
+      type: object
     KillSwitchState:
       properties:
         actor:
@@ -1191,6 +1449,23 @@ components:
       - completed_at
       - result
       title: RightsRequestView
+      type: object
+    RunIn:
+      additionalProperties: false
+      properties:
+        scenario:
+          enum:
+          - failed_upi
+          - confirmation
+          - angry_refund
+          - stop_calling
+          - child_answers
+          - card_number
+          title: Scenario
+          type: string
+      required:
+      - scenario
+      title: RunIn
       type: object
     SimulateIn:
       additionalProperties: false
@@ -2580,6 +2855,216 @@ paths:
       summary: Opt Out
       tags:
       - consent
+  /demo/killswitch:
+    post:
+      operationId: kill_demo_killswitch_post
+      parameters:
+      - in: header
+        name: x-demo-passcode
+        required: true
+        schema:
+          title: X-Demo-Passcode
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KillSwitchResult'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Kill
+      tags:
+      - demo
+  /demo/killswitch/release:
+    post:
+      operationId: release_demo_killswitch_release_post
+      parameters:
+      - in: header
+        name: x-demo-passcode
+        required: true
+        schema:
+          title: X-Demo-Passcode
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KillSwitchResult'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Release
+      tags:
+      - demo
+  /demo/run:
+    post:
+      operationId: run_demo_run_post
+      parameters:
+      - in: header
+        name: x-demo-passcode
+        required: true
+        schema:
+          title: X-Demo-Passcode
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunIn'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoRun'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Run
+      tags:
+      - demo
   /handoff:
     get:
       operationId: list_handoffs_handoff_get

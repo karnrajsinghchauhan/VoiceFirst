@@ -4,6 +4,7 @@
 // appear when their t_ms has elapsed; the transcript fills in alongside.
 import { useEffect, useRef, useState } from "react";
 import type { DemoEvent, DemoRun } from "@/lib/demo-types";
+import { paced } from "@/lib/playback";
 
 const KIND_LABEL: Record<DemoEvent["kind"], string> = {
   holdout: "Holdout",
@@ -115,7 +116,8 @@ function HeroPanels({ run, elapsed }: { run: DemoRun; elapsed: number }) {
 }
 
 /** Hero: the complete run renders on the server; in the browser it replays on a loop. */
-export function HeroTimeline({ run }: { run: DemoRun }) {
+export function HeroTimeline({ run: recorded }: { run: DemoRun }) {
+  const run = paced(recorded);
   const [cycle, setCycle] = useState<number | null>(null);
   useEffect(() => {
     if (!prefersReducedMotion()) setCycle(0);

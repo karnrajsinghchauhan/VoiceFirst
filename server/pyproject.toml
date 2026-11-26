@@ -85,7 +85,7 @@ type = "forbidden"
 source_modules = [
   "app.voice", "app.messaging", "app.handoff", "app.postcall", "app.crm",
   "app.analytics", "app.incidents", "app.rights", "app.admin", "app.simulator",
-  "app.compliance", "app.providers", "app.core", "app.api", "app.wiring",
+  "app.compliance", "app.providers", "app.core", "app.api", "app.wiring", "app.demo",
 ]
 forbidden_modules = ["app.telephony.dial"]
 # Only a direct import can call dial; the composition root reaches it through the dispatcher.

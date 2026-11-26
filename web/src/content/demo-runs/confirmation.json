@@ -1,13 +1,11 @@
 {
  "run_id": "rec_confirmation",
  "scenario": "confirmation",
- "title": "Booking confirmation",
  "mode": "text",
- "recorded_at": "2026-11-23",
- "method": "Recorded from the engine in text mode: compliance.evaluate for the gates, the agent with the mock LLM and scripted caller persona C-28 (seed 0).",
+ "method": "Real dispatcher, gates, agent and post-call on an isolated in-memory engine with mock providers and a scripted caller. Times are engine milliseconds; provider latency is not included until real keys (M8).",
  "events": [
   {
-   "t_ms": 0,
+   "t_ms": 11,
    "kind": "holdout",
    "label": "Holdout check (no-call group)",
    "status": "pass",
@@ -17,7 +15,7 @@
    }
   },
   {
-   "t_ms": 40,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Jurisdiction: +91 only",
    "status": "pass",
@@ -27,7 +25,7 @@
    }
   },
   {
-   "t_ms": 80,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Kill switch and campaign pause",
    "status": "pass",
@@ -37,7 +35,7 @@
    }
   },
   {
-   "t_ms": 120,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Consent basis on record",
    "status": "pass",
@@ -47,7 +45,7 @@
    }
   },
   {
-   "t_ms": 160,
+   "t_ms": 11,
    "kind": "gate",
    "label": "DND preference registry",
    "status": "pass",
@@ -57,7 +55,7 @@
    }
   },
   {
-   "t_ms": 200,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Opt-out lock",
    "status": "pass",
@@ -67,7 +65,7 @@
    }
   },
   {
-   "t_ms": 240,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Caller ID declared as A2P on DLT",
    "status": "pass",
@@ -77,7 +75,7 @@
    }
   },
   {
-   "t_ms": 280,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Number series matches purpose",
    "status": "pass",
@@ -87,7 +85,7 @@
    }
   },
   {
-   "t_ms": 320,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Caller ID active",
    "status": "pass",
@@ -97,7 +95,7 @@
    }
   },
   {
-   "t_ms": 360,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Call window (recipient local time)",
    "status": "pass",
@@ -107,7 +105,7 @@
    }
   },
   {
-   "t_ms": 400,
+   "t_ms": 11,
    "kind": "gate",
    "label": "Attempt cap and cooldown",
    "status": "pass",
@@ -117,68 +115,79 @@
    }
   },
   {
-   "t_ms": 440,
+   "t_ms": 11,
    "kind": "clearance",
-   "label": "Single-use clearance issued",
+   "label": "GateClearance issued (single use, 60 s)",
    "status": "pass",
    "detail": {
-    "expires_in_s": "60"
+    "clearance_id": "clr_bdc63a1b9b4042ba84d35ad29245d719"
    }
   },
   {
-   "t_ms": 968,
+   "t_ms": 16,
    "kind": "disclosure",
-   "label": "AI and recording disclosed in the first sentence",
+   "label": "AI and recording disclosed",
    "status": "pass",
-   "detail": {}
-  },
-  {
-   "t_ms": 2771,
-   "kind": "tool",
-   "label": "Tool: confirm_details",
-   "status": "info",
    "detail": {
-    "check_in": "confirmed",
-    "check_out": "confirmed",
-    "guests": "confirmed"
+    "text": "Namaste ji, main Agoda ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main Amit ji se baat kar rahi hoon?"
    }
   },
   {
-   "t_ms": 2831,
+   "t_ms": 16,
    "kind": "tool",
-   "label": "Tool: record_special_request",
+   "label": "confirm_details",
    "status": "info",
    "detail": {
-    "text": "arrival time: subah das baje"
+    "result": "recorded"
    }
   },
   {
-   "t_ms": 2891,
+   "t_ms": 16,
    "kind": "tool",
-   "label": "Tool: end_call",
+   "label": "record_special_request",
    "status": "info",
    "detail": {
-    "outcome": "details_confirmed"
+    "result": "recorded"
    }
   },
   {
-   "t_ms": 3471,
+   "t_ms": 16,
+   "kind": "tool",
+   "label": "end_call",
+   "status": "info",
+   "detail": {
+    "result": "ended"
+   }
+  },
+  {
+   "t_ms": 16,
+   "kind": "crm",
+   "label": "CRM ticket T00001",
+   "status": "info",
+   "detail": {
+    "subject": "Special request (********6081)"
+   }
+  },
+  {
+   "t_ms": 16,
    "kind": "qa",
-   "label": "QA scorecard 100/100",
+   "label": "QA score 100",
    "status": "pass",
-   "detail": {}
-  },
-  {
-   "t_ms": 3521,
-   "kind": "cost",
-   "label": "Cost of this call (mock pricing)",
-   "status": "info",
    "detail": {
-    "total_paise": "251"
+    "checks": 13
    }
   },
   {
-   "t_ms": 3571,
+   "t_ms": 16,
+   "kind": "cost",
+   "label": "Cost 249 paise",
+   "status": "info",
+   "detail": {
+    "total_paise": 249
+   }
+  },
+  {
+   "t_ms": 16,
    "kind": "end",
    "label": "Outcome: details_confirmed",
    "status": "info",
@@ -191,71 +200,75 @@
   {
    "speaker": "agent",
    "text": "Namaste ji, main Agoda ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main Amit ji se baat kar rahi hoon?",
-   "t_ms": 968
+   "t_ms": 16
   },
   {
    "speaker": "customer",
    "text": "haan ji, main hi bol raha hoon",
-   "t_ms": 968
+   "t_ms": 16
   },
   {
    "speaker": "agent",
-   "text": "Dhanyavaad ji. Aapka baarah December ko Sangam Residency mein check-in hai — bas do minute mein details confirm kar loon?",
-   "t_ms": 1322
+   "text": "Dhanyavaad ji. Aapka untees November ko Sangam Residency mein check-in hai — bas do minute mein details confirm kar loon?",
+   "t_ms": 16
   },
   {
    "speaker": "customer",
    "text": "haan ji",
-   "t_ms": 1322
+   "t_ms": 16
   },
   {
    "speaker": "agent",
-   "text": "Aapki booking baarah December se chaudah December tak, do mehmaanon ke liye hai — kya yeh sahi hai?",
-   "t_ms": 1769
+   "text": "Aapki booking untees November se ek December tak, do mehmaanon ke liye hai — kya yeh sahi hai?",
+   "t_ms": 16
   },
   {
    "speaker": "customer",
    "text": "haan sahi hai",
-   "t_ms": 1769
+   "t_ms": 16
   },
   {
    "speaker": "agent",
    "text": "Aap lagbhag kitne baje pahunchenge, taaki property ko bata sakein?",
-   "t_ms": 2157
+   "t_ms": 16
   },
   {
    "speaker": "customer",
    "text": "subah das baje",
-   "t_ms": 2157
+   "t_ms": 16
   },
   {
    "speaker": "agent",
    "text": "Koi khaas request hai, jaise early check-in ya extra bed?",
-   "t_ms": 2781
+   "t_ms": 16
   },
   {
    "speaker": "customer",
    "text": "Dashashwamedh ghat yahan se kitna door hai?",
-   "t_ms": 2781
+   "t_ms": 16
   },
   {
    "speaker": "agent",
    "text": "Yeh jaankari meri booking details mein nahi hai. Aap Agoda app mein property se seedhe pooch sakte hain. Koi khaas request hai, jaise early check-in ya extra bed?",
-   "t_ms": 2986
+   "t_ms": 16
   },
   {
    "speaker": "customer",
    "text": "nahi, kuch nahi chahiye",
-   "t_ms": 2986
+   "t_ms": 16
   },
   {
    "speaker": "agent",
    "text": "Dhanyavaad ji, aapka din shubh ho.",
-   "t_ms": 3371
+   "t_ms": 16
   }
  ],
  "whatsapp_preview": null,
- "crm_ticket": null,
+ "crm_ticket": {
+  "ticket_id": "T00001",
+  "subject": "Special request (********6081)",
+  "priority": "normal"
+ },
  "qa": {
   "score": 100,
   "checks": [
@@ -316,22 +329,23 @@
  "cost_paise": {
   "telephony": 38,
   "stt": 9,
-  "tts": 204,
+  "tts": 202,
   "llm": 0,
   "whatsapp": 0,
-  "total": 251
+  "total": 249
  },
  "latency_ms": {
-  "p50": 384,
-  "p95": 624,
+  "p50": 0,
+  "p95": 0,
   "per_turn": [
-   328,
-   354,
-   446,
-   388,
-   624,
-   204,
-   384
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
   ]
- }
+ },
+ "recorded_at": "2026-11-27"
 }
