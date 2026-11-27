@@ -281,3 +281,7 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `docs/sales/` (Markdown plus PDFs from `scripts/sales_pdf.py`), the launch-cost list, the MCP scaffold and the review fixes go on `v3/pitch-pack`, based on `v3/w3-frontend`, with its own PR. Site polish stays on PR #14.
 - Why: PR #14 is the front end; sales documents and a server module would make it unreviewable on a phone.
 - Would change it: Karn preferring one PR.
+## D-030 (2026-11-27) The claims rule is a browser test over every public page
+- Decision: `Src`, `Measured`, `Spec` and `Est` render `data-claim`; `web/tests/public-pages.spec.ts` walks the text of each public page and fails on any percentage or money amount outside such a mark, and runs axe for WCAG 2.1 AA. `GET /status` on the engine reports live checks (API, database, dialling state, provider mode) with no data, and an empty uptime history until one is measured.
+- Why: brief v3 section 6 ("every public number needs a source or the label estimate") is only true if a test enforces it.
+- Would change it: a public page that needs a numeric example; it then uses `Est`.

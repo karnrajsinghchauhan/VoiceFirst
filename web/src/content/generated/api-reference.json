@@ -265,6 +265,15 @@
   },
   {
    "method": "GET",
+   "path": "/status",
+   "summary": "Status",
+   "tag": "ops",
+   "auth": true,
+   "request": null,
+   "response": "StatusReport"
+  },
+  {
+   "method": "GET",
    "path": "/whoami",
    "summary": "Whoami",
    "tag": "ops",

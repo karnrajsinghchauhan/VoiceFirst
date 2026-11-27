@@ -11,7 +11,7 @@ from starlette.routing import Match
 
 from app.api.deps import ApiDeps
 from app.api.errors import ERROR_RESPONSES, handle_agoda_voice_error, handle_http_error
-from app.api.routes import admin, demo, ops, records, rights
+from app.api.routes import admin, demo, ops, records, rights, status
 from app.core.errors import AgodaVoiceError
 
 DISCLAIMER = (
@@ -69,4 +69,5 @@ def create_app(deps: ApiDeps) -> FastAPI:
     app.include_router(records.router)
     app.include_router(rights.router)
     app.include_router(demo.router)
+    app.include_router(status.router)
     return app

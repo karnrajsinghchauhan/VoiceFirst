@@ -46,7 +46,7 @@ export function measuredItem(id: string): MeasuredItem {
 export function Src({ id, children }: { id: string; children: ReactNode }) {
   const row = source(id);
   return (
-    <span className="whitespace-nowrap">
+    <span className="whitespace-nowrap" data-claim="source">
       {children}
       <Link
         href={`/docs/sources#${id}`}
@@ -63,7 +63,7 @@ export function Src({ id, children }: { id: string; children: ReactNode }) {
 export function Measured({ id, children }: { id: string; children?: ReactNode }) {
   const item = measuredItem(id);
   return (
-    <span className="whitespace-nowrap">
+    <span className="whitespace-nowrap" data-claim="measured">
       {children ?? item.value}
       <Link
         href={`/product#proof-${id}`}
@@ -79,7 +79,7 @@ export function Measured({ id, children }: { id: string; children?: ReactNode })
 
 export function Spec({ of: specRef, children }: { of: string; children: ReactNode }) {
   return (
-    <span title={`Product specification: ${specRef}`} data-spec={specRef}>
+    <span title={`Product specification: ${specRef}`} data-spec={specRef} data-claim="spec">
       {children}
     </span>
   );
@@ -87,7 +87,7 @@ export function Spec({ of: specRef, children }: { of: string; children: ReactNod
 
 export function Est({ children }: { children: ReactNode }) {
   return (
-    <span>
+    <span data-claim="estimate">
       {children} <span className="text-muted">(estimate)</span>
     </span>
   );

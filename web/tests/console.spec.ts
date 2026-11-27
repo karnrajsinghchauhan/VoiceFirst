@@ -42,7 +42,7 @@ test("unknown token is refused", async ({ page }) => {
   await page.getByLabel("API token").fill("not-a-token");
   await page.getByRole("button", { name: "Sign in" }).click();
   // Scope to main: Next.js adds its own empty route-announcer alert.
-  await expect(page.getByRole("main").getByRole("alert")).toContainText("unknown token");
+  await expect(page.getByRole("main").getByRole("alert")).toContainText("token not accepted");
 });
 
 test("eval report page shows a report or the empty state", async ({ page }) => {
