@@ -14,8 +14,11 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.api.deps import ApiDeps, make_metrics
 from app.api.ports import (
     CampaignView,
+    DemoRun,
+    DemoScenario,
     IncidentKind,
     IncidentView,
+    KillSwitchResult,
     SimulationResult,
     TranscriptLine,
 )
@@ -107,6 +110,22 @@ class StubIncidents:
         return view
 
 
+class StubDemo:
+    """The demo is disabled in stubbed deps; the wired DemoService is tested through app.wiring."""
+
+    def run(self, scenario: DemoScenario) -> DemoRun:
+        raise NotFoundError("demo is not enabled")
+
+    def kill(self) -> KillSwitchResult:
+        raise NotFoundError("demo is not enabled")
+
+    def release(self) -> KillSwitchResult:
+        raise NotFoundError("demo is not enabled")
+
+    def check_passcode(self, presented: str) -> None:
+        raise NotFoundError("demo is not enabled")
+
+
 def build_stub_deps(
     settings: Settings,
     session_factory: sessionmaker[Session],
@@ -122,6 +141,7 @@ def build_stub_deps(
         cipher=DataCipher(PostcallSettings().data_key),
         rights_sla=RightsSlaSettings(),
         simulator=StubSimulator(),
+        demo=StubDemo(),
         campaigns=StubCampaigns(),
         incidents=StubIncidents(),
         human_queue=InMemoryHumanQueue(),

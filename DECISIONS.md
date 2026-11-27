@@ -241,3 +241,43 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `get_principal` resolves `avk_` API keys (sha256 of a 32-byte secret at rest, scoped, rotatable, last-used), OIDC ID tokens (RS256 against the issuer JWKS; group claim to role, most privileged wins), or static dev tokens. Production refuses any static token. A Principal carries its effective permissions (role narrowed by scopes); scopes beyond the role are refused at issue.
 - Why: brief v3 S7 (SSO, scoped keys, RBAC); one authorisation check (`authorize`) whatever the credential.
 - Would change it: SAML via the same group-to-role table when a client requires it.
+
+## D-022 (2026-11-27) /demo runs the real engine on an isolated in-memory store per call
+- Decision: `POST /demo/run` builds a fresh SQLite engine, memory bus and frozen clock (11:00 IST today) per call, seeds one CLI and consent row, ingests one booking event and runs the real dispatcher: holdout, every gate, single-use clearance, dial, agent, tools, post-call. The timeline is read from what the engine published. The demo kill switch engages `compliance.killswitch` on the dispatcher and times the first refused dial. Endpoints need `x-demo-passcode` (`AV_DEMO_PASSCODE`); without it they return 404.
+- Why: brief v3 S10 says the demo uses the real engine, and a demo must never touch tenant data or the shared kill switch.
+- Would change it: a hosted demo that should show a real tenant's console; then it runs as its own tenant.
+
+## D-023 (2026-11-27) The demo's human queue has one free human per queue
+- Decision: the demo engine models a staffed queue, so a dispute ends in a real warm transfer with its summary (`handed_off`). Dev and production keep D-015.
+- Why: the eval persona C-05 expects a handoff; with nobody free the agent correctly books a callback, which hides the warm-transfer path the demo is meant to show.
+- Would change it: Agoda's CCaaS sandbox (AV-CCAAS-1).
+
+## D-024 (2026-11-27) One code path for live and recorded demo runs; paced display only in the browser
+- Decision: `web/scripts/record_demo.py` now records by calling `DemoService`, replacing its own copy of the pipeline. Gate labels live in `app/demo/timeline.py`. Engine times are real milliseconds; `web/src/lib/playback.ts` spaces items out for reading without changing order or content. The angry-refund scenario uses persona C-05 ("angry, paise kat gaye").
+- Why: rule 6.5 (no shadow copies); a mock call finishes in milliseconds, which nobody can read.
+- Would change it: real provider latency (M8), when the timeline can play at real speed.
+
+## D-025 (2026-11-27) `app/wiring/runtime.py` owns the runtime builders
+- Decision: `Runtime`, `build_runtime` and `build_dispatcher` moved from `wiring/main.py` to `wiring/runtime.py`; `main.py` keeps the API composition and re-exports the old names. `build_dispatcher` takes an optional caller and result hook.
+- Why: the demo service needs the dispatcher and the API needs the demo service; one module holding both was an import cycle.
+- Would change it: nothing.
+
+## D-026 (2026-11-27) CI runs locally until GitHub Actions runs on this repo
+- Decision: `make check`, `make e2e` and `npx playwright test -c playwright.demo.config.ts` run locally before each push, and their results go in the PR description.
+- Why: the repo's Actions page reports "GitHub Actions is not currently enabled on this repository" although the setting allows all actions; no run has ever been created.
+- Would change it: GitHub support re-enabling Actions; then `ci.yml` is the gate again.
+
+## D-027 (2026-11-27) docs/sources.md rows carry the URL they were checked against; unverifiable facts become [CD]
+- Decision: every [V] row now links its source and states the check date. Five claims could not be confirmed and moved to [CD] and discovery questions 32-35: "Book with Zero Pay", the India BNPL instrument rule, "47% at INR 5,000 or less", the 18 Sep 2026 notification day (now "September 2026") and the G.S.R. number of the E-Commerce amendment. Two sources were corrected (Airbnb: Customer Experience Dive, not Storyboard18; MakeMyTrip: Deccan Herald, not The Hans India). Kafka volume is now dated (1.8 trillion in 2023; over 3 trillion in 2025).
+- Why: NEXT.md section 3 and Karn's final-run instruction: verify in the browser, drop what cannot be verified.
+- Would change it: Agoda confirming a [CD] item in discovery.
+
+## D-028 (2026-11-27) The /agoda letter is generated from the repo's own facts
+- Decision: `/agoda` (private, noindex, passcode) cites only `docs/sources.md` rows, `content/measured.json` results and labelled estimates; its call transcript is the recorded demo run and its question list is generated from `docs/discovery-questions.md`. `npm run pdf:agoda` prints it from the production build to `reports/agoda-letter.pdf`, which is committed (the only exception to the `reports/` ignore).
+- Why: a letter that copies facts by hand drifts from the code and the sources.
+- Would change it: nothing.
+
+## D-030 (2026-11-27) The claims rule is a browser test over every public page
+- Decision: `Src`, `Measured`, `Spec` and `Est` render `data-claim`; `web/tests/public-pages.spec.ts` walks the text of each public page and fails on any percentage or money amount outside such a mark, and runs axe for WCAG 2.1 AA. `GET /status` on the engine reports live checks (API, database, dialling state, provider mode) with no data, and an empty uptime history until one is measured.
+- Why: brief v3 section 6 ("every public number needs a source or the label estimate") is only true if a test enforces it.
+- Would change it: a public page that needs a numeric example; it then uses `Est`.

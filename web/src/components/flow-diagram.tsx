@@ -1,77 +1,69 @@
-// Inline SVG so the diagram ships with the page and needs no image assets.
+// How one call works. Inline SVG: ships with the page, scales, prints, and reads in a screen reader.
 const STEPS: readonly { label: string; sub: string }[] = [
-  { label: "booking_event", sub: "payment_failed / pending, confirmed" },
-  { label: "Holdout", sub: "10% never called" },
-  { label: "11 compliance gates", sub: "consent, DND, CLI, window, caps" },
-  { label: "AI call", sub: "discloses AI and recording first" },
-  { label: "Consent", sub: "explicit \"haan, bhej do\"" },
-  { label: "WhatsApp pay link", sub: "Agoda-hosted, utility template" },
+  { label: "Booking event", sub: "payment failed or pending, or a stay coming up" },
+  { label: "Holdout", sub: "a fixed share of bookings is never called" },
+  { label: "Compliance gates", sub: "consent, DND, declared caller ID, call window, caps" },
+  { label: "Single-use clearance", sub: "the only thing the dialler accepts" },
+  { label: "AI call", sub: "discloses AI and recording, then confirms identity" },
+  { label: "WhatsApp pay link", sub: "Agoda-hosted page; no card details by voice" },
+  { label: "Outcome logged", sub: "CRM, Kafka, QA score; lift against the holdout" },
 ];
 
+const INK = "#141414";
+const MUTED = "#57544e";
+const LINE = "#dedad1";
+const ACCENT = "#1f4e5f";
+
 export function FlowDiagram() {
-  const boxW = 150;
+  const w = 640;
+  const boxW = 380;
+  const boxH = 58;
   const gap = 22;
-  const y = 20;
-  const h = 74;
-  const width = STEPS.length * boxW + (STEPS.length - 1) * gap + 20;
-  const outcomeY = y + h + 60;
+  const x = 20;
+  const branchX = x + boxW + 40;
+  const height = STEPS.length * (boxH + gap) + 10;
+  const callY = 4 * (boxH + gap) + 10;
   return (
-    <svg
-      viewBox={`0 0 ${width} ${outcomeY + h + 20}`}
-      role="img"
-      aria-labelledby="flow-title"
-      className="w-full"
-    >
-      <title id="flow-title">
-        Flow: booking event, holdout, eleven compliance gates, AI call with disclosure, consent,
-        WhatsApp payment link, then a logged outcome or a warm handoff to a human.
-      </title>
+    <svg viewBox={`0 0 ${w} ${height}`} role="img" aria-labelledby="flow-title flow-desc" className="h-auto w-full max-w-2xl">
+      <title id="flow-title">How one call works</title>
+      <desc id="flow-desc">
+        A booking event passes the holdout and the compliance gates, receives a single-use clearance, and only then is
+        dialled. The AI call discloses itself, confirms identity and sends a WhatsApp payment link. Any judgement call goes
+        to a human with a case summary. Every call ends in a logged outcome.
+      </desc>
       <defs>
-        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M0,0 L10,5 L0,10 z" fill="#5f5b53" />
+        <marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill={MUTED} />
         </marker>
       </defs>
       {STEPS.map((step, i) => {
-        const x = 10 + i * (boxW + gap);
+        const y = 10 + i * (boxH + gap);
         return (
           <g key={step.label}>
-            <rect x={x} y={y} width={boxW} height={h} rx={6} fill="#ffffff" stroke="#2f5d50" />
-            <text x={x + boxW / 2} y={y + 30} textAnchor="middle" fontSize={13} fontWeight={600} fill="#1c1b19">
+            <rect x={x} y={y} width={boxW} height={boxH} rx={4} fill="#ffffff" stroke={i === 3 ? ACCENT : LINE} strokeWidth={i === 3 ? 1.5 : 1} />
+            <text x={x + 16} y={y + 24} fontSize={14} fontWeight={600} fill={INK} fontFamily="var(--font-sans)">
               {step.label}
             </text>
-            <text x={x + boxW / 2} y={y + 52} textAnchor="middle" fontSize={10} fill="#5f5b53">
+            <text x={x + 16} y={y + 44} fontSize={12} fill={MUTED} fontFamily="var(--font-sans)">
               {step.sub}
             </text>
             {i < STEPS.length - 1 && (
-              <line
-                x1={x + boxW}
-                y1={y + h / 2}
-                x2={x + boxW + gap - 2}
-                y2={y + h / 2}
-                stroke="#5f5b53"
-                markerEnd="url(#arrow)"
-              />
+              <line x1={x + 40} y1={y + boxH} x2={x + 40} y2={y + boxH + gap - 2} stroke={MUTED} markerEnd="url(#flow-arrow)" />
             )}
           </g>
         );
       })}
-      {/* Every stage can end in a logged outcome; judgement calls go to a human. */}
-      <rect x={10} y={outcomeY} width={width / 2 - 20} height={h} rx={6} fill="#e6efeb" stroke="#2f5d50" />
-      <text x={10 + (width / 2 - 20) / 2} y={outcomeY + 32} textAnchor="middle" fontSize={13} fontWeight={600} fill="#1c1b19">
-        Outcome logged
+      <line x1={x + boxW} y1={callY + boxH / 2} x2={branchX - 2} y2={callY + boxH / 2} stroke={MUTED} markerEnd="url(#flow-arrow)" />
+      <rect x={branchX} y={callY - 6} width={w - branchX - 10} height={boxH + 12} rx={4} fill="#ffffff" stroke={ACCENT} />
+      <text x={branchX + 12} y={callY + 20} fontSize={14} fontWeight={600} fill={INK} fontFamily="var(--font-sans)">
+        Human
       </text>
-      <text x={10 + (width / 2 - 20) / 2} y={outcomeY + 52} textAnchor="middle" fontSize={10} fill="#5f5b53">
-        call_outcome on Kafka; lift measured vs holdout
+      <text x={branchX + 12} y={callY + 40} fontSize={12} fill={MUTED} fontFamily="var(--font-sans)">
+        money, disputes,
       </text>
-      <rect x={width / 2 + 10} y={outcomeY} width={width / 2 - 20} height={h} rx={6} fill="#f7e9e0" stroke="#8a3b12" />
-      <text x={width / 2 + 10 + (width / 2 - 20) / 2} y={outcomeY + 32} textAnchor="middle" fontSize={13} fontWeight={600} fill="#1c1b19">
-        Warm handoff to a human
+      <text x={branchX + 12} y={callY + 56} fontSize={12} fill={MUTED} fontFamily="var(--font-sans)">
+        anger, safety
       </text>
-      <text x={width / 2 + 10 + (width / 2 - 20) / 2} y={outcomeY + 52} textAnchor="middle" fontSize={10} fill="#5f5b53">
-        disputes, refunds, anger, VIP, safety; with a 5-line summary
-      </text>
-      <line x1={width / 2} y1={y + h} x2={width / 4} y2={outcomeY - 2} stroke="#5f5b53" markerEnd="url(#arrow)" />
-      <line x1={width / 2} y1={y + h} x2={(3 * width) / 4} y2={outcomeY - 2} stroke="#5f5b53" markerEnd="url(#arrow)" />
     </svg>
   );
 }

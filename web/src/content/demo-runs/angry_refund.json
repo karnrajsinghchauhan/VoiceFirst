@@ -1,0 +1,302 @@
+{
+ "run_id": "rec_angry_refund",
+ "scenario": "angry_refund",
+ "mode": "text",
+ "method": "Real dispatcher, gates, agent and post-call on an isolated in-memory engine with mock providers and a scripted caller. Times are engine milliseconds; provider latency is not included until real keys (M8).",
+ "events": [
+  {
+   "t_ms": 12,
+   "kind": "holdout",
+   "label": "Holdout check (no-call group)",
+   "status": "pass",
+   "detail": {
+    "gate": "holdout",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Jurisdiction: +91 only",
+   "status": "pass",
+   "detail": {
+    "gate": "jurisdiction",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Kill switch and campaign pause",
+   "status": "pass",
+   "detail": {
+    "gate": "kill_switch",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Consent basis on record",
+   "status": "pass",
+   "detail": {
+    "gate": "consent",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "DND preference registry",
+   "status": "pass",
+   "detail": {
+    "gate": "dnd",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Opt-out lock",
+   "status": "pass",
+   "detail": {
+    "gate": "opt_out_lock",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Caller ID declared as A2P on DLT",
+   "status": "pass",
+   "detail": {
+    "gate": "cli_declared",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Number series matches purpose",
+   "status": "pass",
+   "detail": {
+    "gate": "series",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Caller ID active",
+   "status": "pass",
+   "detail": {
+    "gate": "cli_status",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Call window (recipient local time)",
+   "status": "pass",
+   "detail": {
+    "gate": "window",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "gate",
+   "label": "Attempt cap and cooldown",
+   "status": "pass",
+   "detail": {
+    "gate": "cap_cooldown",
+    "reason_code": "ok"
+   }
+  },
+  {
+   "t_ms": 12,
+   "kind": "clearance",
+   "label": "GateClearance issued (single use, 60 s)",
+   "status": "pass",
+   "detail": {
+    "clearance_id": "clr_32dc1dc711964401bc389e3333bde901"
+   }
+  },
+  {
+   "t_ms": 17,
+   "kind": "disclosure",
+   "label": "AI and recording disclosed",
+   "status": "pass",
+   "detail": {
+    "text": "Namaste ji, main Agoda ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main Priya ji se baat kar rahi hoon?"
+   }
+  },
+  {
+   "t_ms": 17,
+   "kind": "tool",
+   "label": "log_case",
+   "status": "info",
+   "detail": {
+    "result": "logged"
+   }
+  },
+  {
+   "t_ms": 17,
+   "kind": "tool",
+   "label": "warm_transfer",
+   "status": "info",
+   "detail": {
+    "result": "connected"
+   }
+  },
+  {
+   "t_ms": 17,
+   "kind": "crm",
+   "label": "CRM ticket T00001",
+   "status": "info",
+   "detail": {
+    "subject": "Agoda Voice case: dispute (********BB22)"
+   }
+  },
+  {
+   "t_ms": 17,
+   "kind": "qa",
+   "label": "QA score 100",
+   "status": "pass",
+   "detail": {
+    "checks": 14
+   }
+  },
+  {
+   "t_ms": 17,
+   "kind": "cost",
+   "label": "Cost 148 paise",
+   "status": "info",
+   "detail": {
+    "total_paise": 148
+   }
+  },
+  {
+   "t_ms": 17,
+   "kind": "end",
+   "label": "Outcome: handed_off",
+   "status": "info",
+   "detail": {
+    "outcome": "handed_off"
+   }
+  }
+ ],
+ "transcript": [
+  {
+   "speaker": "agent",
+   "text": "Namaste ji, main Agoda ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main Priya ji se baat kar rahi hoon?",
+   "t_ms": 17
+  },
+  {
+   "speaker": "customer",
+   "text": "haan ji, main hi bol raha hoon",
+   "t_ms": 17
+  },
+  {
+   "speaker": "agent",
+   "text": "Dhanyavaad ji. Aapki Udaipur wali booking ka payment pending hai — kya main aapko WhatsApp par payment link bhej doon?",
+   "t_ms": 17
+  },
+  {
+   "speaker": "customer",
+   "text": "Kya bakwaas hai! Mere paise kat gaye aur booking pending dikha rahe ho!",
+   "t_ms": 17
+  },
+  {
+   "speaker": "agent",
+   "text": "Main aapko abhi hamare team ke saathi se jod rahi hoon — unhe poori baat bata di hai.",
+   "t_ms": 17
+  }
+ ],
+ "whatsapp_preview": null,
+ "crm_ticket": {
+  "ticket_id": "T00001",
+  "subject": "Agoda Voice case: dispute (********BB22)",
+  "priority": "normal"
+ },
+ "qa": {
+  "score": 100,
+  "checks": [
+   {
+    "name": "disclosure_first_utterance",
+    "passed": true
+   },
+   {
+    "name": "no_booking_detail_before_identity",
+    "passed": true
+   },
+   {
+    "name": "allowlisted_tools_only",
+    "passed": true
+   },
+   {
+    "name": "no_money_action",
+    "passed": true
+   },
+   {
+    "name": "never_claims_human",
+    "passed": true
+   },
+   {
+    "name": "handoff_on_trigger",
+    "passed": true
+   },
+   {
+    "name": "no_pii_spoken",
+    "passed": true
+   },
+   {
+    "name": "customer_transcript_redacted",
+    "passed": true
+   },
+   {
+    "name": "language_mirrored_by_turn_2",
+    "passed": true
+   },
+   {
+    "name": "no_dark_patterns",
+    "passed": true
+   },
+   {
+    "name": "task_expected_outcome",
+    "passed": true
+   },
+   {
+    "name": "task_requires_log_case",
+    "passed": true
+   },
+   {
+    "name": "task_requires_warm_transfer",
+    "passed": true
+   },
+   {
+    "name": "forbids_send_payment_link",
+    "passed": true
+   }
+  ]
+ },
+ "cost_paise": {
+  "telephony": 38,
+  "stt": 7,
+  "tts": 103,
+  "llm": 0,
+  "whatsapp": 0,
+  "total": 148
+ },
+ "latency_ms": {
+  "p50": 0,
+  "p95": 0,
+  "per_turn": [
+   0,
+   0,
+   0
+  ]
+ },
+ "recorded_at": "2026-11-27"
+}

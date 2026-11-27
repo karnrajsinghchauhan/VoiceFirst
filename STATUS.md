@@ -1,4 +1,4 @@
-# Status (2026-11-23, end of session)
+# Status (2026-11-27)
 
 Real-provider test calls used: 0 / 20 (no provider keys in the environment).
 
@@ -18,3 +18,43 @@ Real-provider test calls used: 0 / 20 (no provider keys in the environment).
 | M11 | done for mock scope | `make load` 200 sessions; `make chaos` 11 tests (STT/TTS/LLM/telephony/WhatsApp/bus/Postgres); `make scan` green; threat model; tabletop scripts |
 
 Latest report: reports/<ts>-text/index.html (gitignored; regenerate with `make eval`).
+
+## Brief v3 (local session, 2026-11-27)
+
+CI: GitHub Actions does not run on this repo (D-026); every gate below was run locally before push.
+
+| Item | State | Evidence |
+|------|-------|----------|
+| S10 /demo | done (text mode) | 6 scenarios on the real engine, paced live timeline, kill switch (D-022..D-024). `server/tests/demo` 12 tests; `web/tests/demo` 8 Playwright tests against uvicorn + `next start` |
+| Gates | green | `make check` (lint, mypy, 604 tests, tsc, eslint, no contract drift), `make e2e` 8 passed on local Postgres 16 |
+
+## Evals (2026-11-27, branch v3/w3-frontend = main + /demo)
+
+Method: `make eval` and `make eval-audio`, deterministic scripted caller and mock agent LLM (D-007); audio through the mock codec and line simulator with the timing model (D-105). These numbers prove the guardrail and tool layer, not real-LLM or real-audio behaviour. Reports: `reports/20261127T085711Z-text/`, `reports/20261127T085711Z-audio/` (gitignored; regenerate with the same commands).
+
+| Metric | Text (189 conversations) | Audio (378, 4 line profiles) | Target (brief 11.8) |
+|--------|------|-------|--------|
+| Guardrail rate | 100% | 100% | >= 95% |
+| Critical personas C-06/07/08/11/16/17/18 | 100% | 100% | 100% |
+| J1 link consent, cooperative | 100% | 95.4% | >= 90% |
+| Task success | 100% | 96.8% | reported |
+| Containment | 60.3% | 57.1% | reported (pilot target 35-55%) |
+| End of speech to first audio p50/p95 (simulated) | n/a | 725 / 950 ms | < 800 / < 1,500 ms |
+| Barge-in stop (simulated) | n/a | 260 ms | < 300 ms |
+| False interruption / false cutoff C-02, C-25 | n/a | 0% / 0% | < 5% / < 3% |
+| WER clean / 3G / street / TV | n/a | 0 / 7.2% / 6.1% / 0 | benchmark is Agoda's audio [CD] |
+| Dark-pattern findings | 0 | 0 | 0 |
+
+Regression check: the text scorecard is identical to the run on main of 2026-11-25; the only voice-package change since then is the exported `HANDOFF_QUEUES` constant.
+
+## Public site (2026-11-27)
+
+Method: `next build` with the mock data layer, `next start`, Lighthouse 12.8.2 (headless Chromium 1243, default mobile emulation), one warm-up request per server; Playwright with axe-core (WCAG 2.1 A/AA tags).
+
+| Page | Performance | Accessibility | Best practices | SEO |
+|------|-------------|---------------|----------------|-----|
+| / | 98 | 100 | 100 | 100 |
+| /product | 98 | 100 | 100 | 100 |
+| /security, /pricing, /changelog, /company, /status, /docs, /legal/privacy | 99 | 100 | 100 | 100 |
+
+`tests/public-pages.spec.ts`: 15 public pages each carry the disclaimer, have no untagged percentage or money claim (the claims test), return 200 and have zero axe WCAG 2.1 AA violations; security.txt follows RFC 9116. Playwright: 44 mock-site tests and 9 live-engine tests pass.

@@ -7,7 +7,7 @@ export const metadata = { title: "Console | Agoda Voice" };
 export default function ConsoleLayout({ children }: { children: ReactNode }) {
   return (
     <ConsoleSessionProvider>
-      <div className="mx-auto max-w-6xl px-6 py-8">
+      <div className="mx-auto max-w-page px-6 py-8">
         <ConsoleNav />
         <div className="mt-6">{children}</div>
       </div>

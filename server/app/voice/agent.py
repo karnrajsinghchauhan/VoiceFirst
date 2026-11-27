@@ -166,6 +166,7 @@ _HANDOFF_QUEUE = {
     "money_request": "payments",
     "booking_change": "bookings",
 }
+HANDOFF_QUEUES = frozenset({*_HANDOFF_QUEUE.values(), "general"})
 
 
 class Conversation:

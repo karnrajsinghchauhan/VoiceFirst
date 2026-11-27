@@ -1,10 +1,11 @@
-// Deterministic mock data layer behind ConsoleApi. Seeded data only: no real people,
-// bookings or numbers. Mutable state (kill switch, audit log) is persisted to
-// sessionStorage so it survives client navigation between console pages.
+// Deterministic mock of the engine's console endpoints, used by the server-side proxy when
+// AV_API_MODE=mock. Seeded data only: no real people, bookings or numbers. Mutable state
+// (kill switch, audit log) lives in this server process.
 import type { AuditEvent } from "@/contracts/audit_event";
 import type { CallOutcome } from "@/contracts/call_outcome";
 import type { HandoffSummary } from "@/contracts/handoff_summary";
-import type { Campaign, Identity, KillSwitchState, LiveCall } from "./api";
+import type { CallRow, Campaign, CostBreakdown, Identity, KillSwitchState, LiveCall, NumberRow } from "./console-types";
+import { MOCK_COSTS } from "./mock-costs";
 import type { Role } from "./rbac";
 
 // Mirrors the server's dev tokens (server/app/core/config.py Settings.api_tokens).
@@ -17,7 +18,6 @@ const DEV_TOKENS: Record<string, Role> = {
 
 const TENANT = "agoda-in";
 const HASH = "0".repeat(64);
-const STORAGE_KEY = "av-mock-state-v1";
 
 interface MutableState {
   killSwitch: KillSwitchState;
@@ -115,6 +115,38 @@ const HANDOFFS: HandoffSummary[] = [
   },
 ];
 
+// Unanswered calls have no scorecard.
+const QA_SCORES: Record<string, number> = { call_mock1: 100, call_mock2: 86, call_mock3: 100, call_mock4: 93 };
+
+const NUMBERS: NumberRow[] = [
+  {
+    cli_e164: "+911600200001",
+    series: "1600",
+    purpose: "transactional",
+    oap: "OAP-MOCK",
+    declaration_ref: "DLT-A2P-MOCK-0001",
+    dlt_recorded_at: "2026-10-01T00:00:00Z",
+    status: "active",
+    complaints_10d: 0,
+    answer_rate: 0.61,
+    auto_paused: false,
+    paused_reason: null,
+  },
+  {
+    cli_e164: "+911601200001",
+    series: "1601",
+    purpose: "service",
+    oap: "OAP-MOCK",
+    declaration_ref: "DLT-A2P-MOCK-0002",
+    dlt_recorded_at: "2026-10-01T00:00:00Z",
+    status: "paused",
+    complaints_10d: 1,
+    answer_rate: 0.58,
+    auto_paused: true,
+    paused_reason: "complaint cmp_mock1",
+  },
+];
+
 const LIVE: LiveCall[] = [
   {
     call_id: "call_live1",
@@ -147,26 +179,18 @@ function initialState(): MutableState {
   };
 }
 
-function storage(): Storage | null {
-  return typeof window === "undefined" ? null : window.sessionStorage;
-}
-
+// One instance per server process, owned by lib/server/engine.ts.
 export class MockBackend {
-  private static instance: MockBackend | null = null;
   private state: MutableState;
 
   readonly campaigns = CAMPAIGNS;
-  readonly outcomes = OUTCOMES;
+  readonly outcomes: CallRow[] = OUTCOMES.map((o) => ({ ...o, qa_score: QA_SCORES[o.call_id] ?? null }));
+  readonly numbers: NumberRow[] = NUMBERS;
+  readonly costs: CostBreakdown = MOCK_COSTS;
   readonly handoffs = HANDOFFS;
 
-  private constructor() {
-    const saved = storage()?.getItem(STORAGE_KEY);
-    this.state = saved ? (JSON.parse(saved) as MutableState) : initialState();
-  }
-
-  static shared(): MockBackend {
-    MockBackend.instance ??= new MockBackend();
-    return MockBackend.instance;
+  constructor() {
+    this.state = initialState();
   }
 
   identify(token: string): Identity {
@@ -204,7 +228,6 @@ export class MockBackend {
       target: `tenant:${TENANT}`,
       reason,
     });
-    storage()?.setItem(STORAGE_KEY, JSON.stringify(this.state));
     return this.state.killSwitch;
   }
 }

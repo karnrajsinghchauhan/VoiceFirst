@@ -1,0 +1,63 @@
+export const metadata = { title: "SDK snippets" };
+
+# SDK snippets
+
+There is no packaged SDK yet. The API is small, JSON over HTTPS with a bearer token, so a few lines in any language are enough. These snippets use only standard libraries.
+
+## Who am I
+
+```bash
+curl -sS -H "Authorization: Bearer $AV_TOKEN" https://<engine-host>/whoami
+```
+
+```python
+import json, os, urllib.request
+
+req = urllib.request.Request(
+    "https://<engine-host>/whoami",
+    headers={"Authorization": f"Bearer {os.environ['AV_TOKEN']}"},
+)
+with urllib.request.urlopen(req) as res:
+    print(json.load(res))  # {"actor": "...", "role": "ops"}
+```
+
+```js
+const res = await fetch("https://<engine-host>/whoami", {
+  headers: { authorization: `Bearer ${process.env.AV_TOKEN}` },
+});
+if (!res.ok) throw new Error(`whoami failed: ${res.status}`);
+console.log(await res.json());
+```
+
+## Engage the kill switch
+
+Needs the `ops` or `admin` role. A reason is required and is written to the audit log with your identity.
+
+```bash
+curl -sS -X POST https://<engine-host>/killswitch \
+  -H "Authorization: Bearer $AV_TOKEN" -H "content-type: application/json" \
+  -d '{"engaged": true, "reason": "complaint spike on one caller ID"}'
+```
+
+```python
+body = json.dumps({"engaged": True, "reason": "complaint spike on one caller ID"}).encode()
+req = urllib.request.Request(
+    "https://<engine-host>/killswitch", data=body, method="POST",
+    headers={"Authorization": f"Bearer {os.environ['AV_TOKEN']}", "content-type": "application/json"},
+)
+with urllib.request.urlopen(req) as res:
+    print(json.load(res))
+```
+
+## Recent call outcomes
+
+```js
+const res = await fetch("https://<engine-host>/calls?state=ended", {
+  headers: { authorization: `Bearer ${process.env.AV_TOKEN}` },
+});
+const outcomes = await res.json(); // CallOutcome[], see contracts/schemas/call_outcome.json
+```
+
+## Types
+
+TypeScript types for every record are generated from the JSON Schemas into `web/src/contracts/`; Python (pydantic) types into `server/app/contracts/generated/`. Copy them rather than writing your own, so a contract change fails your build instead of your production run.

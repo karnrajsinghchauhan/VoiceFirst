@@ -1,43 +1,54 @@
 # Sources
 
-Every [V] fact used anywhere in this repo. Each row was supplied in the build
-brief v2.0 (23 Nov 2026) with the publication and date shown. URLs are not
-recorded here because the brief did not include them; this session did not
-re-fetch the sources. Re-verify before any external use.
+Every [V] fact used anywhere in this repo, with the page it was checked against.
+Checked 2026-11-27 by web search and page review in the local session. "Secondary"
+means the fact was confirmed in reporting of the original, not the original itself;
+quote it with that source. Facts that could not be confirmed were downgraded to [CD]
+(listed at the end) and must not be stated as fact.
 
-| ID | Fact | Source | Date |
-|----|------|--------|------|
-| S-01 | CEO Omri Morgenshtern; CTO Idan Zalzberg | Agoda corporate | 2026 |
-| S-02 | One Bangkok office for 4,000 staff, opened 1 Apr 2026 | Agoda press | 2026-04-01 |
-| S-03 | 6M+ properties; flights; activities; connected trips | Agoda corporate | 2026 |
-| S-04 | Payment options: Pay Now, BNPL, Book with Zero Pay, Pay at Hotel | Agoda Terms of Use | 2026 |
-| S-05 | India BNPL: pay on or before payment date with an India-issuer instrument | Agoda Terms of Use | 2026 |
-| S-06 | Paytm Travel hotel distribution partnership | Press | early 2025 |
-| S-07 | CS priorities, "humans in charge of the outcome", escalation paths, metrics | Frontier Enterprise, Gauri Vicknasvaran | 2026-08-17 |
-| S-08 | Property AMA bot 30,000+ questions/day | Agoda press | 2025-08 |
-| S-09 | In-app AI Assistant beta Sep 2026; 21 markets by 30 Oct 2026 | Agoda press | 2026-10-30 |
-| S-10 | Meta Muse connector SG and JP | Press | 2026-10 |
-| S-11 | "AI voice agents capable of having reasonable conversations with suppliers" | TTG Asia, CEO interview | 2026-05-04 |
-| S-12 | Engineers expected to vibe code; business rebuilt bottom-up with agents | Skift | 2026-01, 2026-04 |
-| S-13 | One million CPU cores, 14 PB/day, four trillion messages | ComputerWeekly | 2026 |
-| S-14 | Kafka around 1.8 trillion events/day | Agoda Engineering blog | 2026 |
-| S-15 | Fleet on Kubernetes; Spark; Zendesk partner helpdesk | Agoda Engineering | 2026 |
-| S-16 | Country Director ISC & IOI: Gaurav Malik | Agoda press | 2026 |
-| S-17 | 2026 Travel Outlook: 19% spiritual trip; 47% <= INR 5,000/night; 68% AI planning (n=3,353) | Agoda Travel Outlook | 2025-10 |
-| S-18 | Prayagraj searches +233% during 2025 Maha Kumbh | Agoda press | 2025 |
-| S-19 | Top domestic festive searches: Goa, Puri, Udaipur | Agoda press | 2026 |
-| S-20 | Booking Holdings voice AI across majority of eligible inbound calls | BKNG Q2 2026 call | 2026-08-04 |
-| S-21 | Airbnb AI assistant resolved about 40% of issues in Q3 2026 | Storyboard18 | 2026 |
-| S-22 | Expedia "virtual agents now resolve more than half of inquiries" | CX Dive, Q3 2025 call | 2025 |
-| S-23 | MakeMyTrip Myra 2.0: "70% of voice queries come in Hinglish" | The Hans India | 2026 |
-| S-24 | TRAI TCCCPR Third Amendment (05 of 2026), notified 18 Sep 2026, PR 119/2026 | TRAI | 2026-09-18 |
-| S-25 | DPDP Rules 2025 notified 13 Nov 2025; CM provisions 13 Nov 2026; core 13 May 2027 | MeitY | 2025-11-13 |
-| S-26 | IT Amendment Rules 2026 (G.S.R. 120(E)) notified 10 Feb 2026, in force 20 Feb 2026 | MeitY | 2026-02-10 |
-| S-27 | E-Commerce (Amendment) Rules 2026 (G.S.R. 789(E)) notified 9 Sep 2026, in force 1 Jan 2027 | MoCA | 2026-09-09 |
-| S-28 | CCPA Dark Patterns Guidelines 2023: 13 patterns | CCPA | 2023 |
-| S-29 | CERT-In Directions: 6 h reporting, 180-day logs, NTP sync | CERT-In | 2022-04-28 |
-| S-30 | WhatsApp India rates utility Rs 0.1150, marketing Rs 0.8631, +18% GST; 1 Oct 2026 changes | Meta | 2026 |
-| S-31 | Sarvam STT Rs 0.49/min; Bulbul v3 Rs 3.00/1,000 chars | Sarvam pricing page | 2026-11 |
-| S-32 | FCC Feb 2024: AI voices are "artificial" under TCPA | FCC | 2024-02 |
-| S-33 | EU AI Act Art. 50 applicable since 2 Aug 2026 | EU | 2026-08-02 |
-| S-34 | LiveKit Agents 1.8.x stable, 2.0 beta | LiveKit | 2026-10 |
+| ID | Fact | Source (checked 2026-11-27) | Published |
+|----|------|------------------------------|-----------|
+| S-01 | CEO Omri Morgenshtern; CTO Idan Zalzberg | [TTG Asia, "Moving up the funnel"](https://www.ttgasia.com/2026/05/04/moving-up-the-funnel/); [Frontier Enterprise, CTO on Bangkok hub](https://www.frontier-enterprise.com/agoda-cto-breaks-down-strategy-behind-bangkok-tech-hub/) | 2026 |
+| S-02 | New office at One Bangkok opened April 2026 for about 4,000 staff; more than 4,500 by October 2026 | [Agoda release via AAP](https://www.aap.com.au/aapreleases/cision20260409ae30490/); [Malay Mail](https://www.malaymail.com/news/money/mediaoutreach/2026/10/24/agoda-makes-bangkok-its-largest-office-worldwide-with-more-than-4500-staff/496470) | 2026-04-09; 2026-10-24 |
+| S-03 | 6M+ properties, about 130,000 flight routes, about 300,000 activities; single checkout for multi-product trips | [Booking Holdings brand page](https://www.bookingholdings.com/brands/agoda/); [Agoda release via AAP](https://www.aap.com.au/aapreleases/cision20260518ae61572/) | 2026-05-18 |
+| S-04 | Payment options include Pay Now, Book Now Pay Later and Pay at Hotel (Property Collect) | [Agoda Partner Hub, Property Collect](https://partnerhub.agoda.com/?p=3716); secondary: [HotelDig guide](https://www.hoteldig.com/en/agoda-payment-guide/) | 2026 |
+| S-06 | Paytm Travel and Agoda hotel distribution partnership | [PR Newswire](https://www.prnewswire.com/in/news-releases/paytm-travel-and-agoda-partner-to-offer-hotel-bookings-across-indian-and-global-destinations-on-the-paytm-app-302372079.html) | 2025-02-10 |
+| S-07 | CS: "humans in charge of the outcome"; disputes stay with humans; escalation to Legal, Security, Data Privacy; metrics are resolution time and CSAT (Gauri Vicknasvaran) | Secondary, reporting Frontier Enterprise: [Complete AI Training](https://completeaitraining.com/news/agoda-keeps-humans-in-charge-as-ai-scales-customer-service/); [Renascence](https://www.renascence.io/news/31726/agoda-scales-customer-service-with-ai-keeps-humans-in-charge) | 2026-08 |
+| S-08 | Property AMA bot: 30,000+ hotel questions a day; ChatGPT plus live property data | [Agoda release via AAP](https://www.aap.com.au/aapreleases/cision20250821ae56938); [TTG Asia](https://www.ttgasia.com/2025/08/27/agoda-introduces-ai-bot-to-answer-hotel-questions-in-real-time/) | 2025-08-21 |
+| S-09 | In-app AI Assistant in 21 markets; conversational models from OpenAI | [Agoda press](https://www.agoda.com/press/1509063/); [IT Brief](https://itbrief.com.au/story/agoda-rolls-out-ai-assistant-across-21-travel-markets) | 2026 |
+| S-10 | Agoda connector for Meta's Muse in Singapore and Japan | [Skift](https://skift.com/2026/10/28/agoda-plugs-into-metas-muse-in-singapore-and-japan/) | 2026-10-28 |
+| S-11 | CEO: AI voice agents now hold workable conversations with suppliers (paraphrase; quote only from the article) | [TTG Asia](https://www.ttgasia.com/2026/05/04/moving-up-the-funnel/) | 2026-05-04 |
+| S-12 | Engineers expected to vibe code; business rebuilt "bottom up" with multiple agents | [Skift, Jan 2026](https://skift.com/2026/01/23/from-vibe-coding-to-exclusive-llm-deals-ai-takeaways-from-agodas-ceo/); [Skift, Apr 2026](https://skift.com/2026/04/29/agoda-ceo-multiple-ai-agents-rebuild-business/) | 2026-01-23; 2026-04-29 |
+| S-13 | Own infrastructure: one million CPU cores, 14 PB of data daily, four trillion messages (Frontier: 14 PB is read volume; 4.33 trillion messages) | [ComputerWeekly](https://www.computerweekly.com/news/366640804/Agoda-scales-AI-strategy-opens-new-APAC-tech-hub); [Frontier Enterprise](https://www.frontier-enterprise.com/agoda-cto-breaks-down-strategy-behind-bangkok-tech-hub/) | 2026 |
+| S-14 | Kafka: about 1.8 trillion events a day (2023); over 3 trillion records a day (2025) | [Agoda Engineering, 2023](https://medium.com/agoda-engineering/tagged/big-data); [InfoQ](https://www.infoq.com/news/2025/08/agoda-kafka-failover) | 2023-09-17; 2025-08 |
+| S-15 | Private cloud: Fleet compute platform on Kubernetes; Spark kept for data processing. Partner help centre runs on Zendesk | [The Pragmatic Engineer](https://newsletter.pragmaticengineer.com/p/inside-agodas-private-cloud); [agodapropertypartnerhelp.zendesk.com](https://agodapropertypartnerhelp.zendesk.com/hc/en-us/articles/360044010634) | 2023; 2026 |
+| S-16 | Country Director, Indian Subcontinent & Indian Ocean Islands: Gaurav Malik | [Agoda festive release via Utusan](https://www.utusan.com.my/?p=1454780) | 2026-11 |
+| S-17 | 2026 Travel Outlook (n=3,353, nine markets, Oct 2025): 19% of Indians weigh spiritual experiences, highest in Asia; 68% likely to use AI to plan the next trip | [Agoda release via AAP](https://www.aap.com.au/aapreleases/cision20260409ae24602) | 2026 |
+| S-18 | Prayagraj accommodation searches +233% year on year in the 2025 Maha Kumbh period | [Agoda press](https://www.agoda.com/press/from-allahabad-to-varanasi-agoda-rankings-reveal-increased-appeal-of-spiritual-destinations) | 2025-04-24 |
+| S-19 | Top domestic festive searches (stays 15 Oct to 30 Nov 2026): Goa, Puri, Udaipur | [Agoda festive release via Utusan](https://www.utusan.com.my/?p=1454780) | 2026-11 |
+| S-20 | Booking Holdings: voice AI scaled across the majority of eligible inbound traveller calls; CS cost per booking falling at a double-digit rate | Secondary: [Customer Experience Dive](https://www.customerexperiencedive.com/news/booking-holdings-connected-trip-strategy-boosts-loyalty/827135/); [PYMNTS](https://www.pymnts.com/dashboard-post/earnings/2026/ai-can-plan-the-trip-but-booking-holdings-wants-the-transaction/) | call 2026-08-04 |
+| S-21 | Airbnb: AI resolved about 40% of support issues without a human in Q3 2026, up from about a third in Q2 | [Customer Experience Dive](https://www.customerexperiencedive.com/news/airbnb-reduces-customer-support-cost-per-booking-17/874307/); [Crypto Briefing](https://cryptobriefing.com/airbnb-ai-travel-agent-2027-launch/) | 2026 |
+| S-22 | Expedia CFO Scott Schenkel, Q3 2025 call: virtual agents resolve more than half of inquiries | [Customer Experience Dive](https://customerexperiencedive.com/news/expedia-queries-ai-agents/805023) | 2025 |
+| S-23 | MakeMyTrip Myra 2.0: about 70% of voice queries are in Hinglish | [Deccan Herald](https://www.deccanherald.com/amp/story/business%2Fcompanies%2Fmakemytrip-boosts-ai-travel-assistant-myra-to-handle-full-travel-bookings-4003970); [India TV](https://www.indiatvnews.com/technology/news/makemytrip-myra-2-0-ai-asssistant-to-help-completing-travel-bookings-through-voice-conversations-2026-05-14-1041087) | 2026-05-14 |
+| S-24 | TCCCPR (Third Amendment) Regulations 2026 (05 of 2026), press release 119/2026, September 2026; draft of 13 Mar 2026 required pre-declared A2P calls | [TRAI PR 119/2026](https://www.trai.gov.in/sites/default/files/2026-09/PR_No119of2026.pdf); [Onmanorama](https://www.onmanorama.com/news/business/2026/09/29/trai-directs-telcos-to-act-against-spammers-without-complaints.amp.html) | 2026-09 |
+| S-25 | DPDP Rules 2025 gazetted 13 Nov 2025; Consent Manager rule after 12 months (Nov 2026); remaining duties after 18 months (May 2027) | [PIB](https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/nov/doc20251117695301.pdf); [Chambers](https://chambers.com/articles/s-r-data-india-s-digital-personal-data-protection-regime-takes-effect) | 2025-11-13 |
+| S-26 | IT (Intermediary Guidelines) Amendment Rules 2026, G.S.R. 120(E), dated 10 Feb 2026, in force 20 Feb 2026; synthetically generated information labelling | [Khaitan & Co](https://www.khaitanco.com/thought-leadership/MeitY-notifies-the-IT-Amendment-Rules-2026); [SCC Online](https://www.scconline.com/blog/post/2026/02/12/it-rules-2026-ai-and-intermediary-compliance/) | 2026-02-10 |
+| S-27 | Consumer Protection (E-Commerce) (Amendment) Rules 2026 notified 9 Sep 2026, in force 1 Jan 2027; Rule 4(15) yearly dark-pattern self-audit | [SCC Online](https://www.scconline.com/blog/post/2026/09/14/consumer-protection-e-commerce-amendment-rules-2026/); [Bar & Bench](https://www.barandbench.com/law-firms/view-point/consumer-protection-e-commerce-amendment-rules-2026-from-consumer-disclosure-to-platform-governance) | 2026-09-09 |
+| S-28 | CCPA Guidelines for Prevention and Regulation of Dark Patterns 2023: 13 specified patterns, notified 30 Nov 2023 | [JSA](https://www.jsalaw.com/newsletters-and-updates/ccpa-issues-guidelines-for-prevention-and-regulation-of-dark-patterns-2023/); [Bar & Bench](https://www.barandbench.com/law-firms/view-point/ccpa-steps-in-to-curb-dark-patterns) | 2023-11-30 |
+| S-29 | CERT-In Directions of 28 Apr 2022: report within 6 hours; 180-day logs in India; NTP sync to NIC/NPL | [Khaitan & Co](https://khaitanco.com/sites/default/files/2022-04/Ergo_30042022.pdf); [Linklaters](https://www.linklaters.com/en/insights/blogs/digilinks/2022/may/india-new-and-onerous-cyber-security-framework-and-breach-reporting-obligations) | 2022-04-28 |
+| S-30 | WhatsApp India: utility Rs 0.115, marketing Rs 0.8631 per message before GST; in-window utility templates billable from 1 Oct 2026. Reseller-reported; confirm on Meta's rate card before quoting a price | Secondary: [IBTimes India](https://www.ibtimes.co.in/whatsapp-business-messages-become-paid-october-1-india-prices-rules-what-changes-906727); [MyOperator](https://myoperator.com/blog/whatsapp-business-api-pricing-india-2026); [Meta pricing page](https://developers.facebook.com/docs/whatsapp/pricing) | 2026 |
+| S-31 | Sarvam pay-as-you-go: speech to text Rs 0.49/min; Bulbul v3 Rs 3.00 per 1,000 characters | [Sarvam pricing](https://docs.sarvam.ai/api-reference-docs/getting-started/pricing) | 2026-11 |
+| S-32 | FCC declaratory ruling (CG Docket 23-362): AI-generated voices are "artificial" under the TCPA | [FCC-24-17](https://docs.fcc.gov/public/attachments/FCC-24-17A4.pdf); [Cooley](https://www.cooley.com/news/insight/2024/2024-02-15-fcc-ai-generated-robocalls-illegal-under-the-tcpa) | 2024-02-08 |
+| S-33 | EU AI Act Art. 50(1), (3), (4) apply from 2 Aug 2026; the Art. 50(2) marking duty was deferred by the Digital Omnibus | [Sidley](https://datamatters.sidley.com/2026/06/24/eu-ai-act-transparency-obligations-preparing-for-compliance-by-2-august-2026/); [Simmons & Simmons](https://www.simmons-simmons.com/en/publications/cmoveo6ke00icuxskpgueb0od/ai-omnibus-update) | 2026-08-02 |
+| S-34 | livekit-agents 1.8.13 released 2026-11-18 (pinned, D-004); 2.0.0b2 is a beta; 1.9.0 is now the latest stable | [PyPI JSON](https://pypi.org/pypi/livekit-agents/json) | 2026-11-18 |
+
+## Downgraded to [CD] on 2026-11-27 (could not be verified)
+
+| Was | Claim | Why |
+|-----|-------|-----|
+| S-04 (part) | "Book with Zero Pay" is a payment option | Not found in any Agoda page or coverage |
+| S-05 | India BNPL must be paid on or before the payment date with an India-issued instrument | Agoda's consumer Terms of Use page was not reachable; the engine keeps the rule as config (no J1 after `payment_due_at`) |
+| S-17 (part) | 47% of Indians plan to spend INR 5,000 or less per night | Not in any published summary of the Outlook |
+| S-24 (part) | Third Amendment notified on 18 Sep 2026 | The press release is dated September 2026; the exact day was not confirmed |
+| S-27 (part) | Gazette number G.S.R. 789(E) | Not shown in any source checked |
+| S-09 (part) | AI Assistant beta began September 2026 | Start date not confirmed |

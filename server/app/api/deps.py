@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.admin import apikeys
 from app.admin.oidc import OidcVerifier
 from app.admin.rbac import Permission, Principal, authorize, resolve_token
-from app.api.ports import CampaignService, IncidentService, Simulator
+from app.api.ports import CampaignService, Demo, IncidentService, Simulator
 from app.core.bus import EventBus
 from app.core.clock import Clock
 from app.core.config import Settings
@@ -56,6 +56,7 @@ class ApiDeps:
     cipher: DataCipher
     rights_sla: RightsSlaSettings
     simulator: Simulator
+    demo: Demo
     campaigns: CampaignService
     incidents: IncidentService
     human_queue: HumanQueue

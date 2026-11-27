@@ -1,0 +1,36 @@
+export const metadata = { title: "Telephony and numbers" };
+
+# Telephony and numbers
+
+How the service places calls in India, and why it uses few numbers rather than many.
+
+## Few declared numbers, not rotation
+
+TRAI's amended rules treat a call placed by software, including an AI voice, as an application-to-person (A2P) call, and an A2P call from a number that is not declared for that use is treated as spam. So the service dials only from a small set of caller IDs per telecom circle, each declared as A2P on the operators' DLT ledger. A caller ID that is not declared cannot receive a clearance, so the dialler cannot use it.
+
+Rotating through many numbers to dodge spam labels is a pattern regulators and call-management apps look for. A small, stable, declared set builds a reputation instead.
+
+## Series by purpose
+
+- Promotional calls use the 140 series. The pilot makes none.
+- Service and transactional calls (payment rescue, booking confirmation) use the 1600 and 1601 series. Which of those applies to the client's sender category is a question for discovery.
+
+A call whose purpose does not match its number's series is refused by a gate before dialling.
+
+## Verified caller ID
+
+We plan to register the caller IDs for verified business caller ID (Truecaller) and to follow CNAP (caller name presentation) as operators roll it out. Status of both: to be confirmed in discovery.
+
+## WhatsApp before and after
+
+- Built: after a missed call, exactly one utility template follows with the payment link, and only if the customer has opted in to WhatsApp.
+- Planned: a heads-up by WhatsApp utility template before a call, so the customer knows who is calling and why.
+- Planned: a "Call me now" button, so the customer can ask for the call when it suits them; a call they ask for is customer-initiated.
+
+## Caps, cooldowns and windows
+
+- At most two call attempts per booking event, and at least a day between calls to the same number across every campaign.
+- Calls only between 09:00 and 21:00 in the recipient's local time; the window can be narrowed, never widened.
+- Any complaint pauses the caller ID it names. Two complaints from different people within ten days pause every campaign and page a person.
+
+These limits are enforced by the gates in `server/app/compliance/`, each with a test; see [Compliance](/docs/compliance).

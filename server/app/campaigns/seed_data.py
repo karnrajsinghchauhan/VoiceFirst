@@ -1,7 +1,7 @@
 """Deterministic demo and test data: bookings in Tier-2/3 and pilgrimage cities (2.5).
 
-Most nightly amounts are under INR 5,000, matching Agoda's 2026 Travel Outlook
-(47% plan to spend INR 5,000 or less per night). Everything is derived from a
+Most nightly amounts are under INR 5,000 (brief 2.5; the Travel Outlook share behind it is
+unverified, see docs/sources.md). Everything is derived from a
 seeded Random, so the same seed always yields the same bookings.
 """
 

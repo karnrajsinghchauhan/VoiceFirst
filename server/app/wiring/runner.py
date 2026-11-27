@@ -21,7 +21,7 @@ from app.postcall.crypto import DataCipher
 from app.postcall.store import TranscriptTurn, record_outcome, store_transcript
 from app.providers.base import CrmProvider, LlmProvider, TelephonyProvider, WhatsAppProvider
 from app.telephony.handle import CallHandle
-from app.voice.agent import CallSetup, Listener, run_conversation
+from app.voice.agent import CallSetup, ConversationResult, Listener, run_conversation
 from app.wiring.backend import LiveToolBackend
 
 ListenerFactory = Callable[[CallHandle, BookingEvent], Listener]
@@ -43,6 +43,7 @@ class AgentCallRunner:
         cipher: DataCipher,
         listener_factory: ListenerFactory,
         model_ids: dict[str, str],
+        on_result: Callable[[ConversationResult], None] | None = None,
     ) -> None:
         self._factory = session_factory
         self._bus = bus
@@ -56,6 +57,8 @@ class AgentCallRunner:
         self._cipher = cipher
         self._listener_factory = listener_factory
         self._model_ids = model_ids
+        # The live demo shows turn latencies and the transcript, which CallOutcome does not carry.
+        self._on_result = on_result
 
     def _killed(self) -> bool:
         with transaction(self._factory) as s:
@@ -102,4 +105,6 @@ class AgentCallRunner:
                 at=self._clock.now(),
                 turns=[TranscriptTurn(t.speaker, t.text) for t in result.transcript],
             )
+        if self._on_result is not None:
+            self._on_result(result)
         return result.outcome

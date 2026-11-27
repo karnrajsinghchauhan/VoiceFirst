@@ -1,10 +1,12 @@
+import { Spec } from "@/components/claims";
+
 # Agoda Voice
 
 Agoda Voice places compliant outbound service calls in Hindi, English and Hinglish for two pilot journeys:
 
 - **J1 Payment rescue.** A booking whose payment failed, or is pending past its threshold, gets a disclosed AI call that asks for consent to send an Agoda-hosted payment link over WhatsApp. No answer: one WhatsApp utility template, only if the customer opted in to WhatsApp.
 - **J2 Booking confirmation.** Confirms check-in date and time, guests and special requests, answering only from the booking record. It carries no offers (decision D-001).
-- **J3 Holdout.** 10% of eligible bookings are never called, so lift is measured, not assumed.
+- **J3 Holdout.** <Spec of="holdout.percent">10%</Spec> of eligible bookings are never called, so lift is measured, not assumed.
 
 ProsperOps runs it as a managed service first; the same Helm chart then runs on the client's own Kubernetes.
 

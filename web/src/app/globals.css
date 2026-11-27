@@ -1,41 +1,140 @@
 @import "tailwindcss";
 
-/* System font stacks only: no third-party or brand fonts. */
+/*
+ * Design system (web/copy/style.md). Near-black on off-white, one accent (petrol),
+ * green and red only for meaning (pass/fail). 8-pt spacing via Tailwind's 4-px unit
+ * used in even steps. Fonts are self-hosted through next/font in app/fonts.ts.
+ */
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
-  --font-serif: ui-serif, Georgia, "Iowan Old Style", "Noto Serif", "Noto Serif Devanagari", serif;
+  --font-sans: var(--font-inter), var(--font-mukta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-deva: var(--font-mukta), var(--font-inter), sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --color-ink: #1c1b19;
-  --color-muted: #5f5b53;
-  --color-paper: #faf8f4;
-  --color-line: #e3ded4;
-  --color-accent: #2f5d50;
-  --color-accent-soft: #e6efeb;
-  --color-warn: #8a3b12;
-  --color-warn-soft: #f7e9e0;
+
+  --color-ink: #141414;
+  --color-muted: #57544e;
+  --color-paper: #f7f5f0;
+  --color-surface: #ffffff;
+  --color-line: #dedad1;
+  --color-accent: #1f4e5f;
+  --color-accent-soft: #e4edf0;
+  --color-pass: #1d6b3f;
+  --color-pass-soft: #e3f1e8;
+  --color-fail: #a8261b;
+  --color-fail-soft: #f8e5e2;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.6;
+  --text-base: 1rem;
+  --text-base--line-height: 1.65;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 2rem;
+  --text-2xl--line-height: 1.2;
+  --text-3xl: 2.5rem;
+  --text-3xl--line-height: 1.12;
+  --text-4xl: 3.5rem;
+  --text-4xl--line-height: 1.05;
+
+  --container-page: 72rem;
+  --container-prose: 42rem;
 }
 
 :root {
   color-scheme: light;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-.prose-av h1 { font-family: var(--font-serif); font-size: 2rem; line-height: 1.2; margin-bottom: 1rem; }
-.prose-av h2 { font-family: var(--font-serif); font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.5rem; }
-.prose-av h3 { font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.25rem; }
-.prose-av p { margin: 0.6rem 0; line-height: 1.65; }
-.prose-av ul { list-style: disc; padding-left: 1.25rem; margin: 0.6rem 0; }
-.prose-av ol { list-style: decimal; padding-left: 1.25rem; margin: 0.6rem 0; }
-.prose-av li { margin: 0.25rem 0; line-height: 1.6; }
-.prose-av code { font-family: var(--font-mono); font-size: 0.85em; background: var(--color-accent-soft); padding: 0.05rem 0.3rem; border-radius: 0.2rem; }
-.prose-av pre { font-family: var(--font-mono); font-size: 0.82rem; background: #f0ece4; padding: 0.75rem 1rem; border-radius: 0.3rem; overflow-x: auto; margin: 0.75rem 0; }
+/* Hindi always renders in the Devanagari face, never a fallback. */
+:lang(hi) {
+  font-family: var(--font-deva);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+/* Motion: short, and none at all for people who ask for none. */
+.motion {
+  transition-property: color, background-color, border-color, opacity, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 50;
+  background: var(--color-surface);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-line);
+}
+
+/* Long-form text: docs, legal, the letter. */
+.prose-av { max-width: var(--container-prose); }
+.prose-av h1 { font-family: var(--font-display); font-size: var(--text-2xl); line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.01em; }
+.prose-av h2 { font-family: var(--font-display); font-size: var(--text-xl); margin-top: 2.5rem; margin-bottom: 0.75rem; letter-spacing: -0.005em; }
+.prose-av h3 { font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+.prose-av p { margin: 0.75rem 0; line-height: 1.7; }
+.prose-av ul { list-style: disc; padding-left: 1.25rem; margin: 0.75rem 0; }
+.prose-av ol { list-style: decimal; padding-left: 1.25rem; margin: 0.75rem 0; }
+.prose-av li { margin: 0.375rem 0; line-height: 1.65; }
+.prose-av code { font-family: var(--font-mono); font-size: 0.85em; background: var(--color-accent-soft); padding: 0.0625rem 0.3rem; border-radius: 0.2rem; }
+.prose-av pre { font-family: var(--font-mono); font-size: 0.8125rem; background: #efece5; padding: 1rem; border-radius: 0.25rem; overflow-x: auto; margin: 1rem 0; line-height: 1.55; }
 .prose-av pre code { background: none; padding: 0; }
-.prose-av table { border-collapse: collapse; margin: 0.75rem 0; font-size: 0.9rem; width: 100%; }
-.prose-av th, .prose-av td { border-bottom: 1px solid var(--color-line); text-align: left; padding: 0.35rem 0.5rem; vertical-align: top; }
-.prose-av a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 2px; }
+.prose-av table { border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem; width: 100%; display: block; overflow-x: auto; }
+.prose-av th, .prose-av td { border-bottom: 1px solid var(--color-line); text-align: left; padding: 0.5rem; vertical-align: top; }
+.prose-av th { font-weight: 600; }
+.prose-av a { color: var(--color-accent); text-decoration: underline; }
+.prose-av blockquote { border-left: 2px solid var(--color-line); padding-left: 1rem; color: var(--color-muted); }
+
+/* Print: the /agoda letter exports to PDF from the browser or `npm run pdf:agoda`. */
+@media print {
+  @page { size: A4; margin: 18mm 18mm 20mm; }
+  html, body { background: #fff; }
+  body { font-size: 10.5pt; }
+  .no-print, header[data-site-header], footer[data-site-footer], [data-concierge] { display: none !important; }
+  .print-only { display: block !important; }
+  a { color: inherit; text-decoration: none; }
+  .prose-av { max-width: none; }
+  .prose-av h2 { break-after: avoid; }
+  figure, svg, table, pre { break-inside: avoid; }
+}
+.print-only { display: none; }

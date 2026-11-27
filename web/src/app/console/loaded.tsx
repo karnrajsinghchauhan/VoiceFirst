@@ -7,7 +7,7 @@ export function Loaded<T>({ result, children }: { result: Load<T>; children: (da
   if (result.state === "loading") return <p className="text-muted">Loading</p>;
   if (result.state === "error")
     return (
-      <p role="alert" className="text-warn">
+      <p role="alert" className="text-fail">
         {result.message}
       </p>
     );

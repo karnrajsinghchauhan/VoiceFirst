@@ -5,7 +5,7 @@ sign it off before go-live [CD]. Every REQ below has a test at
 `server/tests/compliance/test_<req_id>.py`; a REQ without a passing test blocks
 M2.
 
-## TRAI: TCCCPR 2018 as amended (Second Amendment Feb 2025; Third Amendment 05 of 2026, notified 18 Sep 2026)
+## TRAI: TCCCPR 2018 as amended (Second Amendment Feb 2025; Third Amendment 05 of 2026, notified September 2026, PR 119/2026)
 | REQ | Rule | Where enforced |
 |-----|------|----------------|
 | REQ-TRAI-01 | Every outbound call is A2P; the CLI needs a2p_declared, declaration_ref, OAP, dlt_recorded_at | `gates.gate_cli_declared` |
@@ -63,7 +63,7 @@ from 13 May 2027. We build to the full standard now.
 ## Consumer Protection Act 2019, E-Commerce Rules, Dark Patterns Guidelines 2023
 | REQ | Rule | Where |
 |-----|------|-------|
-| REQ-CP-01 | None of the 13 CCPA dark patterns in any script or template; binding from 1 Jan 2027 (G.S.R. 789(E)) with yearly self-audit | `voice/dark_patterns.py`, eval suite 11.6 |
+| REQ-CP-01 | None of the 13 CCPA dark patterns in any script or template; binding from 1 Jan 2027 with yearly self-audit | `voice/dark_patterns.py`, eval suite 11.6 |
 | REQ-CP-02 | Full payable amount stated once from the booking; no added items, no invented scarcity, no repeated refused ask | `voice/guardrails.py` |
 | REQ-CP-03 | Every outcome carries the grievance channel; case SLA fields 48 h ack and 30 days resolution | `call_outcome.grievance_channel`, `handoff_summary.sla_*` |
 

@@ -1,54 +1,11 @@
-// Typed console API client. One interface, two implementations, chosen once from
-// NEXT_PUBLIC_AV_API_MODE at build time: "http" talks to the FastAPI server at
-// NEXT_PUBLIC_AV_API; "mock" is a deterministic in-browser data layer for dev and tests.
-// There is no runtime fallback between them.
+// Console API client. Talks only to the same-origin proxy (/api/console/*); the proxy holds
+// the token in an HttpOnly cookie and decides http-vs-mock on the server (lib/server/engine.ts).
 import type { AuditEvent } from "@/contracts/audit_event";
-import type { CallOutcome } from "@/contracts/call_outcome";
 import type { HandoffSummary } from "@/contracts/handoff_summary";
-import { assertCan, type Role } from "./rbac";
-import { MockBackend } from "./mock-backend";
+import type { CallRow, Campaign, CostBreakdown, Identity, KillSwitchState, LiveCall, NumberRow } from "./console-types";
+import { assertCan, isRole } from "./rbac";
 
-export interface Identity {
-  actor: string;
-  role: Role;
-}
-
-export interface Campaign {
-  campaign_id: string;
-  name: string;
-  purpose: "J1" | "J2";
-  status: "draft" | "running" | "paused";
-  created_at: string;
-  counts: { eligible: number; held_out: number; dialled: number; link_sent: number; handed_off: number };
-}
-
-export interface LiveCall {
-  call_id: string;
-  trace_id: string;
-  booking_masked: string;
-  purpose: "J1" | "J2";
-  language: CallOutcome["language_detected"];
-  started_at: string;
-  turns: number;
-}
-
-export interface KillSwitchState {
-  engaged: boolean;
-  actor: string;
-  reason: string;
-  changed_at: string;
-}
-
-export interface ConsoleApi {
-  whoami(): Promise<Identity>;
-  listCampaigns(): Promise<Campaign[]>;
-  listLiveCalls(): Promise<LiveCall[]>;
-  listCallOutcomes(): Promise<CallOutcome[]>;
-  listHandoffs(): Promise<HandoffSummary[]>;
-  listAudit(): Promise<AuditEvent[]>;
-  getKillSwitch(): Promise<KillSwitchState>;
-  setKillSwitch(engaged: boolean, reason: string): Promise<KillSwitchState>;
-}
+export type { CallRow, Campaign, CostBreakdown, Identity, KillSwitchState, LiveCall, NumberRow } from "./console-types";
 
 export class ApiError extends Error {
   constructor(
@@ -60,117 +17,88 @@ export class ApiError extends Error {
   }
 }
 
-class HttpApi implements ConsoleApi {
-  private identity: Identity | null = null;
+function csrfToken(): string {
+  const m = document.cookie.match(/(?:^|;\s*)av_csrf=([^;]+)/);
+  if (!m?.[1]) throw new ApiError(403, "no CSRF cookie; sign in again");
+  return m[1];
+}
 
-  constructor(
-    private readonly baseUrl: string,
-    private readonly token: string,
-  ) {}
-
-  private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const res = await fetch(`${this.baseUrl}${path}`, {
-      ...init,
-      headers: { ...init.headers, authorization: `Bearer ${this.token}`, "content-type": "application/json" },
-    });
-    if (!res.ok) throw new ApiError(res.status, `${init.method ?? "GET"} ${path} -> ${res.status}`);
-    return (await res.json()) as T;
+// Every mutation carries the CSRF header, except sign-in, which happens before the cookie exists.
+async function call<T>(path: string, init: RequestInit = {}, csrf = (init.method ?? "GET") !== "GET"): Promise<T> {
+  const method = init.method ?? "GET";
+  const headers: Record<string, string> = { "content-type": "application/json" };
+  if (csrf) headers["x-csrf-token"] = csrfToken();
+  const res = await fetch(path, { ...init, headers, credentials: "same-origin", cache: "no-store" });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { detail?: string } | null;
+    throw new ApiError(res.status, body?.detail ?? `${method} ${path} -> ${res.status}`);
   }
+  return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
+}
 
-  async whoami(): Promise<Identity> {
-    this.identity = await this.request<Identity>("/whoami");
-    return this.identity;
-  }
+export interface SessionInfo {
+  identity: Identity;
+  mode: "http" | "mock";
+}
+
+function asSession(raw: { identity: { actor: unknown; role: unknown }; mode: "http" | "mock" }): SessionInfo {
+  if (typeof raw.identity.actor !== "string" || !isRole(raw.identity.role)) throw new ApiError(502, "engine returned an unknown role");
+  return { identity: { actor: raw.identity.actor, role: raw.identity.role }, mode: raw.mode };
+}
+
+export const session = {
+  async current(): Promise<{ info: SessionInfo | null; mode: "http" | "mock" }> {
+    const raw = await call<{ identity: { actor: unknown; role: unknown } | null; mode: "http" | "mock" }>("/api/console/session");
+    return { info: raw.identity ? asSession({ identity: raw.identity, mode: raw.mode }) : null, mode: raw.mode };
+  },
+  async signIn(token: string): Promise<SessionInfo> {
+    return asSession(await call("/api/console/session", { method: "POST", body: JSON.stringify({ token }) }, false));
+  },
+  async signOut(): Promise<void> {
+    await call("/api/console/session", { method: "DELETE" });
+  },
+};
+
+export class ConsoleApi {
+  constructor(readonly identity: Identity) {}
 
   listCampaigns(): Promise<Campaign[]> {
-    return this.request("/campaigns");
+    return call("/api/console/campaigns");
   }
 
   listLiveCalls(): Promise<LiveCall[]> {
-    return this.request("/calls?state=live");
+    return call("/api/console/calls?state=live");
   }
 
-  listCallOutcomes(): Promise<CallOutcome[]> {
-    return this.request("/calls?state=ended");
+  listCallOutcomes(): Promise<CallRow[]> {
+    return call("/api/console/calls?state=ended");
   }
 
   listHandoffs(): Promise<HandoffSummary[]> {
-    return this.request("/handoff");
+    return call("/api/console/handoff");
   }
 
-  async listAudit(): Promise<AuditEvent[]> {
-    assertCan((await this.role()), "view_audit");
-    return this.request("/audit");
+  listNumbers(): Promise<NumberRow[]> {
+    return call("/api/console/numbers");
+  }
+
+  getCosts(): Promise<CostBreakdown> {
+    assertCan(this.identity.role, "view_costs");
+    return call("/api/console/costs");
+  }
+
+  listAudit(): Promise<AuditEvent[]> {
+    assertCan(this.identity.role, "view_audit");
+    return call("/api/console/audit");
   }
 
   getKillSwitch(): Promise<KillSwitchState> {
-    return this.request("/killswitch");
+    return call("/api/console/killswitch");
   }
 
-  async setKillSwitch(engaged: boolean, reason: string): Promise<KillSwitchState> {
-    // The server enforces RBAC too; refusing here keeps the UI honest about what it can do.
-    assertCan((await this.role()), "operate_kill_switch");
-    return this.request("/killswitch", { method: "POST", body: JSON.stringify({ engaged, reason }) });
+  setKillSwitch(engaged: boolean, reason: string): Promise<KillSwitchState> {
+    // The engine enforces RBAC too; refusing here keeps the UI honest about what it can do.
+    assertCan(this.identity.role, "operate_kill_switch");
+    return call("/api/console/killswitch", { method: "POST", body: JSON.stringify({ engaged, reason }) });
   }
-
-  private async role(): Promise<Role> {
-    return (this.identity ?? (await this.whoami())).role;
-  }
-}
-
-class MockApi implements ConsoleApi {
-  constructor(
-    private readonly backend: MockBackend,
-    private readonly token: string,
-  ) {}
-
-  async whoami(): Promise<Identity> {
-    return this.backend.identify(this.token);
-  }
-
-  async listCampaigns(): Promise<Campaign[]> {
-    return this.backend.campaigns;
-  }
-
-  async listLiveCalls(): Promise<LiveCall[]> {
-    return this.backend.liveCalls();
-  }
-
-  async listCallOutcomes(): Promise<CallOutcome[]> {
-    return this.backend.outcomes;
-  }
-
-  async listHandoffs(): Promise<HandoffSummary[]> {
-    return this.backend.handoffs;
-  }
-
-  async listAudit(): Promise<AuditEvent[]> {
-    assertCan(this.backend.identify(this.token).role, "view_audit");
-    return this.backend.audit();
-  }
-
-  async getKillSwitch(): Promise<KillSwitchState> {
-    return this.backend.killSwitch();
-  }
-
-  async setKillSwitch(engaged: boolean, reason: string): Promise<KillSwitchState> {
-    const who = this.backend.identify(this.token);
-    assertCan(who.role, "operate_kill_switch");
-    return this.backend.setKillSwitch(who, engaged, reason);
-  }
-}
-
-export type ApiMode = "http" | "mock";
-
-export function apiMode(): ApiMode {
-  const mode = process.env.NEXT_PUBLIC_AV_API_MODE ?? "mock";
-  if (mode !== "http" && mode !== "mock") throw new Error(`NEXT_PUBLIC_AV_API_MODE must be http or mock, got ${mode}`);
-  return mode;
-}
-
-export function makeApi(token: string): ConsoleApi {
-  if (apiMode() === "mock") return new MockApi(MockBackend.shared(), token);
-  const base = process.env.NEXT_PUBLIC_AV_API;
-  if (!base) throw new Error("NEXT_PUBLIC_AV_API is required when NEXT_PUBLIC_AV_API_MODE=http");
-  return new HttpApi(base, token);
 }

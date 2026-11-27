@@ -1,0 +1,15 @@
+export const metadata = { title: "Changelog" };
+
+import { CHANGELOG } from "@/content/changelog";
+
+# Changelog
+
+What changed, in the order it landed. Dates are when the change reached the main branch.
+
+<ul>
+  {CHANGELOG.map((c) => (
+    <li key={c.title}>
+      <strong>{c.date}</strong>: {c.title}. {c.body}
+    </li>
+  ))}
+</ul>
