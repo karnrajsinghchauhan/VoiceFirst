@@ -25,8 +25,7 @@ from app.core.ids import new_id, phone_hash, sha256_hex
 from app.postcall.crypto import DataCipher
 from app.postcall.models import AudioRefRow, CallOutcomeRow, TranscriptRow
 from app.rights.models import RightsKind, RightsRequestRow
-
-ERASED = "erased"
+from app.rights.scrub import ERASED, erase_for_phone
 
 
 class RightsSlaSettings(BaseSettings):
@@ -209,6 +208,7 @@ def fulfil_erasure(
         outcome.phone_hash = ERASED
         outcome.booking_id = f"{ERASED}-{sha256_hex(outcome.booking_id)[:12]}"
         outcome.payload = {**outcome.payload, "booking_id": outcome.booking_id}
+    scrubbed = erase_for_phone(session, phone_e164, ph, at)
     counts = ErasureCounts(
         transcripts=transcripts, audio=audio, outcomes_pseudonymised=len(outcomes)
     )
@@ -219,6 +219,9 @@ def fulfil_erasure(
             "transcripts": transcripts,
             "audio": audio,
             "outcomes": len(outcomes),
+            "booking_events_scrubbed": scrubbed.booking_events,
+            "clearances_scrubbed": scrubbed.clearances,
+            "handoffs_scrubbed": scrubbed.handoffs,
             "retained": ["consent_records", "opt_outs"],
         },
     )

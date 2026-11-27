@@ -10,7 +10,7 @@ export default function DemoPage() {
       <h1 className="font-display text-3xl">Live demo</h1>
       <p className="mt-2 max-w-3xl text-sm text-muted">
         Each call runs the real engine: holdout, every compliance gate, a single-use clearance, the agent and its tools,
-        then post-call. Providers are mocks and the customer is a scripted persona, so no real call or message is sent.
+        then post-call. Providers are mocks and the customer is a scripted persona, so no real call or message is sent. The demo models a contact-centre queue with a person free; the connection to a real contact centre is not built yet (AV-CCAAS-1), and no real phone call has been made (0 of 20 test calls).
         Names, bookings and amounts are synthetic.
       </p>
       <DemoApp />

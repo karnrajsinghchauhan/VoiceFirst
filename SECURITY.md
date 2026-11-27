@@ -18,7 +18,7 @@ addendum are available [CD], we build to the strictest common baseline.
 | C-09 | Only declared CLIs; single-use clearances | `compliance/evaluate`, `telephony/dial` | test_clearance_unforgeable |
 | C-10 | Kill switch < 5 s | `compliance/killswitch`, `/killswitch` | tests/api/test_killswitch_latency |
 | C-11 | Secrets never in repo or config files | Secrets from the platform secret store; production validator rejects dev tokens and pepper | test_req_dpdp_09 |
-| C-12 | ICT logs 180 days, producible within India, NTP to NIC/NPL | `retention.ict_log_days >= 180`, `ntp_servers` | test_req_sec_03 |
+| C-12 | ICT logs 180 days, producible within India, NTP to NIC/NPL | Config floor only: `retention.ict_log_days >= 180` and `ntp_servers` required in production. The app logs JSON to stdout; shipping to an India log store with 180-day retention and host NTP sync are deployment requirements, not built in the app (review R2 H3) | test_req_sec_03 (config only) |
 | C-13 | CERT-In report within 6 h of noticing | `incidents/service.py` (`cert_in` window) | test_req_sec_02 |
 | C-14 | Dependency and secret scans | `make scan` (pip-audit, npm audit, gitleaks-style regex scan) | CI |
 | C-15 | Threat model | `docs/threat-model.md` | review |

@@ -51,7 +51,7 @@ See `docs/subprocessors.md`. Pilot defaults: Sarvam (speech, India [CD: confirm 
 | Redacted transcripts | 180 days | REQ-DPDP-07 |
 | Call outcomes | Pseudonymised on erasure, kept for lift measurement | D-302 |
 | Consent and opt-out records | As the law requires [CD: counsel] | D-302 |
-| ICT logs | 180 days rolling, producible in India | CERT-In Directions (S-29) |
+| ICT logs | 180 days rolling, producible in India: a deployment requirement (log shipping to an India store and host NTP), not yet built | CERT-In Directions (S-29) |
 A nightly purge deletes expired data and logs the counts.
 
 ## 6. Incident response

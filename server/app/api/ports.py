@@ -76,6 +76,10 @@ class IncidentService(Protocol):
         self, kind: IncidentKind, summary: str, detected_at: datetime, actor: str
     ) -> IncidentView: ...
 
+    def mark_reported(self, incident_id: str, at: datetime) -> IncidentView: ...
+
+    def acknowledge(self, incident_id: str, at: datetime, actor: str) -> IncidentView: ...
+
 
 DemoScenario = Literal[
     "failed_upi", "confirmation", "angry_refund", "stop_calling", "child_answers", "card_number"

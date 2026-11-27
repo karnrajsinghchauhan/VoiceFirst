@@ -37,8 +37,12 @@ time from the click to the first refused dial (target under 5 s). Queued calls a
 Release it afterwards.
 
 ## 4:30 Close (30 s)
-"What you saw is what runs in the pilot. Real voice is the same engine with keys plugged in;
-the 10% holdout gives you lift you can audit."
+"What you saw is the engine the pilot runs: same gates, same agent, same records. What it has
+not done yet is a real phone call: that needs keys, the media bridge and the 20 test calls in
+weeks 2-3, and the transfer you saw goes to a modelled queue until we connect your contact
+centre. The 10% holdout gives you lift you can audit."
+
+Say this part plainly; a CX director will ask.
 
 If something fails on stage: switch to the recorded runs on the home page, which come from
 the same code path (D-024).

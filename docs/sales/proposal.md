@@ -44,7 +44,7 @@ Inbound support, supply calls, analytics on Agoda's contact history, any promoti
 |---|---|---|
 | Payment recovery lift | Intention-to-treat over all J1-eligible bookings, called vs holdout, two-proportion test, 95% CI (D-202) | Lower bound of the CI above 0 |
 | Compliance | Gate decision written for every dial; complaints per 1,000 calls | Zero dials without a clearance; complaint rate under the agreed ceiling |
-| Customer experience | CSAT by WhatsApp survey; resolution time for transferred calls | No worse than the matching human baseline |
+| Customer experience | CSAT by WhatsApp survey; resolution time for transferred calls, from Agoda's Zendesk report on the tickets we open (each call records its ticket id). Automatic read-back of ticket status is a week-2 task (estimate: 2 days) | No worse than the matching human baseline |
 | Cost | Cost per resolved contact from the cost book | Reported; no threshold in the pilot |
 
 ## 3. Commercials
@@ -58,7 +58,7 @@ Inbound support, supply calls, analytics on Agoda's contact history, any promoti
 | Pass-through costs | Telephony, WhatsApp and model usage are included in options A and B; in the pilot they are included up to an agreed call volume (estimate: 20,000 calls) |
 | Taxes | Exclusive of GST and withholding |
 
-"AI-resolved contact": a call whose outcome is `link_sent`, `details_confirmed` or `opted_out` with no transfer to a person and no complaint within 7 days.
+"AI-resolved contact" (the billing unit): a J1 call after which the booking is paid within its payment window, or a J2 call ending `details_confirmed`; in both cases with no transfer to a person and no complaint within 7 days. A link sent that is never paid, an opt-out, or a callback is not billed. (The engine's containment metric, `AI_RESOLVED` in `analytics/metrics.py`, counts goals met on the call; it is reported, not billed.)
 
 ### 3.1 Our cost to serve (estimate, for transparency)
 From the cost book on branch v3/w2 (`config/costs.yaml`), prices as of 2026-11-23, re-check before quoting: about Rs 2.72 per call minute and about Rs 5.44 per 2-minute call, all components included (estimate). Speech-to-text and text-to-speech prices are Sarvam's published pay-as-you-go rates (docs/sources.md S-31); the WhatsApp rate is reseller-reported (S-30); telephony, LLM and infrastructure lines are estimates.

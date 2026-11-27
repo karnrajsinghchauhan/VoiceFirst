@@ -32,5 +32,7 @@ spec:
             capabilities: {drop: ["ALL"]}
           env:
             {{- include "av.env" . | nindent 12 }}
+          envFrom:
+            {{- include "av.envFrom" . | nindent 12 }}
           resources:
             {{- toYaml .Values.voiceWorker.resources | nindent 12 }}

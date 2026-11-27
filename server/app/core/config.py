@@ -118,6 +118,8 @@ class Settings(BaseSettings):
     bus: BusName = "memory"
     kafka_bootstrap: str = "localhost:19092"
     phone_pepper: str = "dev-pepper-not-secret"
+    # Calls a dispatcher runs at once (D-033). Gates stay sequential whatever the value.
+    call_workers: int = Field(default=1, ge=1, le=200)
     api_tokens: dict[str, str] = Field(
         default_factory=lambda: {
             "dev-admin-token": "admin",
@@ -177,6 +179,18 @@ def validate_for_environment(settings: Settings) -> None:
             raise ProductionConfigError(f"{role} region {region!r} is outside {sorted(allowed)}")
     if not settings.ntp_servers:
         raise ProductionConfigError("NTP servers must be configured (REQ-SEC-03)")
+    # Every notice and WhatsApp template carries these; a placeholder must never reach a customer.
+    for name, value in (
+        ("grievance.channel", settings.grievance.channel),
+        ("grievance.notice_url", settings.grievance.notice_url),
+        ("payment_link.base_url", settings.payment_link.base_url),
+    ):
+        if "[CD" in value or "example.invalid" in value:
+            raise ProductionConfigError(f"{name} is still a placeholder")
+    if settings.stt == "sarvam":
+        # Sarvam returns no per-utterance confidence, so the low-confidence safety rule (D-103)
+        # would never fire. Calibrate a confidence source on real audio (M8) before enabling it.
+        raise ProductionConfigError("stt=sarvam has no calibrated confidence yet (D-103, M8)")
 
 
 @lru_cache(maxsize=1)

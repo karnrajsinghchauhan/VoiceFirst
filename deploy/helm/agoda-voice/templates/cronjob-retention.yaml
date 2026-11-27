@@ -20,3 +20,5 @@ spec:
               command: ["python", "-m", "app.postcall.retention"]
               env:
                 {{- include "av.env" . | nindent 16 }}
+              envFrom:
+                {{- include "av.envFrom" . | nindent 16 }}

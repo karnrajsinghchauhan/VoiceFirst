@@ -12,6 +12,7 @@ from app.core.clock import Clock
 from app.core.config import RetentionSettings
 from app.core.logging import get_logger
 from app.postcall.models import AudioRefRow, TranscriptRow
+from app.rights.scrub import ScrubCounts, scrub_older_than
 
 _log = get_logger(__name__)
 
@@ -20,6 +21,7 @@ _log = get_logger(__name__)
 class PurgeCounts:
     audio: int
     transcripts: int
+    personal_fields: ScrubCounts
 
 
 def purge_expired(session: Session, retention: RetentionSettings, clock: Clock) -> PurgeCounts:
@@ -30,10 +32,21 @@ def purge_expired(session: Session, retention: RetentionSettings, clock: Clock) 
     transcripts = session.execute(
         delete(TranscriptRow).where(TranscriptRow.created_at < transcript_cutoff)
     )
-    counts = PurgeCounts(audio=audio.rowcount, transcripts=transcripts.rowcount)
+    # Booking payloads, clearances and handoff summaries keep names and numbers; they go
+    # with the transcripts, the longest purpose-bound retention (review R2 H1).
+    scrubbed = scrub_older_than(session, transcript_cutoff)
+    counts = PurgeCounts(
+        audio=audio.rowcount, transcripts=transcripts.rowcount, personal_fields=scrubbed
+    )
     _log.info(
         "retention purge",
-        extra={"audio_purged": counts.audio, "transcripts_purged": counts.transcripts},
+        extra={
+            "audio_purged": counts.audio,
+            "transcripts_purged": counts.transcripts,
+            "booking_events_scrubbed": scrubbed.booking_events,
+            "clearances_scrubbed": scrubbed.clearances,
+            "handoffs_scrubbed": scrubbed.handoffs,
+        },
     )
     return counts
 

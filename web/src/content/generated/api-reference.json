@@ -228,6 +228,24 @@
    "response": "IncidentView"
   },
   {
+   "method": "POST",
+   "path": "/incidents/{incident_id}/acknowledge",
+   "summary": "Acknowledge Incident",
+   "tag": "incidents",
+   "auth": true,
+   "request": "ReasonIn",
+   "response": "IncidentView"
+  },
+  {
+   "method": "POST",
+   "path": "/incidents/{incident_id}/reported",
+   "summary": "Mark Incident Reported",
+   "tag": "incidents",
+   "auth": true,
+   "request": "ReasonIn",
+   "response": "IncidentView"
+  },
+  {
    "method": "GET",
    "path": "/killswitch",
    "summary": "Get Killswitch",

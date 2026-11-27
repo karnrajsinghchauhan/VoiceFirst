@@ -92,6 +92,18 @@ class StubIncidents:
     def list_incidents(self) -> list[IncidentView]:
         return list(self.incidents)
 
+    def _find(self, incident_id: str) -> IncidentView:
+        found = next((i for i in self.incidents if i.incident_id == incident_id), None)
+        if found is None:
+            raise NotFoundError(f"no incident {incident_id}")
+        return found
+
+    def mark_reported(self, incident_id: str, at: datetime) -> IncidentView:
+        return self._find(incident_id).model_copy(update={"status": "reported"})
+
+    def acknowledge(self, incident_id: str, at: datetime, actor: str) -> IncidentView:
+        return self._find(incident_id).model_copy(update={"status": "closed"})
+
     def open_incident(
         self, kind: IncidentKind, summary: str, detected_at: datetime, actor: str
     ) -> IncidentView:

@@ -62,7 +62,7 @@ export default function AgodaLetter() {
               Your customer service leadership has said publicly that AI is now central to how you scale support but that people
               stay in charge of the outcome, that disputes stay with humans, and that the measures that matter are case
               resolution time and customer satisfaction <Src id="S-07">(August 2026)</Src>. We took that literally: our handoff
-              summary is written in the shape of a case summary, we report resolution time and CSAT rather than containment
+              summary is written in the shape of a case summary, the pilot reports resolution time and CSAT rather than containment
               alone, and no dispute is ever resolved by the AI.
             </li>
             <li>
@@ -196,6 +196,12 @@ export default function AgodaLetter() {
             safety and tool layer behaves as designed. It does not prove how a real language model behaves on real Indian phone
             audio; that is what the pilot is for.
           </p>
+          <p>
+            <strong>Not proven yet.</strong> No real phone call has been made (0 of the 20 test calls we budget). The latency
+            figure below comes from a timing model, not a call; with real streaming speech and a real language model in the
+            loop it will be slower until we measure and tune it in weeks 2-3. Calls run concurrently up to a configured limit
+            per dispatcher, tested with test doubles, not with real telephony.
+          </p>
           <table>
             <thead>
               <tr>
@@ -308,7 +314,7 @@ export default function AgodaLetter() {
                 <td>Running on your Kubernetes</td>
                 <td>The Helm chart has no cloud-vendor dependencies; secrets, ingress and Postgres are yours</td>
                 <td>
-                  <Est>about 5 days with your platform team</Est>
+                  <Est>about 5 days with your platform team, after we add the LiveKit server, SIP service and Redis the chart does not yet include</Est>
                 </td>
               </tr>
             </tbody>
@@ -350,9 +356,11 @@ export default function AgodaLetter() {
             </li>
             <li>
               <strong>Weeks 1-2:</strong> discovery answers, counsel review, caller-ID declaration, WhatsApp templates approved,
-              Kafka and CRM connected in a sandbox. <strong>Weeks 3-4:</strong> evaluation on a sample of your own call audio;
-              internal test calls. <strong>Weeks 5-8:</strong> live traffic with the holdout; weekly review of every failed or
-              low-scoring call; a written result at the end.
+              Kafka and CRM connected in a sandbox. <strong>Week 3:</strong> evaluation on a sample of your own call audio;
+              internal test calls. <strong>Week 4:</strong> live at 5% of eligible bookings with the holdout running.{" "}
+              <strong>Weeks 5-6:</strong> ramp to all eligible bookings, with a manual weekly review of every failed or
+              low-scoring call. <strong>Week 7:</strong> lift read-out. <strong>Week 8:</strong> decision. We will size the
+              sample with you in week 1 so the read-out has the power to show a result.
             </li>
           </ul>
         </Section>

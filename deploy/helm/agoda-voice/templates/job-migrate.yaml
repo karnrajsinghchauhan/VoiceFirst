@@ -20,3 +20,5 @@ spec:
           command: ["alembic", "upgrade", "head"]
           env:
             {{- include "av.env" . | nindent 12 }}
+          envFrom:
+            {{- include "av.envFrom" . | nindent 12 }}

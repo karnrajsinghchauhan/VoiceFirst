@@ -25,6 +25,8 @@ export interface MeasuredItem {
   date: string;
   method: string;
   result: string;
+  // "modelled" when the number comes from a timing model rather than a run (review R3 H1).
+  kind: string;
 }
 
 export const SOURCES: readonly SourceRow[] = sources.rows;
@@ -68,10 +70,10 @@ export function Measured({ id, children }: { id: string; children?: ReactNode })
       <Link
         href={`/product#proof-${id}`}
         className="ml-0.5 align-super text-[0.65em] text-accent no-underline hover:underline"
-        title={`Measured on test data, ${item.date}: ${item.method}`}
-        aria-label={`Measured on test data, ${item.date}`}
+        title={`${item.kind === "modelled" ? "Modelled" : "Measured on test data"}, ${item.date}: ${item.method}`}
+        aria-label={`${item.kind === "modelled" ? "Modelled" : "Measured on test data"}, ${item.date}`}
       >
-        measured
+        {item.kind}
       </Link>
     </span>
   );

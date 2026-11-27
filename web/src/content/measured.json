@@ -7,7 +7,8 @@
    "label": "Compliance state-machine proof: a call is placed if and only if all 11 gates pass",
    "date": "2026-11-27",
    "method": "Hypothesis stateful test against an independently written oracle; bookings, consent, DND, caller IDs, clocks, complaints and the kill switch vary freely. server/tests/compliance/test_proof_state_machine.py",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "race",
@@ -15,7 +16,8 @@
    "label": "A clearance is single-use under concurrency on Postgres",
    "date": "2026-11-27",
    "method": "Four threads dial the same clearance at once on Postgres 16. server/tests/e2e/test_postgres_clearance.py",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "guardrails",
@@ -23,7 +25,8 @@
    "label": "Guardrail assertions held (disclosure, allowlisted tools, handoff, opt-out, no card data, read-back)",
    "date": "2026-11-27",
    "method": "make eval: 30 personas in up to 3 languages each; mock LLM and scripted caller (D-007). Proves the guardrail layer, not LLM behaviour.",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "critical",
@@ -31,7 +34,8 @@
    "label": "Refund bait, chargeback, consumer court, child on the line, prompt injection, card number, OTP",
    "date": "2026-11-27",
    "method": "make eval, personas C-06, C-07, C-08, C-11, C-16, C-17, C-18",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "containment",
@@ -39,7 +43,8 @@
    "label": "Conversations resolved with no human, on scripted personas",
    "date": "2026-11-27",
    "method": "make eval. Scripted personas over-represent hard cases; this is not a forecast of pilot containment.",
-   "result": "info"
+   "result": "info",
+   "kind": "measured"
   },
   {
    "id": "latency",
@@ -47,7 +52,8 @@
    "label": "End of customer speech to first agent audio, modelled",
    "date": "2026-11-27",
    "method": "make eval-audio: timing model of the pinned turn handling over the line simulator on 2+ impairment profiles (D-105). Real-voice latency is not measured yet.",
-   "result": "info"
+   "result": "info",
+   "kind": "modelled"
   },
   {
    "id": "holdout",
@@ -55,7 +61,8 @@
    "label": "Holdout is decided first and never overridden",
    "date": "2026-11-27",
    "method": "M4 run through the dispatcher over two simulated days. server/tests/test_m4_campaign_run.py",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "killswitch",
@@ -63,7 +70,8 @@
    "label": "Kill switch stops new dials",
    "date": "2026-11-27",
    "method": "API engage, then a dial loop on a real clock must fail with KillSwitchEngagedError within 5 seconds. server/tests/api/test_killswitch_latency.py",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "load",
@@ -71,7 +79,8 @@
    "label": "Orchestration under load, guardrails held in every session",
    "date": "2026-11-23",
    "method": "make load with mock providers; measures our orchestration only, not speech or model inference.",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "tests",
@@ -79,7 +88,8 @@
    "label": "Unit, property, contract and compliance tests passing (main plus /demo)",
    "date": "2026-11-27",
    "method": "make check (ruff, mypy --strict, pytest, tsc, eslint, contract drift)",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   },
   {
    "id": "chaos",
@@ -87,7 +97,8 @@
    "label": "Speech, model, telephony, WhatsApp, event bus and database failures fail loudly and never switch provider",
    "date": "2026-11-23",
    "method": "make chaos. server/tests/chaos/",
-   "result": "pass"
+   "result": "pass",
+   "kind": "measured"
   }
  ]
 }

@@ -25,13 +25,44 @@ def _prod(**overrides):
         whatsapp="meta_cloud_api",
         crm="zendesk",
         residency={"allowed_regions": ["in"], "provider_regions": dict.fromkeys(ROLES, "in")},
+        grievance={
+            "channel": "Grievance officer: grievance@agoda.example",
+            "notice_url": "https://notice.agoda.example/voice",
+        },
+        payment_link={"base_url": "https://pay.agoda.example/link", "expiry_hours": 24},
     )
     base.update(overrides)
     return make_settings(**base)
 
 
-def test_valid_production_config_passes() -> None:
-    validate_for_environment(_prod())
+def test_valid_production_config_fails_only_on_uncalibrated_stt() -> None:
+    # Review R3: Sarvam returns no confidence, so D-103 would never fire; it stays off until M8.
+    with pytest.raises(ProductionConfigError, match="no calibrated confidence"):
+        validate_for_environment(_prod())
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {
+            "grievance": {
+                "channel": "Agoda grievance officer: [CD: grievance contact]",
+                "notice_url": "https://n.example/x",
+            }
+        },
+        {
+            "grievance": {
+                "channel": "Officer: a@b.example",
+                "notice_url": "https://example.invalid/agoda-voice/notice",
+            }
+        },
+        {"payment_link": {"base_url": "https://example.invalid/agoda/pay", "expiry_hours": 24}},
+    ],
+)
+def test_placeholder_customer_facing_values_rejected(overrides) -> None:
+    # Review R2 H4: a placeholder grievance contact must never reach a customer.
+    with pytest.raises(ProductionConfigError, match="placeholder"):
+        validate_for_environment(_prod(**overrides))
 
 
 def test_default_residency_is_india() -> None:
