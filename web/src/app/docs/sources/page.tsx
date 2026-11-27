@@ -9,8 +9,8 @@ export default function SourcesPage() {
     <>
       <h1>Sources</h1>
       <p>
-        Every external fact on this site links here. Each row names the publication and its date. Facts the client must still
-        confirm never appear as facts; they are questions in the discovery list.
+        Every external fact on this site links here. Each row links the page it was checked against and gives its date. Facts
+        that could not be verified never appear as facts; they are questions in the discovery list.
       </p>
       <p className="text-sm text-muted">{sources.note}</p>
       <table>
@@ -29,7 +29,18 @@ export default function SourcesPage() {
                 <code>{s.id}</code>
               </td>
               <td>{s.fact}</td>
-              <td>{s.source}</td>
+              <td>
+                {s.links.length === 0
+                  ? s.source
+                  : s.links.map((l, i) => (
+                      <span key={l.url}>
+                        {i > 0 ? "; " : null}
+                        <a href={l.url} rel="noopener noreferrer">
+                          {l.label}
+                        </a>
+                      </span>
+                    ))}
+              </td>
               <td className="whitespace-nowrap">{s.date}</td>
             </tr>
           ))}

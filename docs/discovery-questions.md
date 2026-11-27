@@ -47,9 +47,13 @@ hard-coded as truth. Config key in brackets where one exists.
 25. Plivo India Rs 0.38/min (30-s pulse); Vapi $0.05/min hosting; Retell $0.07-0.31; Bland $0.12-0.14; ElevenLabs Agents $0.08/min overage.
 
 ## Raised during the build
-26. The brief's verbatim openings name the city/property before the callee confirms identity (D-101). Is that acceptable to Agoda's privacy team, or should the identity check come first?
+Resolved: item 26 (identity before booking details) was settled by D-017.
 27. Male-voice Hindi/Hinglish lines: does Agoda want a male voice option? (Only female lines exist; boot rejects a male voice until they do.)
 28. Agoda app deep link for customer-initiated add-on questions (D-001). [`wiring/backend.AGODA_APP_LINK`]
 29. CCaaS platform and queue API for warm transfer (D-015).
 30. Where confirmed details and special requests should land: booking system API, property extranet, or a human case (currently a CRM case).
 31. The declared CLI per journey (D-014). [`compliance.cli_by_purpose`]
+32. India BNPL: is the rule still "pay on or before the payment date with an India-issued instrument"? Could not be verified on 2026-11-27 (docs/sources.md); the engine never calls after `payment_due_at`.
+33. Is "Book with Zero Pay" a current payment option, and how should the agent describe it?
+34. What share of Indian bookings are under INR 5,000 a night? (The Travel Outlook figure could not be verified.)
+35. Which Agoda-hosted payment-link format and expiry should the WhatsApp template carry? (REQ-PAY-02)

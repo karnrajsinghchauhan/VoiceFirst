@@ -4,12 +4,57 @@
  "operations": [
   {
    "method": "GET",
+   "path": "/api-keys",
+   "summary": "List Keys",
+   "tag": "api-keys",
+   "auth": true,
+   "request": null,
+   "response": "ApiKeyOut[]"
+  },
+  {
+   "method": "POST",
+   "path": "/api-keys",
+   "summary": "Issue Key",
+   "tag": "api-keys",
+   "auth": true,
+   "request": "ApiKeyIn",
+   "response": "IssuedKeyOut"
+  },
+  {
+   "method": "POST",
+   "path": "/api-keys/{key_id}/revoke",
+   "summary": "Revoke Key",
+   "tag": "api-keys",
+   "auth": true,
+   "request": "ReasonIn",
+   "response": "ApiKeyOut"
+  },
+  {
+   "method": "POST",
+   "path": "/api-keys/{key_id}/rotate",
+   "summary": "Rotate Key",
+   "tag": "api-keys",
+   "auth": true,
+   "request": "ReasonIn",
+   "response": "IssuedKeyOut"
+  },
+  {
+   "method": "GET",
    "path": "/audit",
    "summary": "List Audit",
    "tag": "audit",
    "auth": true,
    "request": null,
    "response": "AuditEvent[]"
+  },
+  {
+   "method": "GET",
+   "path": "/audit/export",
+   "summary": "Export Audit",
+   "tag": "audit",
+   "auth": true,
+   "request": null,
+   "response": null
   },
   {
    "method": "GET",
@@ -109,6 +154,33 @@
    "auth": true,
    "request": "OptOutIn",
    "response": "ConsentRecord[]"
+  },
+  {
+   "method": "POST",
+   "path": "/demo/killswitch",
+   "summary": "Kill",
+   "tag": "demo",
+   "auth": true,
+   "request": null,
+   "response": "KillSwitchResult"
+  },
+  {
+   "method": "POST",
+   "path": "/demo/killswitch/release",
+   "summary": "Release",
+   "tag": "demo",
+   "auth": true,
+   "request": null,
+   "response": "KillSwitchResult"
+  },
+  {
+   "method": "POST",
+   "path": "/demo/run",
+   "summary": "Run",
+   "tag": "demo",
+   "auth": true,
+   "request": "RunIn",
+   "response": "DemoRun"
   },
   {
    "method": "GET",

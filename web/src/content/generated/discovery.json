@@ -1,0 +1,88 @@
+{
+ "sections": [
+  {
+   "heading": "Company and product",
+   "questions": [
+    "Current rules for Agoda Homes, AgodaVIP and Agoda Cash that a service call may touch.",
+    "India payment methods offered (UPI, Paytm, netbanking, cards) and the payment-failure taxonomy (reason codes) we will receive in `booking_event`.",
+    "Model versions in production and the number of internal LLM tools (to avoid duplication).",
+    "Storage vendors in the private cloud (object store, KMS, Postgres operator).",
+    "Agoda-approved brand phrasing and brand-voice guide for Hindi, Hinglish and English."
+   ]
+  },
+  {
+   "heading": "Vendor standards (Booking Holdings)",
+   "questions": [
+    "Supplier code of conduct, security questionnaire, privacy addendum, responsible-AI principles.",
+    "Is Agoda notified, or expected to be notified, as a Significant Data Fiduciary? (REQ-DPDP-10)",
+    "Allowlist of provider regions for processing (REQ-DPDP-09)."
+   ]
+  },
+  {
+   "heading": "Telecom (TRAI / DoT)",
+   "questions": [
+    "Which 1600xx/1601xx series applies to Agoda's sender category, and which OAP. [`cli_registry`, `compliance.service_series`]",
+    "Legal source of the 09:00-21:00 window under current regulations (we apply it as house policy).",
+    "Counsel sign-off for J1 dialling a DND-flagged number on a transaction basis.",
+    "Telecommunications Act 2023 section references for consent, DND and complaints (REQ-TEL-01).",
+    "CNAP and Truecaller business verification status for the declared CLIs (REQ-CLI-01).",
+    "SIP trunk choice (Tata or other) via LiveKit SIP."
+   ]
+  },
+  {
+   "heading": "Data protection",
+   "questions": [
+    "Retention period for consent records as the law requires (REQ-DPDP-07).",
+    "Whether IT (Intermediary Guidelines) Amendment Rules 2026 SGI labelling applies to our calls (REQ-AI-01). We disclose regardless.",
+    "Indian counsel sign-off on docs/compliance.md before go-live.",
+    "Grievance officer contact and grievance channel URL to carry in every outcome (REQ-CP-03)."
+   ]
+  },
+  {
+   "heading": "Payments",
+   "questions": [
+    "Agoda-hosted pay-link format and expiry (REQ-PAY-02)."
+   ]
+  },
+  {
+   "heading": "Voice and models",
+   "questions": [
+    "Licence for IndicConformer (self-hosted STT).",
+    "Licence for Indic Parler-TTS / IndicF5 (self-hosted TTS).",
+    "Agoda's own Hinglish audio for the WER/CER benchmark (11.8)."
+   ]
+  },
+  {
+   "heading": "Measurement",
+   "questions": [
+    "CSAT survey via WhatsApp utility template: is it allowed, and which template text."
+   ]
+  },
+  {
+   "heading": "Other jurisdictions",
+   "questions": [
+    "Details of SG, TH, MY, US, EU policies before any non-+91 dialling (5.8)."
+   ]
+  },
+  {
+   "heading": "Cost model (carried from earlier research, re-confirm before quoting)",
+   "questions": [
+    "Plivo India Rs 0.38/min (30-s pulse); Vapi $0.05/min hosting; Retell $0.07-0.31; Bland $0.12-0.14; ElevenLabs Agents $0.08/min overage."
+   ]
+  },
+  {
+   "heading": "Raised during the build",
+   "questions": [
+    "Male-voice Hindi/Hinglish lines: does Agoda want a male voice option? (Only female lines exist; boot rejects a male voice until they do.)",
+    "Agoda app deep link for customer-initiated add-on questions (D-001).",
+    "CCaaS platform and queue API for warm transfer (D-015).",
+    "Where confirmed details and special requests should land: booking system API, property extranet, or a human case (currently a CRM case).",
+    "The declared CLI per journey (D-014).",
+    "India BNPL: is the rule still \"pay on or before the payment date with an India-issued instrument\"? Could not be verified on 2026-11-27 (docs/sources.md); the engine never calls after `payment_due_at`.",
+    "Is \"Book with Zero Pay\" a current payment option, and how should the agent describe it?",
+    "What share of Indian bookings are under INR 5,000 a night? (The Travel Outlook figure could not be verified.)",
+    "Which Agoda-hosted payment-link format and expiry should the WhatsApp template carry? (REQ-PAY-02)"
+   ]
+  }
+ ]
+}

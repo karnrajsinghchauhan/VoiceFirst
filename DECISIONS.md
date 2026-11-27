@@ -266,3 +266,13 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `make check`, `make e2e` and `npx playwright test -c playwright.demo.config.ts` run locally before each push, and their results go in the PR description.
 - Why: the repo's Actions page reports "GitHub Actions is not currently enabled on this repository" although the setting allows all actions; no run has ever been created.
 - Would change it: GitHub support re-enabling Actions; then `ci.yml` is the gate again.
+
+## D-027 (2026-11-27) docs/sources.md rows carry the URL they were checked against; unverifiable facts become [CD]
+- Decision: every [V] row now links its source and states the check date. Five claims could not be confirmed and moved to [CD] and discovery questions 32-35: "Book with Zero Pay", the India BNPL instrument rule, "47% at INR 5,000 or less", the 18 Sep 2026 notification day (now "September 2026") and the G.S.R. number of the E-Commerce amendment. Two sources were corrected (Airbnb: Customer Experience Dive, not Storyboard18; MakeMyTrip: Deccan Herald, not The Hans India). Kafka volume is now dated (1.8 trillion in 2023; over 3 trillion in 2025).
+- Why: NEXT.md section 3 and Karn's final-run instruction: verify in the browser, drop what cannot be verified.
+- Would change it: Agoda confirming a [CD] item in discovery.
+
+## D-028 (2026-11-27) The /agoda letter is generated from the repo's own facts
+- Decision: `/agoda` (private, noindex, passcode) cites only `docs/sources.md` rows, `content/measured.json` results and labelled estimates; its call transcript is the recorded demo run and its question list is generated from `docs/discovery-questions.md`. `npm run pdf:agoda` prints it from the production build to `reports/agoda-letter.pdf`, which is committed (the only exception to the `reports/` ignore).
+- Why: a letter that copies facts by hand drifts from the code and the sources.
+- Would change it: nothing.

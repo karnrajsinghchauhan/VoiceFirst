@@ -7,7 +7,7 @@ export default async function GatePage({ searchParams }: { searchParams: Promise
   const { next, error } = await searchParams;
   const target = next !== undefined && ALLOWED.has(next) ? next : "/demo";
   return (
-    <main className="mx-auto max-w-sm px-4 py-24">
+    <div className="mx-auto max-w-sm px-4 py-24">
       <h1 className="font-display text-2xl">Private page</h1>
       <p className="mt-2 text-sm text-muted">Enter the passcode you were given.</p>
       <form method="post" action="/api/gate" className="mt-6 space-y-3">
@@ -32,6 +32,6 @@ export default async function GatePage({ searchParams }: { searchParams: Promise
           Continue
         </button>
       </form>
-    </main>
+    </div>
   );
 }

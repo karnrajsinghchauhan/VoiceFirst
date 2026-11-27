@@ -20,7 +20,11 @@ function sources() {
   for (const line of md.split("\n")) {
     const m = line.match(/^\|\s*(S-\d{2})\s*\|(.*)\|(.*)\|(.*)\|\s*$/);
     if (!m) continue;
-    rows.push({ id: m[1], fact: m[2].trim(), source: m[3].trim(), date: m[4].trim() });
+    // The source cell holds Markdown links: plain text for tooltips, parsed links for the page.
+    const cell = m[3].trim();
+    const links = [...cell.matchAll(/\[([^\]]+)\]\((https:[^)\s]+)\)/g)].map((l) => ({ label: l[1], url: l[2] }));
+    const source = cell.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    rows.push({ id: m[1], fact: m[2].trim(), source, links, date: m[4].trim() });
   }
   if (rows.length === 0) throw new Error("no rows parsed from docs/sources.md");
   const note = md.split("\n").filter((l) => l && !l.startsWith("|") && !l.startsWith("#")).join(" ").trim();
@@ -97,8 +101,23 @@ function searchIndex() {
   return { entries };
 }
 
+// docs/discovery-questions.md -> the /agoda letter's "what we need from you" list.
+function discovery() {
+  const md = readFileSync(join(repo, "docs/discovery-questions.md"), "utf8");
+  const sections = [];
+  for (const line of md.split("\n")) {
+    const heading = line.match(/^## (.+)$/);
+    if (heading) sections.push({ heading: heading[1].trim(), questions: [] });
+    const item = line.match(/^\d+\. (.+)$/);
+    if (item && sections.length) sections[sections.length - 1].questions.push(item[1].replace(/\s*\[`[^`]+`\]\s*$/, "").trim());
+  }
+  if (sections.length === 0) throw new Error("no sections parsed from docs/discovery-questions.md");
+  return { sections };
+}
+
 const files = {
   "sources.json": sources(),
+  "discovery.json": discovery(),
   "api-reference.json": apiReference(),
   "search-index.json": searchIndex(),
 };

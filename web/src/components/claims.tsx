@@ -14,6 +14,7 @@ export interface SourceRow {
   id: string;
   fact: string;
   source: string;
+  links: { label: string; url: string }[];
   date: string;
 }
 

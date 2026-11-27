@@ -19,6 +19,12 @@
    "text": "booking event - holdout - jurisdiction - kill switch - consent - DND - opt-out lock - CLI declared - number series - CLI status - call window - attempt cap and cooldown - GateClearance (single use, 60 s) - dial - agent session - call outcome . The gate decision is written and published whether or not the call is cleared. dial consumes the clearance with a conditional update in the same transaction as the call, and re-checks the kill switch, so a clearance minted just before the switch is engaged cannot dial."
   },
   {
+   "url": "/docs/changelog",
+   "title": "Changelog",
+   "heading": "Changelog",
+   "text": "Changelog What changed, in the order it landed. Dates are when the change reached the main branch. {CHANGELOG.map((c) = ( {c.date} : {c.title}. {c.body} ))}"
+  },
+  {
    "url": "/docs/compliance",
    "title": "Compliance",
    "heading": "Compliance",
@@ -142,7 +148,7 @@
    "url": "/docs/quickstart",
    "title": "Quickstart",
    "heading": "Console",
-   "text": "Unless built with NEXT PUBLIC AV API MODE=http , the console uses its mock data layer. Sign in with dev-ops-token , dev-admin-token , dev-auditor-token or dev-ro-token ."
+   "text": "The web app talks to the engine through its own server routes. With AV API MODE=mock (the default) they use a mock data layer; set AV API MODE=http and AV API URL to use a running engine. Sign in with dev-ops-token , dev-admin-token , dev-auditor-token or dev-ro-token ."
   },
   {
    "url": "/docs/runbooks",
@@ -181,16 +187,64 @@
    "text": "Expect a typed error and an alert. Before a dial nothing is placed; mid-call the agent apologises and schedules a human callback. Do not switch providers at runtime: fix or reconfigure, then redeploy."
   },
   {
+   "url": "/docs/sdk",
+   "title": "SDK snippets",
+   "heading": "SDK snippets",
+   "text": "SDK snippets There is no packaged SDK yet. The API is small, JSON over HTTPS with a bearer token, so a few lines in any language are enough. These snippets use only standard libraries."
+  },
+  {
+   "url": "/docs/sdk",
+   "title": "SDK snippets",
+   "heading": "Engage the kill switch",
+   "text": "Needs the ops or admin role. A reason is required and is written to the audit log with your identity."
+  },
+  {
+   "url": "/docs/sdk",
+   "title": "SDK snippets",
+   "heading": "Types",
+   "text": "TypeScript types for every record are generated from the JSON Schemas into web/src/contracts/ ; Python (pydantic) types into server/app/contracts/generated/ . Copy them rather than writing your own, so a contract change fails your build instead of your production run."
+  },
+  {
    "url": "/docs/security",
    "title": "Security",
    "heading": "Security",
    "text": "Security Baseline until the client's vendor standards are received: - Audit log for every privileged action, append-only, also published to av.audit.v1 . - Least-privilege RBAC: admin, ops, auditor, read-only. - Encryption in transit and at rest. - No training or fine-tuning on client data. - A processing record for each purpose. - PII redacted inside the logger itself and at write time, not by callers. - Phone numbers stored as peppered hashes wherever the raw number is not needed. - ICT logs kept for a rolling 180 days, producible within India, with clocks synced to NIC/NPL-traceable NTP. The full control list is SECURITY.md in the repository."
   },
   {
-   "url": "/docs/sources",
-   "title": "Sources",
-   "heading": "Sources",
-   "text": "Sources Every external fact used on the site and in the proposal is listed with its publication and date in docs/sources.md . Facts the client must still confirm appear only as questions in docs/discovery-questions.md . Figures quoted on this site: Fact Source Date --- --- --- \"70% of voice queries come in Hinglish\" (MakeMyTrip Myra 2.0 launch) The Hans India 2026 Pricing and the containment target (35 to 55%) are ProsperOps commercial terms and a target, not measured results."
+   "url": "/docs/telephony",
+   "title": "Telephony and numbers",
+   "heading": "Telephony and numbers",
+   "text": "Telephony and numbers How the service places calls in India, and why it uses few numbers rather than many."
+  },
+  {
+   "url": "/docs/telephony",
+   "title": "Telephony and numbers",
+   "heading": "Few declared numbers, not rotation",
+   "text": "TRAI's amended rules treat a call placed by software, including an AI voice, as an application-to-person (A2P) call, and an A2P call from a number that is not declared for that use is treated as spam. So the service dials only from a small set of caller IDs per telecom circle, each declared as A2P on the operators' DLT ledger. A caller ID that is not declared cannot receive a clearance, so the dialler cannot use it. Rotating through many numbers to dodge spam labels is a pattern regulators and call-management apps look for. A small, stable, declared set builds a reputation instead."
+  },
+  {
+   "url": "/docs/telephony",
+   "title": "Telephony and numbers",
+   "heading": "Series by purpose",
+   "text": "- Promotional calls use the 140 series. The pilot makes none. - Service and transactional calls (payment rescue, booking confirmation) use the 1600 and 1601 series. Which of those applies to the client's sender category is a question for discovery. A call whose purpose does not match its number's series is refused by a gate before dialling."
+  },
+  {
+   "url": "/docs/telephony",
+   "title": "Telephony and numbers",
+   "heading": "Verified caller ID",
+   "text": "We plan to register the caller IDs for verified business caller ID (Truecaller) and to follow CNAP (caller name presentation) as operators roll it out. Status of both: to be confirmed in discovery."
+  },
+  {
+   "url": "/docs/telephony",
+   "title": "Telephony and numbers",
+   "heading": "WhatsApp before and after",
+   "text": "- Built: after a missed call, exactly one utility template follows with the payment link, and only if the customer has opted in to WhatsApp. - Planned: a heads-up by WhatsApp utility template before a call, so the customer knows who is calling and why. - Planned: a \"Call me now\" button, so the customer can ask for the call when it suits them; a call they ask for is customer-initiated."
+  },
+  {
+   "url": "/docs/telephony",
+   "title": "Telephony and numbers",
+   "heading": "Caps, cooldowns and windows",
+   "text": "- At most two call attempts per booking event, and at least a day between calls to the same number across every campaign. - Calls only between 09:00 and 21:00 in the recipient's local time; the window can be narrowed, never widened. - Any complaint pauses the caller ID it names. Two complaints from different people within ten days pause every campaign and page a person. These limits are enforced by the gates in server/app/compliance/ , each with a test; see Compliance."
   },
   {
    "url": "/docs/tester",
@@ -215,6 +269,30 @@
    "title": "The tester",
    "heading": "Regression gate",
    "text": "A change to prompts, tools, model ids or the normaliser runs every persona with three seeds. It fails if any persona with a 100% target drops, or if the overall guardrail rate falls by more than one point against main."
+  },
+  {
+   "url": "/docs/webhooks",
+   "title": "Webhooks",
+   "heading": "Webhooks",
+   "text": "Webhooks Status: in progress. This page describes the contract the outbound webhook is being built to; it will say \"built\" here when the implementation and its replay test are on main."
+  },
+  {
+   "url": "/docs/webhooks",
+   "title": "Webhooks",
+   "heading": "Outbound: call outcomes",
+   "text": "Any system can subscribe to call outcome records instead of reading Kafka. Each delivery is a POST with the CallOutcome JSON as the body (schema: contracts/schemas/call outcome.json ). Every delivery is signed and timestamped: - the signature is an HMAC-SHA256 over the timestamp and the raw body, with a secret shared once per subscriber; - the timestamp is checked against a short tolerance window, so an old delivery replayed later is rejected; - each delivery carries a unique id; a receiver that has seen the id before must ignore it. A receiver should verify the signature with a constant-time comparison, reject stale timestamps, and store delivery ids long enough to cover the window."
+  },
+  {
+   "url": "/docs/webhooks",
+   "title": "Webhooks",
+   "heading": "Inbound: telephony and WhatsApp",
+   "text": "Webhooks from the telephony provider and from the WhatsApp Cloud API are accepted only with a valid provider signature and a fresh timestamp. Unsigned or replayed requests are rejected before any processing."
+  },
+  {
+   "url": "/docs/webhooks",
+   "title": "Webhooks",
+   "heading": "Failures",
+   "text": "A delivery that fails lands in a dead-letter queue that raises an alert. Nothing is dropped silently."
   },
   {
    "url": "/security#controls",
@@ -250,7 +328,7 @@
    "url": "/security#compliance",
    "title": "Trust centre",
    "heading": "Compliance status",
-   "text": "This is engineering status, not legal advice. Indian counsel must sign off before any live call. TRAI TCCCPR as amended (including the Third Amendment notified [[S-24|18 Sep 2026]]): every rule we know of has an automated test. Counsel sign-off: pending. DPDP Act 2023 and Rules 2025: built to the full standard now; core duties apply from [[S-25|13 May 2027]]. Counsel sign-off: pending. CERT-In directions: incident timers and log retention built. Counsel sign-off: pending. ISO 27001, SOC 2 and similar certifications: none held. Not planned before a pilot. OWASP ASVS Level 2: used as our checklist; self-assessment in progress."
+   "text": "This is engineering status, not legal advice. Indian counsel must sign off before any live call. TRAI TCCCPR as amended (including the Third Amendment notified [[S-24|September 2026]]): every rule we know of has an automated test. Counsel sign-off: pending. DPDP Act 2023 and Rules 2025: built to the full standard now; core duties apply from [[S-25|13 May 2027]]. Counsel sign-off: pending. CERT-In directions: incident timers and log retention built. Counsel sign-off: pending. ISO 27001, SOC 2 and similar certifications: none held. Not planned before a pilot. OWASP ASVS Level 2: used as our checklist; self-assessment in progress."
   },
   {
    "url": "/security#disclosure",

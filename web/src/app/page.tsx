@@ -53,7 +53,7 @@ export default function Home() {
           </p>
           <p>
             Calling at scale in India is regulated. TRAI&apos;s amended rules treat an AI-placed call from an undeclared number
-            as unsolicited commercial communication (<Src id="S-24">notified 18 Sep 2026</Src>). Consent, DND, call windows and
+            as unsolicited commercial communication (<Src id="S-24">notified September 2026</Src>). Consent, DND, call windows and
             caps have to be enforced by the system, not remembered by a team.
           </p>
           <p>

@@ -1,209 +1,497 @@
 {
- "note": "Every [V] fact used anywhere in this repo. Each row was supplied in the build brief v2.0 (23 Nov 2026) with the publication and date shown. URLs are not recorded here because the brief did not include them; this session did not re-fetch the sources. Re-verify before any external use.",
+ "note": "Every [V] fact used anywhere in this repo, with the page it was checked against. Checked 2026-11-27 by web search and page review in the local session. \"Secondary\" means the fact was confirmed in reporting of the original, not the original itself; quote it with that source. Facts that could not be confirmed were downgraded to [CD] (listed at the end) and must not be stated as fact.",
  "rows": [
   {
    "id": "S-01",
    "fact": "CEO Omri Morgenshtern; CTO Idan Zalzberg",
-   "source": "Agoda corporate",
+   "source": "TTG Asia, \"Moving up the funnel\"; Frontier Enterprise, CTO on Bangkok hub",
+   "links": [
+    {
+     "label": "TTG Asia, \"Moving up the funnel\"",
+     "url": "https://www.ttgasia.com/2026/05/04/moving-up-the-funnel/"
+    },
+    {
+     "label": "Frontier Enterprise, CTO on Bangkok hub",
+     "url": "https://www.frontier-enterprise.com/agoda-cto-breaks-down-strategy-behind-bangkok-tech-hub/"
+    }
+   ],
    "date": "2026"
   },
   {
    "id": "S-02",
-   "fact": "One Bangkok office for 4,000 staff, opened 1 Apr 2026",
-   "source": "Agoda press",
-   "date": "2026-04-01"
+   "fact": "New office at One Bangkok opened April 2026 for about 4,000 staff; more than 4,500 by October 2026",
+   "source": "Agoda release via AAP; Malay Mail",
+   "links": [
+    {
+     "label": "Agoda release via AAP",
+     "url": "https://www.aap.com.au/aapreleases/cision20260409ae30490/"
+    },
+    {
+     "label": "Malay Mail",
+     "url": "https://www.malaymail.com/news/money/mediaoutreach/2026/10/24/agoda-makes-bangkok-its-largest-office-worldwide-with-more-than-4500-staff/496470"
+    }
+   ],
+   "date": "2026-04-09; 2026-10-24"
   },
   {
    "id": "S-03",
-   "fact": "6M+ properties; flights; activities; connected trips",
-   "source": "Agoda corporate",
-   "date": "2026"
+   "fact": "6M+ properties, about 130,000 flight routes, about 300,000 activities; single checkout for multi-product trips",
+   "source": "Booking Holdings brand page; Agoda release via AAP",
+   "links": [
+    {
+     "label": "Booking Holdings brand page",
+     "url": "https://www.bookingholdings.com/brands/agoda/"
+    },
+    {
+     "label": "Agoda release via AAP",
+     "url": "https://www.aap.com.au/aapreleases/cision20260518ae61572/"
+    }
+   ],
+   "date": "2026-05-18"
   },
   {
    "id": "S-04",
-   "fact": "Payment options: Pay Now, BNPL, Book with Zero Pay, Pay at Hotel",
-   "source": "Agoda Terms of Use",
-   "date": "2026"
-  },
-  {
-   "id": "S-05",
-   "fact": "India BNPL: pay on or before payment date with an India-issuer instrument",
-   "source": "Agoda Terms of Use",
+   "fact": "Payment options include Pay Now, Book Now Pay Later and Pay at Hotel (Property Collect)",
+   "source": "Agoda Partner Hub, Property Collect; secondary: HotelDig guide",
+   "links": [
+    {
+     "label": "Agoda Partner Hub, Property Collect",
+     "url": "https://partnerhub.agoda.com/?p=3716"
+    },
+    {
+     "label": "HotelDig guide",
+     "url": "https://www.hoteldig.com/en/agoda-payment-guide/"
+    }
+   ],
    "date": "2026"
   },
   {
    "id": "S-06",
-   "fact": "Paytm Travel hotel distribution partnership",
-   "source": "Press",
-   "date": "early 2025"
+   "fact": "Paytm Travel and Agoda hotel distribution partnership",
+   "source": "PR Newswire",
+   "links": [
+    {
+     "label": "PR Newswire",
+     "url": "https://www.prnewswire.com/in/news-releases/paytm-travel-and-agoda-partner-to-offer-hotel-bookings-across-indian-and-global-destinations-on-the-paytm-app-302372079.html"
+    }
+   ],
+   "date": "2025-02-10"
   },
   {
    "id": "S-07",
-   "fact": "CS priorities, \"humans in charge of the outcome\", escalation paths, metrics",
-   "source": "Frontier Enterprise, Gauri Vicknasvaran",
-   "date": "2026-08-17"
+   "fact": "CS: \"humans in charge of the outcome\"; disputes stay with humans; escalation to Legal, Security, Data Privacy; metrics are resolution time and CSAT (Gauri Vicknasvaran)",
+   "source": "Secondary, reporting Frontier Enterprise: Complete AI Training; Renascence",
+   "links": [
+    {
+     "label": "Complete AI Training",
+     "url": "https://completeaitraining.com/news/agoda-keeps-humans-in-charge-as-ai-scales-customer-service/"
+    },
+    {
+     "label": "Renascence",
+     "url": "https://www.renascence.io/news/31726/agoda-scales-customer-service-with-ai-keeps-humans-in-charge"
+    }
+   ],
+   "date": "2026-08"
   },
   {
    "id": "S-08",
-   "fact": "Property AMA bot 30,000+ questions/day",
-   "source": "Agoda press",
-   "date": "2025-08"
+   "fact": "Property AMA bot: 30,000+ hotel questions a day; ChatGPT plus live property data",
+   "source": "Agoda release via AAP; TTG Asia",
+   "links": [
+    {
+     "label": "Agoda release via AAP",
+     "url": "https://www.aap.com.au/aapreleases/cision20250821ae56938"
+    },
+    {
+     "label": "TTG Asia",
+     "url": "https://www.ttgasia.com/2025/08/27/agoda-introduces-ai-bot-to-answer-hotel-questions-in-real-time/"
+    }
+   ],
+   "date": "2025-08-21"
   },
   {
    "id": "S-09",
-   "fact": "In-app AI Assistant beta Sep 2026; 21 markets by 30 Oct 2026",
-   "source": "Agoda press",
-   "date": "2026-10-30"
+   "fact": "In-app AI Assistant in 21 markets; conversational models from OpenAI",
+   "source": "Agoda press; IT Brief",
+   "links": [
+    {
+     "label": "Agoda press",
+     "url": "https://www.agoda.com/press/1509063/"
+    },
+    {
+     "label": "IT Brief",
+     "url": "https://itbrief.com.au/story/agoda-rolls-out-ai-assistant-across-21-travel-markets"
+    }
+   ],
+   "date": "2026"
   },
   {
    "id": "S-10",
-   "fact": "Meta Muse connector SG and JP",
-   "source": "Press",
-   "date": "2026-10"
+   "fact": "Agoda connector for Meta's Muse in Singapore and Japan",
+   "source": "Skift",
+   "links": [
+    {
+     "label": "Skift",
+     "url": "https://skift.com/2026/10/28/agoda-plugs-into-metas-muse-in-singapore-and-japan/"
+    }
+   ],
+   "date": "2026-10-28"
   },
   {
    "id": "S-11",
-   "fact": "\"AI voice agents capable of having reasonable conversations with suppliers\"",
-   "source": "TTG Asia, CEO interview",
+   "fact": "CEO: AI voice agents now hold workable conversations with suppliers (paraphrase; quote only from the article)",
+   "source": "TTG Asia",
+   "links": [
+    {
+     "label": "TTG Asia",
+     "url": "https://www.ttgasia.com/2026/05/04/moving-up-the-funnel/"
+    }
+   ],
    "date": "2026-05-04"
   },
   {
    "id": "S-12",
-   "fact": "Engineers expected to vibe code; business rebuilt bottom-up with agents",
-   "source": "Skift",
-   "date": "2026-01, 2026-04"
+   "fact": "Engineers expected to vibe code; business rebuilt \"bottom up\" with multiple agents",
+   "source": "Skift, Jan 2026; Skift, Apr 2026",
+   "links": [
+    {
+     "label": "Skift, Jan 2026",
+     "url": "https://skift.com/2026/01/23/from-vibe-coding-to-exclusive-llm-deals-ai-takeaways-from-agodas-ceo/"
+    },
+    {
+     "label": "Skift, Apr 2026",
+     "url": "https://skift.com/2026/04/29/agoda-ceo-multiple-ai-agents-rebuild-business/"
+    }
+   ],
+   "date": "2026-01-23; 2026-04-29"
   },
   {
    "id": "S-13",
-   "fact": "One million CPU cores, 14 PB/day, four trillion messages",
-   "source": "ComputerWeekly",
+   "fact": "Own infrastructure: one million CPU cores, 14 PB of data daily, four trillion messages (Frontier: 14 PB is read volume; 4.33 trillion messages)",
+   "source": "ComputerWeekly; Frontier Enterprise",
+   "links": [
+    {
+     "label": "ComputerWeekly",
+     "url": "https://www.computerweekly.com/news/366640804/Agoda-scales-AI-strategy-opens-new-APAC-tech-hub"
+    },
+    {
+     "label": "Frontier Enterprise",
+     "url": "https://www.frontier-enterprise.com/agoda-cto-breaks-down-strategy-behind-bangkok-tech-hub/"
+    }
+   ],
    "date": "2026"
   },
   {
    "id": "S-14",
-   "fact": "Kafka around 1.8 trillion events/day",
-   "source": "Agoda Engineering blog",
-   "date": "2026"
+   "fact": "Kafka: about 1.8 trillion events a day (2023); over 3 trillion records a day (2025)",
+   "source": "Agoda Engineering, 2023; InfoQ",
+   "links": [
+    {
+     "label": "Agoda Engineering, 2023",
+     "url": "https://medium.com/agoda-engineering/tagged/big-data"
+    },
+    {
+     "label": "InfoQ",
+     "url": "https://www.infoq.com/news/2025/08/agoda-kafka-failover"
+    }
+   ],
+   "date": "2023-09-17; 2025-08"
   },
   {
    "id": "S-15",
-   "fact": "Fleet on Kubernetes; Spark; Zendesk partner helpdesk",
-   "source": "Agoda Engineering",
-   "date": "2026"
+   "fact": "Private cloud: Fleet compute platform on Kubernetes; Spark kept for data processing. Partner help centre runs on Zendesk",
+   "source": "The Pragmatic Engineer; agodapropertypartnerhelp.zendesk.com",
+   "links": [
+    {
+     "label": "The Pragmatic Engineer",
+     "url": "https://newsletter.pragmaticengineer.com/p/inside-agodas-private-cloud"
+    },
+    {
+     "label": "agodapropertypartnerhelp.zendesk.com",
+     "url": "https://agodapropertypartnerhelp.zendesk.com/hc/en-us/articles/360044010634"
+    }
+   ],
+   "date": "2023; 2026"
   },
   {
    "id": "S-16",
-   "fact": "Country Director ISC & IOI: Gaurav Malik",
-   "source": "Agoda press",
-   "date": "2026"
+   "fact": "Country Director, Indian Subcontinent & Indian Ocean Islands: Gaurav Malik",
+   "source": "Agoda festive release via Utusan",
+   "links": [
+    {
+     "label": "Agoda festive release via Utusan",
+     "url": "https://www.utusan.com.my/?p=1454780"
+    }
+   ],
+   "date": "2026-11"
   },
   {
    "id": "S-17",
-   "fact": "2026 Travel Outlook: 19% spiritual trip; 47% <= INR 5,000/night; 68% AI planning (n=3,353)",
-   "source": "Agoda Travel Outlook",
-   "date": "2025-10"
-  },
-  {
-   "id": "S-18",
-   "fact": "Prayagraj searches +233% during 2025 Maha Kumbh",
-   "source": "Agoda press",
-   "date": "2025"
-  },
-  {
-   "id": "S-19",
-   "fact": "Top domestic festive searches: Goa, Puri, Udaipur",
-   "source": "Agoda press",
+   "fact": "2026 Travel Outlook (n=3,353, nine markets, Oct 2025): 19% of Indians weigh spiritual experiences, highest in Asia; 68% likely to use AI to plan the next trip",
+   "source": "Agoda release via AAP",
+   "links": [
+    {
+     "label": "Agoda release via AAP",
+     "url": "https://www.aap.com.au/aapreleases/cision20260409ae24602"
+    }
+   ],
    "date": "2026"
   },
   {
+   "id": "S-18",
+   "fact": "Prayagraj accommodation searches +233% year on year in the 2025 Maha Kumbh period",
+   "source": "Agoda press",
+   "links": [
+    {
+     "label": "Agoda press",
+     "url": "https://www.agoda.com/press/from-allahabad-to-varanasi-agoda-rankings-reveal-increased-appeal-of-spiritual-destinations"
+    }
+   ],
+   "date": "2025-04-24"
+  },
+  {
+   "id": "S-19",
+   "fact": "Top domestic festive searches (stays 15 Oct to 30 Nov 2026): Goa, Puri, Udaipur",
+   "source": "Agoda festive release via Utusan",
+   "links": [
+    {
+     "label": "Agoda festive release via Utusan",
+     "url": "https://www.utusan.com.my/?p=1454780"
+    }
+   ],
+   "date": "2026-11"
+  },
+  {
    "id": "S-20",
-   "fact": "Booking Holdings voice AI across majority of eligible inbound calls",
-   "source": "BKNG Q2 2026 call",
-   "date": "2026-08-04"
+   "fact": "Booking Holdings: voice AI scaled across the majority of eligible inbound traveller calls; CS cost per booking falling at a double-digit rate",
+   "source": "Secondary: Customer Experience Dive; PYMNTS",
+   "links": [
+    {
+     "label": "Customer Experience Dive",
+     "url": "https://www.customerexperiencedive.com/news/booking-holdings-connected-trip-strategy-boosts-loyalty/827135/"
+    },
+    {
+     "label": "PYMNTS",
+     "url": "https://www.pymnts.com/dashboard-post/earnings/2026/ai-can-plan-the-trip-but-booking-holdings-wants-the-transaction/"
+    }
+   ],
+   "date": "call 2026-08-04"
   },
   {
    "id": "S-21",
-   "fact": "Airbnb AI assistant resolved about 40% of issues in Q3 2026",
-   "source": "Storyboard18",
+   "fact": "Airbnb: AI resolved about 40% of support issues without a human in Q3 2026, up from about a third in Q2",
+   "source": "Customer Experience Dive; Crypto Briefing",
+   "links": [
+    {
+     "label": "Customer Experience Dive",
+     "url": "https://www.customerexperiencedive.com/news/airbnb-reduces-customer-support-cost-per-booking-17/874307/"
+    },
+    {
+     "label": "Crypto Briefing",
+     "url": "https://cryptobriefing.com/airbnb-ai-travel-agent-2027-launch/"
+    }
+   ],
    "date": "2026"
   },
   {
    "id": "S-22",
-   "fact": "Expedia \"virtual agents now resolve more than half of inquiries\"",
-   "source": "CX Dive, Q3 2025 call",
+   "fact": "Expedia CFO Scott Schenkel, Q3 2025 call: virtual agents resolve more than half of inquiries",
+   "source": "Customer Experience Dive",
+   "links": [
+    {
+     "label": "Customer Experience Dive",
+     "url": "https://customerexperiencedive.com/news/expedia-queries-ai-agents/805023"
+    }
+   ],
    "date": "2025"
   },
   {
    "id": "S-23",
-   "fact": "MakeMyTrip Myra 2.0: \"70% of voice queries come in Hinglish\"",
-   "source": "The Hans India",
-   "date": "2026"
+   "fact": "MakeMyTrip Myra 2.0: about 70% of voice queries are in Hinglish",
+   "source": "Deccan Herald; India TV",
+   "links": [
+    {
+     "label": "Deccan Herald",
+     "url": "https://www.deccanherald.com/amp/story/business%2Fcompanies%2Fmakemytrip-boosts-ai-travel-assistant-myra-to-handle-full-travel-bookings-4003970"
+    },
+    {
+     "label": "India TV",
+     "url": "https://www.indiatvnews.com/technology/news/makemytrip-myra-2-0-ai-asssistant-to-help-completing-travel-bookings-through-voice-conversations-2026-05-14-1041087"
+    }
+   ],
+   "date": "2026-05-14"
   },
   {
    "id": "S-24",
-   "fact": "TRAI TCCCPR Third Amendment (05 of 2026), notified 18 Sep 2026, PR 119/2026",
-   "source": "TRAI",
-   "date": "2026-09-18"
+   "fact": "TCCCPR (Third Amendment) Regulations 2026 (05 of 2026), press release 119/2026, September 2026; draft of 13 Mar 2026 required pre-declared A2P calls",
+   "source": "TRAI PR 119/2026; Onmanorama",
+   "links": [
+    {
+     "label": "TRAI PR 119/2026",
+     "url": "https://www.trai.gov.in/sites/default/files/2026-09/PR_No119of2026.pdf"
+    },
+    {
+     "label": "Onmanorama",
+     "url": "https://www.onmanorama.com/news/business/2026/09/29/trai-directs-telcos-to-act-against-spammers-without-complaints.amp.html"
+    }
+   ],
+   "date": "2026-09"
   },
   {
    "id": "S-25",
-   "fact": "DPDP Rules 2025 notified 13 Nov 2025; CM provisions 13 Nov 2026; core 13 May 2027",
-   "source": "MeitY",
+   "fact": "DPDP Rules 2025 gazetted 13 Nov 2025; Consent Manager rule after 12 months (Nov 2026); remaining duties after 18 months (May 2027)",
+   "source": "PIB; Chambers",
+   "links": [
+    {
+     "label": "PIB",
+     "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/nov/doc20251117695301.pdf"
+    },
+    {
+     "label": "Chambers",
+     "url": "https://chambers.com/articles/s-r-data-india-s-digital-personal-data-protection-regime-takes-effect"
+    }
+   ],
    "date": "2025-11-13"
   },
   {
    "id": "S-26",
-   "fact": "IT Amendment Rules 2026 (G.S.R. 120(E)) notified 10 Feb 2026, in force 20 Feb 2026",
-   "source": "MeitY",
+   "fact": "IT (Intermediary Guidelines) Amendment Rules 2026, G.S.R. 120(E), dated 10 Feb 2026, in force 20 Feb 2026; synthetically generated information labelling",
+   "source": "Khaitan & Co; SCC Online",
+   "links": [
+    {
+     "label": "Khaitan & Co",
+     "url": "https://www.khaitanco.com/thought-leadership/MeitY-notifies-the-IT-Amendment-Rules-2026"
+    },
+    {
+     "label": "SCC Online",
+     "url": "https://www.scconline.com/blog/post/2026/02/12/it-rules-2026-ai-and-intermediary-compliance/"
+    }
+   ],
    "date": "2026-02-10"
   },
   {
    "id": "S-27",
-   "fact": "E-Commerce (Amendment) Rules 2026 (G.S.R. 789(E)) notified 9 Sep 2026, in force 1 Jan 2027",
-   "source": "MoCA",
+   "fact": "Consumer Protection (E-Commerce) (Amendment) Rules 2026 notified 9 Sep 2026, in force 1 Jan 2027; Rule 4(15) yearly dark-pattern self-audit",
+   "source": "SCC Online; Bar & Bench",
+   "links": [
+    {
+     "label": "SCC Online",
+     "url": "https://www.scconline.com/blog/post/2026/09/14/consumer-protection-e-commerce-amendment-rules-2026/"
+    },
+    {
+     "label": "Bar & Bench",
+     "url": "https://www.barandbench.com/law-firms/view-point/consumer-protection-e-commerce-amendment-rules-2026-from-consumer-disclosure-to-platform-governance"
+    }
+   ],
    "date": "2026-09-09"
   },
   {
    "id": "S-28",
-   "fact": "CCPA Dark Patterns Guidelines 2023: 13 patterns",
-   "source": "CCPA",
-   "date": "2023"
+   "fact": "CCPA Guidelines for Prevention and Regulation of Dark Patterns 2023: 13 specified patterns, notified 30 Nov 2023",
+   "source": "JSA; Bar & Bench",
+   "links": [
+    {
+     "label": "JSA",
+     "url": "https://www.jsalaw.com/newsletters-and-updates/ccpa-issues-guidelines-for-prevention-and-regulation-of-dark-patterns-2023/"
+    },
+    {
+     "label": "Bar & Bench",
+     "url": "https://www.barandbench.com/law-firms/view-point/ccpa-steps-in-to-curb-dark-patterns"
+    }
+   ],
+   "date": "2023-11-30"
   },
   {
    "id": "S-29",
-   "fact": "CERT-In Directions: 6 h reporting, 180-day logs, NTP sync",
-   "source": "CERT-In",
+   "fact": "CERT-In Directions of 28 Apr 2022: report within 6 hours; 180-day logs in India; NTP sync to NIC/NPL",
+   "source": "Khaitan & Co; Linklaters",
+   "links": [
+    {
+     "label": "Khaitan & Co",
+     "url": "https://khaitanco.com/sites/default/files/2022-04/Ergo_30042022.pdf"
+    },
+    {
+     "label": "Linklaters",
+     "url": "https://www.linklaters.com/en/insights/blogs/digilinks/2022/may/india-new-and-onerous-cyber-security-framework-and-breach-reporting-obligations"
+    }
+   ],
    "date": "2022-04-28"
   },
   {
    "id": "S-30",
-   "fact": "WhatsApp India rates utility Rs 0.1150, marketing Rs 0.8631, +18% GST; 1 Oct 2026 changes",
-   "source": "Meta",
+   "fact": "WhatsApp India: utility Rs 0.115, marketing Rs 0.8631 per message before GST; in-window utility templates billable from 1 Oct 2026. Reseller-reported; confirm on Meta's rate card before quoting a price",
+   "source": "Secondary: IBTimes India; MyOperator; Meta pricing page",
+   "links": [
+    {
+     "label": "IBTimes India",
+     "url": "https://www.ibtimes.co.in/whatsapp-business-messages-become-paid-october-1-india-prices-rules-what-changes-906727"
+    },
+    {
+     "label": "MyOperator",
+     "url": "https://myoperator.com/blog/whatsapp-business-api-pricing-india-2026"
+    },
+    {
+     "label": "Meta pricing page",
+     "url": "https://developers.facebook.com/docs/whatsapp/pricing"
+    }
+   ],
    "date": "2026"
   },
   {
    "id": "S-31",
-   "fact": "Sarvam STT Rs 0.49/min; Bulbul v3 Rs 3.00/1,000 chars",
-   "source": "Sarvam pricing page",
+   "fact": "Sarvam pay-as-you-go: speech to text Rs 0.49/min; Bulbul v3 Rs 3.00 per 1,000 characters",
+   "source": "Sarvam pricing",
+   "links": [
+    {
+     "label": "Sarvam pricing",
+     "url": "https://docs.sarvam.ai/api-reference-docs/getting-started/pricing"
+    }
+   ],
    "date": "2026-11"
   },
   {
    "id": "S-32",
-   "fact": "FCC Feb 2024: AI voices are \"artificial\" under TCPA",
-   "source": "FCC",
-   "date": "2024-02"
+   "fact": "FCC declaratory ruling (CG Docket 23-362): AI-generated voices are \"artificial\" under the TCPA",
+   "source": "FCC-24-17; Cooley",
+   "links": [
+    {
+     "label": "FCC-24-17",
+     "url": "https://docs.fcc.gov/public/attachments/FCC-24-17A4.pdf"
+    },
+    {
+     "label": "Cooley",
+     "url": "https://www.cooley.com/news/insight/2024/2024-02-15-fcc-ai-generated-robocalls-illegal-under-the-tcpa"
+    }
+   ],
+   "date": "2024-02-08"
   },
   {
    "id": "S-33",
-   "fact": "EU AI Act Art. 50 applicable since 2 Aug 2026",
-   "source": "EU",
+   "fact": "EU AI Act Art. 50(1), (3), (4) apply from 2 Aug 2026; the Art. 50(2) marking duty was deferred by the Digital Omnibus",
+   "source": "Sidley; Simmons & Simmons",
+   "links": [
+    {
+     "label": "Sidley",
+     "url": "https://datamatters.sidley.com/2026/06/24/eu-ai-act-transparency-obligations-preparing-for-compliance-by-2-august-2026/"
+    },
+    {
+     "label": "Simmons & Simmons",
+     "url": "https://www.simmons-simmons.com/en/publications/cmoveo6ke00icuxskpgueb0od/ai-omnibus-update"
+    }
+   ],
    "date": "2026-08-02"
   },
   {
    "id": "S-34",
-   "fact": "LiveKit Agents 1.8.x stable, 2.0 beta",
-   "source": "LiveKit",
-   "date": "2026-10"
+   "fact": "livekit-agents 1.8.13 released 2026-11-18 (pinned, D-004); 2.0.0b2 is a beta; 1.9.0 is now the latest stable",
+   "source": "PyPI JSON",
+   "links": [
+    {
+     "label": "PyPI JSON",
+     "url": "https://pypi.org/pypi/livekit-agents/json"
+    }
+   ],
+   "date": "2026-11-18"
   }
  ]
 }

@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default function DemoPage() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="font-display text-3xl">Live demo</h1>
       <p className="mt-2 max-w-3xl text-sm text-muted">
         Each call runs the real engine: holdout, every compliance gate, a single-use clearance, the agent and its tools,
@@ -17,6 +17,6 @@ export default function DemoPage() {
       <p className="mt-10 text-xs text-muted">
         Agoda Voice is an independent ProsperOps product and is not affiliated with or endorsed by Agoda.
       </p>
-    </main>
+    </div>
   );
 }
