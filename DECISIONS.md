@@ -300,3 +300,8 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `run_due` clears and dials up to `call_workers` items sequentially, then runs those calls in parallel threads and records their outcomes; it never dials more calls than it can run. Default 1 (tests), Helm 20.
 - Why: review R3 C1: one call at a time per tenant cannot serve a pilot. Clearance and the dial-attempt row commit before a call runs, so caps and cooldowns still count exactly (tested with a shared number).
 - Would change it: moving the call loop into the LiveKit worker (PLAN item 1), after which the dispatcher only dials.
+
+## D-034 (2026-11-28) Brand is BookedMeetings; the voice product is its /voice subsection
+- Decision: `BRAND_NAME` defaults to BookedMeetings and the site URL to bookedmeetings.com (Karn, 2026-11-28; supersedes D-701's ownermeetings.com). `/` is the brand home; the voice product's pages live under `/voice` (home, product, security, pricing, changelog) with permanent redirects from the old paths. Status, company, legal and docs stay at the root because they cover the whole brand. The footer disclaimer names Agoda and Cars24. The domain is not bought (spending gate).
+- Why: Karn wants one brand serving more than one client (Agoda, Cars24), with voice as one section of it.
+- Would change it: Karn choosing a subdomain instead of a path.

@@ -19,6 +19,14 @@ const config: NextConfig = {
   outputFileTracingRoot: __dirname,
   // `make check` runs eslint with our strict config; the build need not run it twice.
   eslint: { ignoreDuringBuilds: true },
+  // The voice product moved under /voice when the brand site became BookedMeetings (D-034).
+  async redirects() {
+    return ["product", "security", "pricing", "changelog"].map((p) => ({
+      source: `/${p}`,
+      destination: `/voice/${p}`,
+      permanent: true,
+    }));
+  },
   async headers() {
     return [
       // Two rules must not both match a path: duplicate X-Frame-Options values are invalid.

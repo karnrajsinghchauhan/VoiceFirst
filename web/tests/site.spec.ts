@@ -3,7 +3,7 @@ import { disclaimer } from "../src/config/brand";
 import { DOCS } from "../src/content/docs-nav";
 
 test("home shows the recorded call, the five promises and the disclaimer", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/voice");
   await expect(page.getByTestId("disclaimer")).toHaveText(disclaimer());
   await expect(page.locator("#promises li")).toHaveCount(5);
   await expect(page.getByTestId("transcript")).toContainText("Kya main");

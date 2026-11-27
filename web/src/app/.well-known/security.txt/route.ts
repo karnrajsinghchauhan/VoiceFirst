@@ -10,7 +10,7 @@ export function GET(): Response {
     `Expires: ${expires}`,
     "Preferred-Languages: en, hi",
     `Canonical: ${BRAND.siteUrl}/.well-known/security.txt`,
-    `Policy: ${BRAND.siteUrl}/security#disclosure`,
+    `Policy: ${BRAND.siteUrl}/voice/security#disclosure`,
     "",
   ].join("\n");
   return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8" } });

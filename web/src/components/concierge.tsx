@@ -111,7 +111,7 @@ export function Concierge() {
                   )}
                   {t.reply.actions.some((a) => a.type === "book_meeting") && (
                     <p className="mt-1">
-                      <Link href="/#book" className="underline" onClick={() => setOpen(false)}>
+                      <Link href="/voice#book" className="underline" onClick={() => setOpen(false)}>
                         Book a call
                       </Link>
                     </p>

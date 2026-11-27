@@ -92,7 +92,7 @@ function searchIndex() {
       if (text.length > 40) entries.push({ url, title, heading, text });
     });
   }
-  for (const [name, url] of [["trust", "/security"], ["pricing", "/pricing"]]) {
+  for (const [name, url] of [["trust", "/voice/security"], ["pricing", "/voice/pricing"]]) {
     const data = JSON.parse(readFileSync(join(web, `src/content/${name}.json`), "utf8"));
     for (const s of data.sections) {
       entries.push({ url: `${url}#${s.id}`, title: data.title, heading: s.heading, text: [s.body, ...(s.points ?? [])].join(" ") });
