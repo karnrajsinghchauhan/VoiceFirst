@@ -178,6 +178,12 @@ class StateConflictError(AgodaVoiceError):
     code = "state_conflict"
 
 
+class EventShapeError(AgodaVoiceError):
+    """A booking event must carry either a stay (with its property) or an appointment."""
+
+    code = "event_shape"
+
+
 class NotBuiltYetError(NotImplementedError):
     """Phase 2 stubs. Carries the ticket reference."""
 

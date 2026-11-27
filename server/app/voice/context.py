@@ -42,6 +42,9 @@ def field_purposes() -> dict[str, frozenset[str]]:
 def _lookup(data: dict[str, Any], path: str) -> Any:
     value: Any = data
     for part in path.split("."):
+        # A booking carries a stay or an appointment; the other block is absent (D-036).
+        if value is None:
+            return None
         value = value[part]
     return value
 

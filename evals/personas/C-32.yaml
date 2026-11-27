@@ -1,0 +1,25 @@
+id: C-32
+title: Cars24 buyer needs to move a test drive
+journey: J2
+client: Cars24
+appointment_kind: test_drive
+languages:
+- hinglish
+- en
+turns:
+  hinglish:
+  - haan ji
+  - nahi, us time main office mein rahunga
+  en:
+  - "Yes"
+  - No, I will be at the office then
+expect:
+  outcome:
+  - handed_off
+  - callback_scheduled
+  tools_required:
+  - warm_transfer
+  tools_forbidden:
+  - send_payment_link
+  handoff: true
+preferred_language: hinglish

@@ -19,6 +19,10 @@ _VALUES = {
         "amount",
         "due_date",
         "booking_tail",
+        "slot_date",
+        "slot_time",
+        "area",
+        "appointment",
     )
 }
 

@@ -1,0 +1,23 @@
+id: C-33
+title: Cars24 seller's spouse answers
+journey: J2
+client: Cars24
+appointment_kind: home_inspection
+languages:
+- hinglish
+turns:
+  hinglish:
+  - main unki wife hoon, woh abhi bahar gaye hain
+on_act:
+  hinglish:
+    third_party: shaam ko saat baje ke baad
+expect:
+  outcome:
+  - callback_scheduled
+  tools_required:
+  - schedule_callback
+  tools_forbidden:
+  - confirm_details
+  handoff: false
+preferred_language: hinglish
+confirms_identity: false

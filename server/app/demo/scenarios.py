@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import Literal
 
 from app.api.ports import DemoScenario
+from app.campaigns.journeys import stay_of
 from app.compliance.holdout import is_held_out
 from app.contracts.generated.booking_event import BookingEvent
 from app.core.config import Settings
@@ -56,7 +57,7 @@ def build_event(
             "status": spec.status,
             "occurred_at": at - timedelta(hours=3),
             "payment_due_at": at + timedelta(days=2),
-            "stay": base.stay.model_copy(
+            "stay": stay_of(base)[1].model_copy(
                 update={"check_in": check_in, "check_out": check_in + timedelta(days=2)}
             ),
         }

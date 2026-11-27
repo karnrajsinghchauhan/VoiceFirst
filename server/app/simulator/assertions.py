@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from app.campaigns.journeys import appointment_of, booking_shape, stay_of
 from app.simulator.scenario import Run
 from app.voice.dark_patterns import find_dark_patterns, find_nagging
 from app.voice.guardrails import BACKCHANNEL_ONLY, detect_language
@@ -102,17 +103,19 @@ def check_run(run: Run) -> list[Check]:
     return checks
 
 
-_PURPOSE_ACTS = ("j1_purpose", "j2_purpose")
+_PURPOSE_ACTS = ("j1_purpose", "j2_purpose", "j2a_purpose")
 
 
 def _booking_details(run: Run) -> list[str]:
     e = run.event
-    return [
-        e.property.city,
-        e.property.name,
+    money = [
         e.amount_due.value.split(".")[0],
         amount_words(e.amount_due.value, e.amount_due.currency, run.language),
     ]
+    if booking_shape(e) == "appointment":
+        return [appointment_of(e).area, *money]
+    prop, _ = stay_of(e)
+    return [prop.city, prop.name, *money]
 
 
 def _details_before_identity(run: Run) -> list[str]:

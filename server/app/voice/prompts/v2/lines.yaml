@@ -214,3 +214,49 @@ kill_close:
   hinglish: "Maaf kijiye ji, humein yeh call abhi yahin rokni hogi. Dhanyavaad, aapka din shubh ho."
   hi: "माफ़ कीजिए जी, हमें यह कॉल अभी यहीं रोकनी होगी। धन्यवाद, आपका दिन शुभ हो।"
   en: "I am sorry, we have to end this call now. Thank you, and have a good day."
+
+# ---- Appointment confirmations (Cars24 home inspection or test drive, D-036) ----
+j2a_purpose:
+  hinglish: "Dhanyavaad ji. Aapka {slot_date} ko {slot_time} {area} mein {appointment} book hai — bas do minute mein confirm kar loon?"
+  hi: "धन्यवाद जी। आपका {slot_date} को {slot_time} {area} में {appointment} बुक है — बस दो मिनट में कन्फ़र्म कर लूँ?"
+  en: "Thank you. Your {appointment} is booked for {slot_date} at {slot_time} in {area}. May I take two minutes to confirm it?"
+
+j2a_confirm_slot:
+  hinglish: "{slot_date}, {slot_time}, {area} — kya yeh time aur jagah sahi hai?"
+  hi: "{slot_date}, {slot_time}, {area} — क्या यह समय और जगह सही है?"
+  en: "{slot_date}, {slot_time}, in {area}. Is that time and place right?"
+
+j2a_reask_slot:
+  hinglish: "Maaf kijiye ji, main samajh nahi paayi. Kya {slot_date} ko {slot_time} {area} mein theek hai? Haan ya nahi bataiye."
+  hi: "माफ़ कीजिए जी, मैं समझ नहीं पाई। क्या {slot_date} को {slot_time} {area} में ठीक है? हाँ या नहीं बताइए।"
+  en: "Sorry, I did not catch that. Does {slot_date} at {slot_time} in {area} work for you? Please say yes or no."
+
+j2a_docs_home_inspection:
+  hinglish: "Shukriya ji. Inspection ke time RC, insurance aur PUC ready rakhiyega, aur gaadi ki chaabi bhi."
+  hi: "शुक्रिया जी। इंस्पेक्शन के समय RC, इंश्योरेंस और PUC तैयार रखिएगा, और गाड़ी की चाबी भी।"
+  en: "Thank you. Please keep the RC, insurance and PUC ready for the inspection, and the car keys."
+
+j2a_docs_test_drive:
+  hinglish: "Shukriya ji. Test drive ke liye apna driving licence saath rakhiyega."
+  hi: "शुक्रिया जी। टेस्ट ड्राइव के लिए अपना ड्राइविंग लाइसेंस साथ रखिएगा।"
+  en: "Thank you. Please keep your driving licence with you for the test drive."
+
+j2a_ask_request:
+  hinglish: "Kya koi aur baat hai jo hamari team ko pata honi chahiye, jaise parking ya gate ki jaankari?"
+  hi: "क्या कोई और बात है जो हमारी टीम को पता होनी चाहिए, जैसे पार्किंग या गेट की जानकारी?"
+  en: "Is there anything our team should know, such as parking or gate details?"
+
+j2a_request_noted:
+  hinglish: "Theek hai ji, maine yeh hamari team ke liye note kar liya hai."
+  hi: "ठीक है जी, मैंने यह हमारी टीम के लिए नोट कर लिया है।"
+  en: "Noted, I have passed that to our team."
+
+j2a_mismatch:
+  hinglish: "Koi baat nahi ji. Naya time ya jagah tay karne ke liye main aapko hamari team se jod rahi hoon — unhe poori baat bata di hai."
+  hi: "कोई बात नहीं जी। नया समय या जगह तय करने के लिए मैं आपको हमारी टीम से जोड़ रही हूँ — उन्हें पूरी बात बता दी है।"
+  en: "No problem. I am connecting you to our team to set a new time or place; they have the full details."
+
+j2a_unknown_question:
+  hinglish: "Yeh jaankari mere paas nahi hai. Aap {client} app mein dekh sakte hain, ya hamari team aapko bata degi."
+  hi: "यह जानकारी मेरे पास नहीं है। आप {client} ऐप में देख सकते हैं, या हमारी टीम आपको बता देगी।"
+  en: "I do not have that information. You can check the {client} app, or our team can tell you."

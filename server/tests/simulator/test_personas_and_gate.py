@@ -10,8 +10,12 @@ from tests.voice.helpers import settings
 PERSONAS = load_personas()
 
 
-def test_thirty_personas_c01_to_c30() -> None:
-    assert [p.id for p in PERSONAS] == [f"C-{i:02d}" for i in range(1, 31)]
+def test_brief_personas_then_client_personas_in_sequence() -> None:
+    # C-01..C-30 are the brief's 11.3 list; C-31 onward are Cars24 appointment personas (D-036).
+    ids = [p.id for p in PERSONAS]
+    assert ids == [f"C-{i:02d}" for i in range(1, len(ids) + 1)]
+    assert len(ids) >= 30
+    assert all(p.client == "Cars24" and p.appointment_kind for p in PERSONAS[30:])
 
 
 @pytest.mark.parametrize("persona", PERSONAS, ids=lambda p: p.id)

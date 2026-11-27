@@ -66,7 +66,8 @@ TEMPLATES: dict[str, Template] = {
         bodies={
             "hinglish": "Namaste {{first_name}} ji, aapne jo poocha tha, woh {{client}} app mein yahan "
             "dekh sakte hain: {{link}}",
-            "hi": "नमस्ते {{first_name}} जी, आपने जो पूछा था, वह {{client}} ऐप में यहाँ देख सकते हैं: " "{{link}}",
+            "hi": "नमस्ते {{first_name}} जी, आपने जो पूछा था, वह {{client}} ऐप में यहाँ देख सकते हैं: "
+            "{{link}}",
             "en": "Hello {{first_name}}, you can find what you asked about in the {{client}} app here: "
             "{{link}}",
         },

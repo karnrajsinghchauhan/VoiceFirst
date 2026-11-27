@@ -8,7 +8,7 @@ implementation.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, time
 from decimal import Decimal
 
 from app.core.errors import ReadBackMismatchError
@@ -129,6 +129,40 @@ def date_words(d: date, language: Language) -> str:
     """12 Dec -> 'baarah December' / 'बारह दिसंबर' / 'twelve December'."""
     lang = spoken_lang(language)
     return f"{number_words(d.day, language)} {_MONTHS[lang][d.month - 1]}"
+
+
+# Times are spoken on the 12-hour clock with the part of day, as people say them on the phone.
+_DAY_PARTS = {
+    "hinglish": ((5, "subah"), (12, "dopahar"), (16, "shaam"), (20, "raat")),
+    "hi": ((5, "सुबह"), (12, "दोपहर"), (16, "शाम"), (20, "रात")),
+}
+_OCLOCK = {"hinglish": "baje", "hi": "बजे"}
+_HALF = {"hinglish": "saadhe", "hi": "साढ़े"}
+# 1:30 and 2:30 have their own words; "saadhe ek" is not how anyone says it.
+_HALF_PAST = {"hinglish": {1: "dedh", 2: "dhaai"}, "hi": {1: "डेढ़", 2: "ढाई"}}
+
+
+def time_words(t: time, language: Language) -> str:
+    """11:00 -> 'subah gyaarah baje' / 'सुबह ग्यारह बजे' / 'eleven a.m.'; :30 adds 'saadhe'."""
+    if t.minute not in (0, 30):
+        raise ValueError("appointment slots start on the hour or half hour")
+    lang = spoken_lang(language)
+    hour12 = t.hour % 12 or 12
+    if lang == "en":
+        suffix = "a.m." if t.hour < 12 else "p.m."
+        half = (
+            f"{number_words(hour12, language)} thirty"
+            if t.minute
+            else number_words(hour12, language)
+        )
+        return f"{half} {suffix}"
+    part = next(name for start, name in reversed(_DAY_PARTS[lang]) if t.hour >= start or start == 5)
+    hour = number_words(hour12, language)
+    if t.minute and hour12 in _HALF_PAST[lang]:
+        spoken = _HALF_PAST[lang][hour12]
+    else:
+        spoken = f"{_HALF[lang]} {hour}" if t.minute else hour
+    return f"{part} {spoken} {_OCLOCK[lang]}"
 
 
 def number_word_set(language: Language) -> frozenset[str]:

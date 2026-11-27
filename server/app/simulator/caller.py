@@ -63,6 +63,9 @@ class Persona:
     # The booker answers the identity question with a plain yes; others answer from the script.
     confirms_identity: bool
     impairment_profiles: tuple[str, ...]
+    # Cars24 personas book an appointment instead of a stay, on a Cars24 tenant (D-036).
+    appointment_kind: str | None = None
+    client: str | None = None
 
 
 def _as_tuple(value: Any) -> tuple[str, ...]:
@@ -103,6 +106,8 @@ def load_persona(path: Path) -> Persona:
             hidden_facts=_as_tuple(raw.get("hidden_facts")),
             confirms_identity=bool(raw.get("confirms_identity", True)),
             impairment_profiles=_as_tuple(raw.get("impairment_profiles", ["clean", "mobile_3g"])),
+            appointment_kind=raw.get("appointment_kind"),
+            client=raw.get("client"),
         )
     except KeyError as exc:
         raise ConfigError(f"persona {path.name} is missing {exc}") from exc

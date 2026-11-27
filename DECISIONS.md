@@ -310,3 +310,8 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `Settings.client.name` (default "Agoda") fills `{client}` in every spoken line, WhatsApp template and notice. A tenant runtime serves one client (D-020), so Cars24 is a second tenant with `AV_CLIENT__NAME=Cars24`.
 - Why: Karn wants to work with Cars24 as well; the engine must not say "Agoda" on a Cars24 call.
 - Would change it: nothing.
+
+## D-036 (2026-11-28) Cars24 is J2 with an appointment instead of a stay
+- Decision: `booking_event` gains an optional `appointment` (kind home_inspection or test_drive, slot start, locality only) and `property`/`stay` become optional; `journeys.booking_shape` is the one owner of which shape an event has and ingest refuses both or neither (`EventShapeError`). The J2 flow and every guardrail are shared; only the lines differ (`j2a_*`), chosen in one place in the agent. Appointment calls go out 18 hours before the slot [CD]. A Cars24 tenant sets `client.name=Cars24`. Lending, EMI and collections calls are out of scope: they fall under RBI's fair-practice and recovery-agent rules, which this build does not implement.
+- Why: Karn wants Cars24 call flows. A confirmation call has the same consent basis, number series and gates as J2, so a new purpose would duplicate compliance code for no gain.
+- Would change it: a Cars24 journey with a different lawful basis (for example a promotional or lending call), which would need its own purpose and gates.
