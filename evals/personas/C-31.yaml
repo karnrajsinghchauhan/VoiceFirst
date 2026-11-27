@@ -1,0 +1,36 @@
+id: C-31
+title: Cars24 seller confirms a home inspection
+journey: J2
+client: Cars24
+appointment_kind: home_inspection
+cooperative: true
+languages:
+- hinglish
+- hi
+- en
+turns:
+  hinglish:
+  - haan ji
+  - haan sahi hai
+  - gate pe guard ko bata dijiye, gaadi basement mein hai
+  hi:
+  - हाँ जी
+  - हाँ सही है
+  - गेट पर गार्ड को बता दीजिए, गाड़ी बेसमेंट में है
+  en:
+  - "Yes"
+  - Yes, that's right
+  - Please tell the guard at the gate, the car is in the basement
+expect:
+  outcome:
+  - details_confirmed
+  tools_required:
+  - confirm_details
+  - record_special_request
+  tools_forbidden:
+  - warm_transfer
+  - send_payment_link
+  handoff: false
+  must_say:
+  - RC
+preferred_language: hinglish

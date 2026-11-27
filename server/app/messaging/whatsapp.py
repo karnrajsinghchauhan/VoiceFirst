@@ -13,6 +13,7 @@ from typing import Literal
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.campaigns.journeys import stay_of
 from app.compliance.models import WhatsAppSendRow
 from app.contracts.generated.booking_event import BookingEvent
 from app.core.clock import Clock
@@ -101,8 +102,9 @@ def _send(
 
 def _payment_params(settings: Settings, event: BookingEvent) -> dict[str, str]:
     return {
+        "client": settings.client.name,
         "first_name": event.customer.first_name,
-        "city": event.property.city,
+        "city": stay_of(event)[0].city,
         "amount": format_inr(event.amount_due.value, event.amount_due.currency),
         "link": payment_link(settings, event),
         "grievance": settings.grievance.channel,
@@ -180,7 +182,7 @@ def send_app_link(
         provider,
         event,
         "av_app_link_v1",
-        {"first_name": event.customer.first_name, "link": link},
+        {"client": settings.client.name, "first_name": event.customer.first_name, "link": link},
         "app_link",
     )
 

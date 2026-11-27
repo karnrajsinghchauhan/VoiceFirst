@@ -17,17 +17,17 @@ export interface BookingEvent {
   payment_option: "pay_now" | "bnpl" | "zero_pay" | "pay_at_hotel";
   payment_due_at: string | null;
   amount_due: Money;
-  property: {
+  property?: {
     name: string;
     city: string;
     state: string;
     tier: number;
-  };
-  stay: {
+  } | null;
+  stay?: {
     check_in: string;
     check_out: string;
     guests: number;
-  };
+  } | null;
   customer: {
     first_name: string;
     phone_e164: string;
@@ -45,6 +45,17 @@ export interface BookingEvent {
    * @minItems 1
    */
   purposes_allowed: ["J1" | "J2", ...("J1" | "J2")[]];
+  /**
+   * A booked service appointment (Cars24: home inspection or test drive). Present instead of property and stay; exactly one of the two shapes is sent (checked at ingest).
+   */
+  appointment?: {
+    kind: "home_inspection" | "test_drive";
+    slot_start: string;
+    /**
+     * Locality only, never the full address.
+     */
+    area: string;
+  } | null;
 }
 export interface Money {
   value: string;

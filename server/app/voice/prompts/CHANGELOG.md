@@ -2,6 +2,12 @@
 
 Any change to prompts, tool schemas, model ids or the normaliser triggers the eval gate (brief 10.9, 11.9).
 
+## v2.2 (2026-11-28)
+- Appointment variant of J2 for Cars24 (D-036): `j2a_*` acts name the home inspection or test drive with date, time and locality in words, confirm the slot, remind the customer of documents (RC, insurance, PUC; or a driving licence), and take a note for the team. A wrong slot goes to a person to reschedule. New personas C-31 to C-34; `make eval` 213 conversations, guardrails 100%, task success 100%.
+
+## v2.1 (2026-11-28)
+- The client's name is a placeholder `{client}` (tenant setting `client.name`, default Agoda) in every line, WhatsApp template and the DPDP notice, so one engine can call for Agoda and Cars24 (D-035). Wording is otherwise unchanged; `make eval` scorecard identical (guardrails 100%, containment 60.3%).
+
 ## v2 (2026-11-23)
 - Identity first (brief v3 S1, D-101 resolved): the opening is disclosure plus "Kya main {first_name} ji se baat kar rahi hoon?". City, property, dates and amount are spoken only after the person confirms; a child, a third party or the wrong person hears none of them.
 - New acts `opening`, `j1_purpose`, `j2_purpose` replace `j1_opening` and `j2_opening`.

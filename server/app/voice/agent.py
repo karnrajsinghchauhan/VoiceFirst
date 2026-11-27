@@ -14,11 +14,12 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime, timedelta
 from typing import Literal, Protocol
 from zoneinfo import ZoneInfo
 
+from app.campaigns.journeys import booking_shape
 from app.contracts.generated.booking_event import BookingEvent
 from app.contracts.generated.call_outcome import (
     CallOutcome,
@@ -52,6 +53,7 @@ from app.voice.normalise import (
     number_word_set,
     number_words,
     spoken_lang,
+    time_words,
     words_to_number,
 )
 from app.voice.tools import TOOL_SPECS, ToolBackend, check_allowed, ledger_entry
@@ -169,10 +171,31 @@ _HANDOFF_QUEUE = {
 HANDOFF_QUEUES = frozenset({*_HANDOFF_QUEUE.values(), "general"})
 
 
+# A Cars24 appointment (D-036) runs the J2 flow with its own lines for these acts.
+_APPOINTMENT_ACTS = {
+    "j2_purpose": "j2a_purpose",
+    "j2_confirm_stay": "j2a_confirm_slot",
+    "j2_reask_stay": "j2a_reask_slot",
+    "j2_ask_request": "j2a_ask_request",
+    "j2_request_noted": "j2a_request_noted",
+    "j2_mismatch": "j2a_mismatch",
+    "unknown_question": "j2a_unknown_question",
+}
+_APPOINTMENT_WORDS = {
+    "home_inspection": {
+        "hinglish": "car ka home inspection",
+        "hi": "कार का होम इंस्पेक्शन",
+        "en": "car's home inspection",
+    },
+    "test_drive": {"hinglish": "test drive", "hi": "टेस्ट ड्राइव", "en": "test drive"},
+}
+
+
 class Conversation:
     def __init__(self, setup: CallSetup) -> None:
         self.s = setup
         self.ctx = PurposeContext(setup.event, setup.purpose)
+        self.shape = booking_shape(setup.event)
         pref = self.ctx.get("customer.preferred_language")
         self.lang: Language = "hinglish" if pref == "unknown" else pref
         self.detected: Language = "unknown"
@@ -208,7 +231,16 @@ class Conversation:
             "city": str(ctx.get("property.city")),
             "property_name": str(ctx.get("property.name")),
             "booking_tail": str(ctx.get("booking_id"))[-4:],
+            "client": self.s.settings.client.name,
         }
+        if self.shape == "appointment":
+            slot = datetime.fromisoformat(ctx.get("appointment.slot_start")).astimezone(_IST)
+            values["slot_date"] = date_words(slot.date(), self.lang)
+            values["slot_time"] = time_words(slot.time(), self.lang)
+            values["area"] = str(ctx.get("appointment.area"))
+            kind = str(ctx.get("appointment.kind"))
+            values["appointment"] = _APPOINTMENT_WORDS[kind][spoken_lang(self.lang)]
+            return values
         values["check_in_date"] = date_words(
             date.fromisoformat(ctx.get("stay.check_in")), self.lang
         )
@@ -228,6 +260,8 @@ class Conversation:
 
     # ---- agent speech ----
     def _say(self, step: _Step) -> None:
+        if self.shape == "appointment":
+            step = replace(step, acts=tuple(_APPOINTMENT_ACTS.get(a, a) for a in step.acts))
         if self.s.is_killed():
             step = _Step(
                 ("kill_close",), (ToolCall("end_call", {"outcome": "abandoned"}),), "abandoned"
@@ -595,6 +629,14 @@ class Conversation:
                     ("close",), (ToolCall("end_call", {"outcome": "declined"}),), end="declined"
                 )
         elif self.stage == "confirm_stay":
+            if sig.yes and self.shape == "appointment":
+                # The slot is the whole booking; a document reminder replaces the arrival time.
+                kind = str(self.ctx.get("appointment.kind"))
+                return _Step(
+                    (f"j2a_docs_{kind}", "j2_ask_request"),
+                    (ToolCall("confirm_details", {"slot": "confirmed"}),),
+                    stage="ask_request",
+                )
             if sig.yes:
                 details = {"check_in": "confirmed", "check_out": "confirmed", "guests": "confirmed"}
                 return _Step(
@@ -603,7 +645,11 @@ class Conversation:
                     stage="ask_arrival",
                 )
             if sig.no:
-                self.customer_wants = "stay details are wrong; wants a change"
+                self.customer_wants = (
+                    "appointment time or place is wrong; wants to reschedule"
+                    if self.shape == "appointment"
+                    else "stay details are wrong; wants a change"
+                )
                 return self._handoff("booking_change", "j2_mismatch", "booking_change")
         elif self.stage == "ask_arrival":
             if redacted and not sig.question:

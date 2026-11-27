@@ -1,7 +1,7 @@
 // Passcode form for the private pages. Posts to /api/gate, which sets the gate cookie.
 export const metadata = { title: "Private | Agoda Voice", robots: { index: false, follow: false } };
 
-const ALLOWED = new Set(["/demo", "/agoda"]);
+const ALLOWED = new Set(["/demo", "/agoda", "/cars24"]);
 
 export default async function GatePage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
   const { next, error } = await searchParams;

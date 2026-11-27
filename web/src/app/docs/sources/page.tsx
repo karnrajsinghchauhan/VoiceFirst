@@ -48,7 +48,7 @@ export default function SourcesPage() {
       </table>
       <p>
         Results we measured ourselves are not sources; they are listed with their method and date on the{" "}
-        <a href="/product#proof">product page</a>.
+        <a href="/voice/product#proof">product page</a>.
       </p>
     </>
   );

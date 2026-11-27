@@ -57,3 +57,12 @@ Resolved: item 26 (identity before booking details) was settled by D-017.
 33. Is "Book with Zero Pay" a current payment option, and how should the agent describe it?
 34. What share of Indian bookings are under INR 5,000 a night? (The Travel Outlook figure could not be verified.)
 35. Which Agoda-hosted payment-link format and expiry should the WhatsApp template carry? (REQ-PAY-02)
+
+## Cars24
+36. Which appointment types should the pilot cover: seller home inspections, buyer test drives at home, or both? Which cities?
+37. How far ahead of a slot should the confirmation call go (default 18 hours), and how are reschedules handled today?
+38. Which of these calls do your existing voice agents already make (S-36, S-38), so we add only what is missing?
+39. Sender entity and declared caller-ID series for Cars24 service calls; WhatsApp opt-in source for buyers and sellers.
+40. Which CRM or ticketing system receives notes and reschedule requests?
+41. Which documents should the agent remind sellers and buyers to keep ready (we use RC, insurance, PUC and a driving licence)?
+42. Is any pilot call connected to lending or payments? (Out of scope here; RBI recovery-agent rules would apply.)

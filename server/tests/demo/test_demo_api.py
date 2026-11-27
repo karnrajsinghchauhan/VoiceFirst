@@ -21,6 +21,8 @@ EXPECTED = {
     "stop_calling": "opted_out",
     "child_answers": "minor_on_line",
     "card_number": "link_sent",
+    "cars24_inspection": "details_confirmed",
+    "cars24_reschedule": "handed_off",
 }
 
 
@@ -111,3 +113,9 @@ def test_demo_is_off_without_a_passcode(client, monkeypatch, session_factory, bu
     off = TestClient(build_api(rt))
     r = off.post("/demo/run", json={"scenario": "failed_upi"}, headers=HEADERS)
     assert r.status_code == 404
+
+
+def test_cars24_scenarios_speak_for_cars24_not_agoda(client):
+    for scenario in ("cars24_inspection", "cars24_reschedule"):
+        first = _run(client, scenario)["transcript"][0]["text"]
+        assert "Cars24" in first and "Agoda" not in first

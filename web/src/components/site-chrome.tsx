@@ -2,11 +2,12 @@ import Link from "next/link";
 import { BRAND, disclaimer } from "@/config/brand";
 
 const NAV: readonly { href: string; label: string }[] = [
-  { href: "/product", label: "Product" },
-  { href: "/security", label: "Security" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/voice", label: "Voice" },
+  { href: "/voice/product", label: "Product" },
+  { href: "/voice/security", label: "Security" },
+  { href: "/voice/pricing", label: "Pricing" },
   { href: "/docs", label: "Docs" },
-  { href: "/changelog", label: "Changelog" },
+  { href: "/voice/changelog", label: "Changelog" },
   { href: "/company", label: "Company" },
 ];
 
@@ -24,7 +25,7 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            href="/#book"
+            href="/voice#book"
             className="motion rounded border border-ink px-3 py-1.5 text-ink hover:bg-ink hover:text-paper"
           >
             Book a call

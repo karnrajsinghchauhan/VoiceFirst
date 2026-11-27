@@ -300,3 +300,23 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `run_due` clears and dials up to `call_workers` items sequentially, then runs those calls in parallel threads and records their outcomes; it never dials more calls than it can run. Default 1 (tests), Helm 20.
 - Why: review R3 C1: one call at a time per tenant cannot serve a pilot. Clearance and the dial-attempt row commit before a call runs, so caps and cooldowns still count exactly (tested with a shared number).
 - Would change it: moving the call loop into the LiveKit worker (PLAN item 1), after which the dispatcher only dials.
+
+## D-034 (2026-11-28) Brand is BookedMeetings; the voice product is its /voice subsection
+- Decision: `BRAND_NAME` defaults to BookedMeetings and the site URL to bookedmeetings.com (Karn, 2026-11-28; supersedes D-701's ownermeetings.com). `/` is the brand home; the voice product's pages live under `/voice` (home, product, security, pricing, changelog) with permanent redirects from the old paths. Status, company, legal and docs stay at the root because they cover the whole brand. The footer disclaimer names Agoda and Cars24. The domain is not bought (spending gate).
+- Why: Karn wants one brand serving more than one client (Agoda, Cars24), with voice as one section of it.
+- Would change it: Karn choosing a subdomain instead of a path.
+
+## D-035 (2026-11-28) The client is tenant configuration, not text
+- Decision: `Settings.client.name` (default "Agoda") fills `{client}` in every spoken line, WhatsApp template and notice. A tenant runtime serves one client (D-020), so Cars24 is a second tenant with `AV_CLIENT__NAME=Cars24`.
+- Why: Karn wants to work with Cars24 as well; the engine must not say "Agoda" on a Cars24 call.
+- Would change it: nothing.
+
+## D-036 (2026-11-28) Cars24 is J2 with an appointment instead of a stay
+- Decision: `booking_event` gains an optional `appointment` (kind home_inspection or test_drive, slot start, locality only) and `property`/`stay` become optional; `journeys.booking_shape` is the one owner of which shape an event has and ingest refuses both or neither (`EventShapeError`). The J2 flow and every guardrail are shared; only the lines differ (`j2a_*`), chosen in one place in the agent. Appointment calls go out 18 hours before the slot [CD]. A Cars24 tenant sets `client.name=Cars24`. Lending, EMI and collections calls are out of scope: they fall under RBI's fair-practice and recovery-agent rules, which this build does not implement.
+- Why: Karn wants Cars24 call flows. A confirmation call has the same consent basis, number series and gates as J2, so a new purpose would duplicate compliance code for no gain.
+- Would change it: a Cars24 journey with a different lawful basis (for example a promotional or lending call), which would need its own purpose and gates.
+
+## D-037 (2026-11-28) Cars24 in the demo and a private /cars24 note
+- Decision: `/demo` gains two Cars24 scenarios (home inspection confirmed; test drive needs a new time) that run as a Cars24 tenant, so the agent says Cars24. `/cars24` is a private, noindex note (passcode) citing S-35 to S-40: it credits Cars24's existing voice agents, proposes only appointment confirmations, states that no lending or collection calls are made, and leaves commercial terms to agree. Cars24 discovery questions are 36-42. Rate limits per bucket can be overridden by `AV_RATE_LIMIT_<BUCKET>` (the test server raises demo and gate; production keeps 30 and 10).
+- Why: Karn wants to work with Cars24; Cars24 already runs voice AI at scale (S-36 to S-38), so the honest offer is a narrow, auditable addition.
+- Would change it: Cars24's answers to the discovery questions.

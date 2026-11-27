@@ -68,7 +68,7 @@ export function Measured({ id, children }: { id: string; children?: ReactNode })
     <span className="whitespace-nowrap" data-claim="measured">
       {children ?? item.value}
       <Link
-        href={`/product#proof-${id}`}
+        href={`/voice/product#proof-${id}`}
         className="ml-0.5 align-super text-[0.65em] text-accent no-underline hover:underline"
         title={`${item.kind === "modelled" ? "Modelled" : "Measured on test data"}, ${item.date}: ${item.method}`}
         aria-label={`${item.kind === "modelled" ? "Modelled" : "Measured on test data"}, ${item.date}`}

@@ -2,10 +2,12 @@
 // repo never disagree about what is still unknown.
 import discovery from "@/content/generated/discovery.json";
 
-export function DiscoveryList() {
+// `only` picks one client's section; without it, every section except other clients' lists.
+export function DiscoveryList({ only }: { only?: string }) {
+  const sections = discovery.sections.filter((s) => (only ? s.heading === only : s.heading !== "Cars24"));
   return (
     <>
-      {discovery.sections.map((s) => (
+      {sections.map((s) => (
         <div key={s.heading}>
           <h3>{s.heading}</h3>
           <ul>

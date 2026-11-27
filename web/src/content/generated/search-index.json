@@ -295,73 +295,73 @@
    "text": "A delivery that fails lands in a dead-letter queue that raises an alert. Nothing is dropped silently."
   },
   {
-   "url": "/security#controls",
+   "url": "/voice/security#controls",
    "title": "Trust centre",
    "heading": "Security controls",
    "text": "The control list lives in SECURITY.md in the repository and maps each control to the code or test that enforces it. Every privileged action is written to an append-only audit log with actor, role and reason, mirrored to the av.audit.v1 Kafka topic. Status: built. Role-based access with four roles: admin, ops, auditor, read-only. Status: built. Single sign-on for the console (OIDC first, SAML-ready). Status: in progress. Encryption in transit (TLS at ingress, Kafka TLS, Postgres verify-full in production values). Status: configured in the Helm chart. Field-level encryption of transcripts and audio references at rest. Status: built. Per-tenant envelope encryption with a managed KMS: planned. No training or fine-tuning on client data. There is no training code path; it is a contract term with every sub-processor. PII and payment-credential redaction before speech-to-text output reaches the model or storage, and inside the logger. Status: built and tested. No card, CVV, UPI PIN or OTP field exists in any contract or table. A static test proves it. Dependency audit and secret scan in CI. SAST, container scanning and signed images: planned."
   },
   {
-   "url": "/security#data-flow",
+   "url": "/voice/security#data-flow",
    "title": "Trust centre",
    "heading": "Data flow",
    "text": "A booking event from Agoda is checked against the holdout and eleven compliance gates. Only a cleared call is dialled. Speech is transcribed, redacted, and only then passed to the model with purpose-limited booking fields. Payment happens on an Agoda-hosted page linked over WhatsApp; the call never takes card details. Outcomes and redacted transcripts are stored encrypted, and handoffs land in the client's CRM."
   },
   {
-   "url": "/security#subprocessors",
+   "url": "/voice/security#subprocessors",
    "title": "Trust centre",
    "heading": "Sub-processors",
    "text": "None is contracted yet. Each role has exactly one provider chosen at boot, and the production validator refuses to start if a provider's region is outside the client's allowlist (India by default). The full table, with what each provider sees, is in docs/subprocessors.md. Speech-to-text: Sarvam (planned), or a self-hosted model on the client's cluster. Text-to-speech: Sarvam Bulbul (planned), or self-hosted. Language model: one of OpenAI or Anthropic under a no-training agreement (planned), or a self-hosted model. Telephony: Plivo or Exotel through SIP (planned). WhatsApp: Meta WhatsApp Cloud API (planned). CRM: the client's Zendesk, Salesforce or HubSpot tenant."
   },
   {
-   "url": "/security#retention",
+   "url": "/voice/security#retention",
    "title": "Trust centre",
    "heading": "Retention",
    "text": "Retention is set per purpose and enforced by a nightly purge that logs how many records it removed. Call audio: [[spec:retention.audio_days|30 days]] by default. Redacted transcripts: [[spec:retention.transcript_days|180 days]] by default. Security and audit logs: [[spec:retention.ict_log_days|180 days]] rolling, kept in India, as CERT-In directs. Consent records: as the law requires; the exact period is a question for counsel."
   },
   {
-   "url": "/security#dpa",
+   "url": "/voice/security#dpa",
    "title": "Trust centre",
    "heading": "Data processing agreement",
    "text": "A draft DPA template is published at /legal/dpa. It is a draft pending review by Indian counsel and is not yet signed with anyone."
   },
   {
-   "url": "/security#compliance",
+   "url": "/voice/security#compliance",
    "title": "Trust centre",
    "heading": "Compliance status",
    "text": "This is engineering status, not legal advice. Indian counsel must sign off before any live call. TRAI TCCCPR as amended (including the Third Amendment notified [[S-24|September 2026]]): every rule we know of has an automated test. Counsel sign-off: pending. DPDP Act 2023 and Rules 2025: built to the full standard now; core duties apply from [[S-25|13 May 2027]]. Counsel sign-off: pending. CERT-In directions: incident timers and log retention built. Counsel sign-off: pending. ISO 27001, SOC 2 and similar certifications: none held. Not planned before a pilot. OWASP ASVS Level 2: used as our checklist; self-assessment in progress."
   },
   {
-   "url": "/security#disclosure",
+   "url": "/voice/security#disclosure",
    "title": "Trust centre",
    "heading": "Reporting a vulnerability",
    "text": "Email the security contact listed in /.well-known/security.txt. Please do not open a public issue. We acknowledge reports and will tell you what we changed."
   },
   {
-   "url": "/pricing#pilot",
+   "url": "/voice/pricing#pilot",
    "title": "Pricing",
    "heading": "Pilot",
    "text": "An eight-week pilot on India-originating bookings: payment rescue and booking confirmation, with a no-call holdout to measure lift. Fixed fee [[spec:offer.pilot_fee|USD 20,000]], with [[spec:offer.pilot_at_risk|half]] at risk against the agreed success metrics. Containment target [[spec:offer.containment_target|35 to 55 percent]]. A target, not a measured result."
   },
   {
-   "url": "/pricing#after",
+   "url": "/voice/pricing#after",
    "title": "Pricing",
    "heading": "After the pilot",
    "text": "Two options. Pick the one whose unit you trust more. Per outcome: [[spec:offer.retainer|USD 6,000 a month]] plus [[spec:offer.per_resolved|Rs 25 per contact the AI resolves]] with no human. Per minute: [[spec:offer.per_minute|USD 0.09 per outbound minute]]."
   },
   {
-   "url": "/pricing#logic",
+   "url": "/voice/pricing#logic",
    "title": "Pricing",
    "heading": "Why per outcome",
    "text": "A per-minute price rewards long calls. A per-resolved-contact price rewards short calls that finish the job, which is what a customer wants too. Resolved means the journey's goal was met on the call (payment link accepted, or details confirmed) with no human involved."
   },
   {
-   "url": "/pricing#costs",
+   "url": "/voice/pricing#costs",
    "title": "Pricing",
    "heading": "What a call costs to run",
    "text": "Our unit economics page lists each cost component (telephony, speech, model, voice, WhatsApp, infrastructure) with its unit price, source and the date it was checked. Prices are re-checked before any quote. Speech-to-text list price [[S-31|Rs 0.49 per minute]] (Sarvam). Text-to-speech list price [[S-31|Rs 3.00 per 1,000 characters]] (Sarvam Bulbul v3). WhatsApp utility template [[S-30|Rs 0.1150 plus 18% GST]] (Meta, India)."
   },
   {
-   "url": "/pricing#enterprise",
+   "url": "/voice/pricing#enterprise",
    "title": "Pricing",
    "heading": "Enterprise path",
    "text": "Run as a managed service first. When you are ready, the same Helm chart runs on your Kubernetes and we hand it over: build, operate, transfer. Private deployment, SSO, data residency and an SLA are part of the enterprise agreement."

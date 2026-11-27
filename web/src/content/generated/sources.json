@@ -492,6 +492,86 @@
     }
    ],
    "date": "2026-11-18"
+  },
+  {
+   "id": "S-35",
+   "fact": "Cars24 selling: online valuation, then a free home inspection by an inspector at the car's location; buyers can book a test drive at home in select cities",
+   "source": "Cars24: how to sell your used car; Cars24: India platform",
+   "links": [
+    {
+     "label": "Cars24: how to sell your used car",
+     "url": "https://www.cars24.com/article/how-to-sell-your-used-car-with-cars24/"
+    },
+    {
+     "label": "Cars24: India platform",
+     "url": "https://www.cars24.com/article/cars24-india-revolutionising-used-car-buying-selling"
+    }
+   ],
+   "date": "2026"
+  },
+  {
+   "id": "S-36",
+   "fact": "Cars24 builds voice and chat agents on OpenAI across buying, selling, financing, follow-up and support (vendor case study)",
+   "source": "OpenAI customer story",
+   "links": [
+    {
+     "label": "OpenAI customer story",
+     "url": "https://openai.com/index/cars24"
+    }
+   ],
+   "date": "2026"
+  },
+  {
+   "id": "S-37",
+   "fact": "Cars24's AI voicebots handled 2.58 million connected conversation minutes in a quarter, up 30.3% quarter on quarter",
+   "source": "Business Today",
+   "links": [
+    {
+     "label": "Business Today",
+     "url": "https://www.businesstoday.in/auto/story/how-cars24-is-reinventing-itself-as-an-ai-first-used-car-platform-544318-2026-07-21"
+    }
+   ],
+   "date": "2026-07-21"
+  },
+  {
+   "id": "S-38",
+   "fact": "Cars24 aims for 30% of calls handled by AI agents; planned expansion covers inspections, financing and after-sale service; its agents say they are virtual when asked and transfer to a person on request (vendor blog)",
+   "source": "ElevenLabs: Cars24",
+   "links": [
+    {
+     "label": "ElevenLabs: Cars24",
+     "url": "https://elevenlabs.io/blog/cars24"
+    }
+   ],
+   "date": "2026"
+  },
+  {
+   "id": "S-39",
+   "fact": "Cars24 FY25 revenue about Rs 6,233 crore (down about 10%); net loss about Rs 543 crore",
+   "source": "Indian Startup News; Entrackr",
+   "links": [
+    {
+     "label": "Indian Startup News",
+     "url": "https://indianstartupnews.com/news/cars24-india-loss-widens-to-rs-543-crore-in-fy25-revenue-falls-10-11163537"
+    },
+    {
+     "label": "Entrackr",
+     "url": "https://entrackr.com/fintrackr/cars24-reports-10-revenue-decline-in-fy25-losses-rise-marginally-11160853"
+    }
+   ],
+   "date": "2025"
+  },
+  {
+   "id": "S-40",
+   "fact": "Cars24 handles RC transfer for sellers (Seller Kavach); timelines vary by state, from about 15-45 days to several months",
+   "source": "Cars24: RC transfer timelines",
+   "links": [
+    {
+     "label": "Cars24: RC transfer timelines",
+     "url": "https://www.cars24.com/article/rc-transfer-with-cars24-timelines-process-and-what-sellers-should-expect/"
+    }
+   ],
+   "date": "2026"
   }
  ]
 }

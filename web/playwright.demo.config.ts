@@ -27,7 +27,7 @@ export default defineConfig({
     {
       command: "npx next start -p 3200",
       url: "http://localhost:3200",
-      env: { AV_API_MODE: "http", AV_API_URL: ENGINE, AV_DEMO_PASSCODE: PASSCODE },
+      env: { AV_API_MODE: "http", AV_API_URL: ENGINE, AV_DEMO_PASSCODE: PASSCODE, AV_RATE_LIMIT_DEMO: "300", AV_RATE_LIMIT_GATE: "100" },
       reuseExistingServer: false,
       timeout: 60_000,
     },

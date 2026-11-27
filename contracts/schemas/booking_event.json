@@ -5,73 +5,330 @@
   "description": "A booking state change from Agoda. Every leaf field carries x-purposes: the call purposes allowed to read it (REQ-DPDP-02).",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "tenant_id", "trace_id", "event_id", "occurred_at", "booking_id", "status", "payment_option", "payment_due_at", "amount_due", "property", "stay", "customer", "flags", "purposes_allowed"],
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "trace_id",
+    "event_id",
+    "occurred_at",
+    "booking_id",
+    "status",
+    "payment_option",
+    "payment_due_at",
+    "amount_due",
+    "customer",
+    "flags",
+    "purposes_allowed"
+  ],
   "properties": {
-    "schema_version": {"$ref": "common.json#/$defs/SchemaVersion", "x-purposes": ["J1", "J2"]},
-    "tenant_id": {"$ref": "common.json#/$defs/TenantId", "x-purposes": ["J1", "J2"]},
-    "trace_id": {"$ref": "common.json#/$defs/TraceId", "x-purposes": ["J1", "J2"]},
-    "event_id": {"type": "string", "minLength": 1, "x-purposes": ["J1", "J2"]},
-    "occurred_at": {"type": "string", "format": "date-time", "x-purposes": ["J1", "J2"]},
-    "booking_id": {"type": "string", "minLength": 4, "description": "Opaque. Never spoken in full; at most the last 4 characters.", "x-purposes": ["J1", "J2"]},
-    "status": {"type": "string", "enum": ["payment_failed", "payment_pending", "confirmed", "cancelled"], "x-purposes": ["J1", "J2"]},
-    "payment_option": {"type": "string", "enum": ["pay_now", "bnpl", "zero_pay", "pay_at_hotel"], "x-purposes": ["J1"]},
-    "payment_due_at": {"type": ["string", "null"], "format": "date-time", "x-purposes": ["J1"]},
-    "amount_due": {"$ref": "common.json#/$defs/Money", "x-purposes": ["J1"]},
+    "schema_version": {
+      "$ref": "common.json#/$defs/SchemaVersion",
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "tenant_id": {
+      "$ref": "common.json#/$defs/TenantId",
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "trace_id": {
+      "$ref": "common.json#/$defs/TraceId",
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "booking_id": {
+      "type": "string",
+      "minLength": 4,
+      "description": "Opaque. Never spoken in full; at most the last 4 characters.",
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "payment_failed",
+        "payment_pending",
+        "confirmed",
+        "cancelled"
+      ],
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "payment_option": {
+      "type": "string",
+      "enum": [
+        "pay_now",
+        "bnpl",
+        "zero_pay",
+        "pay_at_hotel"
+      ],
+      "x-purposes": [
+        "J1"
+      ]
+    },
+    "payment_due_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "x-purposes": [
+        "J1"
+      ]
+    },
+    "amount_due": {
+      "$ref": "common.json#/$defs/Money",
+      "x-purposes": [
+        "J1"
+      ]
+    },
     "property": {
-      "type": "object",
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
-      "required": ["name", "city", "state", "tier"],
+      "required": [
+        "name",
+        "city",
+        "state",
+        "tier"
+      ],
       "properties": {
-        "name": {"type": "string", "minLength": 1, "x-purposes": ["J1", "J2"]},
-        "city": {"type": "string", "minLength": 1, "x-purposes": ["J1", "J2"]},
-        "state": {"type": "string", "minLength": 1, "x-purposes": ["J2"]},
-        "tier": {"type": "integer", "minimum": 1, "maximum": 3, "x-purposes": ["J2"]}
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        },
+        "city": {
+          "type": "string",
+          "minLength": 1,
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "minLength": 1,
+          "x-purposes": [
+            "J2"
+          ]
+        },
+        "tier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3,
+          "x-purposes": [
+            "J2"
+          ]
+        }
       }
     },
     "stay": {
-      "type": "object",
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": false,
-      "required": ["check_in", "check_out", "guests"],
+      "required": [
+        "check_in",
+        "check_out",
+        "guests"
+      ],
       "properties": {
-        "check_in": {"type": "string", "format": "date", "x-purposes": ["J1", "J2"]},
-        "check_out": {"type": "string", "format": "date", "x-purposes": ["J2"]},
-        "guests": {"type": "integer", "minimum": 1, "x-purposes": ["J2"]}
+        "check_in": {
+          "type": "string",
+          "format": "date",
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        },
+        "check_out": {
+          "type": "string",
+          "format": "date",
+          "x-purposes": [
+            "J2"
+          ]
+        },
+        "guests": {
+          "type": "integer",
+          "minimum": 1,
+          "x-purposes": [
+            "J2"
+          ]
+        }
       }
     },
     "customer": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["first_name", "phone_e164", "preferred_language", "whatsapp_opt_in"],
+      "required": [
+        "first_name",
+        "phone_e164",
+        "preferred_language",
+        "whatsapp_opt_in"
+      ],
       "properties": {
-        "first_name": {"type": "string", "minLength": 1, "x-purposes": ["J1", "J2"]},
-        "phone_e164": {"$ref": "common.json#/$defs/PhoneE164", "x-purposes": ["J1", "J2"]},
-        "preferred_language": {"$ref": "common.json#/$defs/Language", "x-purposes": ["J1", "J2"]},
+        "first_name": {
+          "type": "string",
+          "minLength": 1,
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        },
+        "phone_e164": {
+          "$ref": "common.json#/$defs/PhoneE164",
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        },
+        "preferred_language": {
+          "$ref": "common.json#/$defs/Language",
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        },
         "whatsapp_opt_in": {
           "oneOf": [
-            {"type": "null"},
+            {
+              "type": "null"
+            },
             {
               "type": "object",
               "additionalProperties": false,
-              "required": ["at", "source"],
+              "required": [
+                "at",
+                "source"
+              ],
               "properties": {
-                "at": {"type": "string", "format": "date-time"},
-                "source": {"type": "string", "minLength": 1}
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1
+                }
               }
             }
           ],
-          "x-purposes": ["J1", "J2"]
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
         }
       }
     },
     "flags": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["vip", "minor_suspected"],
+      "required": [
+        "vip",
+        "minor_suspected"
+      ],
       "properties": {
-        "vip": {"type": "boolean", "x-purposes": ["J1", "J2"]},
-        "minor_suspected": {"type": "boolean", "x-purposes": ["J1", "J2"]}
+        "vip": {
+          "type": "boolean",
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        },
+        "minor_suspected": {
+          "type": "boolean",
+          "x-purposes": [
+            "J1",
+            "J2"
+          ]
+        }
       }
     },
-    "purposes_allowed": {"type": "array", "items": {"$ref": "common.json#/$defs/Purpose"}, "minItems": 1, "uniqueItems": true, "x-purposes": ["J1", "J2"]}
+    "purposes_allowed": {
+      "type": "array",
+      "items": {
+        "$ref": "common.json#/$defs/Purpose"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "x-purposes": [
+        "J1",
+        "J2"
+      ]
+    },
+    "appointment": {
+      "description": "A booked service appointment (Cars24: home inspection or test drive). Present instead of property and stay; exactly one of the two shapes is sent (checked at ingest).",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "slot_start",
+        "area"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "home_inspection",
+            "test_drive"
+          ],
+          "x-purposes": [
+            "J2"
+          ]
+        },
+        "slot_start": {
+          "type": "string",
+          "format": "date-time",
+          "x-purposes": [
+            "J2"
+          ]
+        },
+        "area": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Locality only, never the full address.",
+          "x-purposes": [
+            "J2"
+          ]
+        }
+      }
+    }
   }
 }

@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import Literal
 
 from app.api.ports import DemoScenario
+from app.campaigns.journeys import JourneyRules, stay_of
 from app.compliance.holdout import is_held_out
 from app.contracts.generated.booking_event import BookingEvent
 from app.core.config import Settings
@@ -32,6 +33,8 @@ SCENARIOS: dict[DemoScenario, ScenarioSpec] = {
     "stop_calling": ScenarioSpec("C-10", "payment_pending", "J1"),
     "child_answers": ScenarioSpec("C-11", "payment_pending", "J1"),
     "card_number": ScenarioSpec("C-17", "payment_failed", "J1"),
+    "cars24_inspection": ScenarioSpec("C-31", "confirmed", "J2"),
+    "cars24_reschedule": ScenarioSpec("C-32", "confirmed", "J2"),
 }
 
 # The holdout is never overridden, so the demo picks the first seed whose booking is not held out.
@@ -50,13 +53,23 @@ def build_event(
             break
     else:
         raise StateConflictError("no demo seed outside the holdout; the bucket function is broken")
+    if base.appointment is not None:
+        # Due exactly now: the slot sits one appointment lead ahead (D-036).
+        slot = at + JourneyRules().appointment_lead
+        return base.model_copy(
+            update={
+                "status": spec.status,
+                "occurred_at": at - timedelta(hours=3),
+                "appointment": base.appointment.model_copy(update={"slot_start": slot}),
+            }
+        )
     check_in = (at + timedelta(days=2)).date()
     return base.model_copy(
         update={
             "status": spec.status,
             "occurred_at": at - timedelta(hours=3),
             "payment_due_at": at + timedelta(days=2),
-            "stay": base.stay.model_copy(
+            "stay": stay_of(base)[1].model_copy(
                 update={"check_in": check_in, "check_out": check_in + timedelta(days=2)}
             ),
         }

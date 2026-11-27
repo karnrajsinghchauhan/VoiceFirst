@@ -4,10 +4,11 @@ import { expect, test } from "@playwright/test";
 // Every public page: the disclaimer, no untagged numeric claim, no 404, and WCAG 2.1 AA.
 const PAGES = [
   "/",
-  "/product",
-  "/security",
-  "/pricing",
-  "/changelog",
+  "/voice",
+  "/voice/product",
+  "/voice/security",
+  "/voice/pricing",
+  "/voice/changelog",
   "/company",
   "/status",
   "/docs",
@@ -28,7 +29,7 @@ for (const path of PAGES) {
   test(`${path}: disclaimer, sourced claims, accessible`, async ({ page }) => {
     const res = await page.goto(path);
     expect(res?.status()).toBe(200);
-    await expect(page.locator("footer[data-site-footer]")).toContainText("Not affiliated with or endorsed by Agoda");
+    await expect(page.locator("footer[data-site-footer]")).toContainText("Not affiliated with or endorsed by Agoda or Cars24");
 
     const untagged = await page.evaluate((pattern) => {
       const re = new RegExp(pattern);
@@ -49,6 +50,14 @@ for (const path of PAGES) {
     expect(axe.violations.map((v) => `${v.id}: ${v.nodes.length} node(s)`), `axe on ${path}`).toEqual([]);
   });
 }
+
+test("old product URLs redirect into /voice", async ({ request }) => {
+  for (const p of ["product", "security", "pricing", "changelog"]) {
+    const res = await request.get(`/${p}`, { maxRedirects: 0 });
+    expect(res.status()).toBe(308);
+    expect(res.headers()["location"]).toBe(`/voice/${p}`);
+  }
+});
 
 test("security.txt follows RFC 9116", async ({ request }) => {
   const res = await request.get("/.well-known/security.txt");

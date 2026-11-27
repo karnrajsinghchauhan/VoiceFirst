@@ -23,7 +23,7 @@ from typing import Literal, Protocol
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.campaigns.journeys import JourneyRules, plan_journey
+from app.campaigns.journeys import JourneyRules, booking_shape, plan_journey
 from app.campaigns.models import (
     BookingEventRow,
     CampaignStateRow,
@@ -115,6 +115,7 @@ class Dispatcher:
         Redelivery of an already stored event_id is a no-op, because Kafka delivers at least once.
         """
         event = BookingEvent.model_validate(payload)
+        booking_shape(event)  # edge validation: a stay or an appointment, never both (D-036)
         with transaction(self._factory) as session:
             if session.get(BookingEventRow, event.event_id) is not None:
                 return event

@@ -3,7 +3,7 @@ import { jsonError, passcodeMatches, rateLimited, setGate } from "@/lib/server/s
 
 export const dynamic = "force-dynamic";
 
-const NEXT_ALLOWED = new Set(["/demo", "/agoda"]);
+const NEXT_ALLOWED = new Set(["/demo", "/agoda", "/cars24"]);
 
 export async function POST(req: Request): Promise<Response> {
   if (await rateLimited("gate")) return jsonError(429, "rate_limited", "too many attempts; wait a minute");

@@ -46,6 +46,26 @@ class Flags(BaseModel):
     minor_suspected: bool
 
 
+class Appointment(BaseModel):
+    """
+    A booked service appointment (Cars24: home inspection or test drive). Present instead of property and stay; exactly one of the two shapes is sent (checked at ingest).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    kind: Literal["home_inspection", "test_drive"]
+    slot_start: AwareDatetime
+    area: Annotated[
+        str,
+        Field(
+            description="Locality only, never the full address.",
+            max_length=80,
+            min_length=1,
+        ),
+    ]
+
+
 class Customer(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -80,8 +100,14 @@ class BookingEvent(BaseModel):
     payment_option: Literal["pay_now", "bnpl", "zero_pay", "pay_at_hotel"]
     payment_due_at: AwareDatetime | None
     amount_due: common.Money
-    property: Property
-    stay: Stay
+    property: Property | None = None
+    stay: Stay | None = None
     customer: Customer
     flags: Flags
     purposes_allowed: Annotated[list[Literal["J1", "J2"]], Field(min_length=1)]
+    appointment: Annotated[
+        Appointment | None,
+        Field(
+            description="A booked service appointment (Cars24: home inspection or test drive). Present instead of property and stay; exactly one of the two shapes is sent (checked at ingest)."
+        ),
+    ] = None

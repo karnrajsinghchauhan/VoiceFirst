@@ -10,6 +10,7 @@ _VALUES = {
     k: "x"
     for k in (
         "first_name",
+        "client",
         "city",
         "property_name",
         "check_in_date",
@@ -18,6 +19,10 @@ _VALUES = {
         "amount",
         "due_date",
         "booking_tail",
+        "slot_date",
+        "slot_time",
+        "area",
+        "appointment",
     )
 }
 
