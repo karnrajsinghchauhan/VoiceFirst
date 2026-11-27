@@ -276,3 +276,8 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `/agoda` (private, noindex, passcode) cites only `docs/sources.md` rows, `content/measured.json` results and labelled estimates; its call transcript is the recorded demo run and its question list is generated from `docs/discovery-questions.md`. `npm run pdf:agoda` prints it from the production build to `reports/agoda-letter.pdf`, which is committed (the only exception to the `reports/` ignore).
 - Why: a letter that copies facts by hand drifts from the code and the sources.
 - Would change it: nothing.
+
+## D-029 (2026-11-27) The pitch pack lives on its own branch and PR
+- Decision: `docs/sales/` (Markdown plus PDFs from `scripts/sales_pdf.py`), the launch-cost list, the MCP scaffold and the review fixes go on `v3/pitch-pack`, based on `v3/w3-frontend`, with its own PR. Site polish stays on PR #14.
+- Why: PR #14 is the front end; sales documents and a server module would make it unreviewable on a phone.
+- Would change it: Karn preferring one PR.
