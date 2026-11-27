@@ -73,10 +73,26 @@ export async function gateValid(): Promise<boolean> {
 // Fixed-window limits per client and bucket. In-process: enough for one web instance; the
 // engine applies its own limits to the API behind it.
 const WINDOW_MS = 60_000;
-const LIMITS = { ask: 20, book: 5, gate: 10, demo: 30, session: 10 } as const;
+// Requests per client per minute. AV_RATE_LIMIT_<BUCKET> overrides one bucket, so the
+// Playwright suite (every scenario and sign-in within a minute) can lift it; production
+// keeps these defaults.
+const DEFAULT_LIMITS = { ask: 20, book: 5, gate: 10, demo: 30, session: 10 } as const;
+
+function limit(bucket: keyof typeof DEFAULT_LIMITS): number {
+  const raw = Number(process.env[`AV_RATE_LIMIT_${bucket.toUpperCase()}`]);
+  return Number.isInteger(raw) && raw > 0 ? raw : DEFAULT_LIMITS[bucket];
+}
+
+const LIMITS: Record<keyof typeof DEFAULT_LIMITS, number> = {
+  ask: limit("ask"),
+  book: limit("book"),
+  gate: limit("gate"),
+  demo: limit("demo"),
+  session: limit("session"),
+};
 const hits = new Map<string, { start: number; count: number }>();
 
-export type Bucket = keyof typeof LIMITS;
+export type Bucket = keyof typeof DEFAULT_LIMITS;
 
 export async function clientKey(): Promise<string> {
   const h = await headers();

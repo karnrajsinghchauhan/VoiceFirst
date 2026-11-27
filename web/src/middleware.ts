@@ -2,8 +2,8 @@
 // routes, and the passcode gate in front of /demo and /agoda.
 import { NextResponse, type NextRequest } from "next/server";
 
-const PRIVATE = ["/demo", "/agoda", "/console", "/gate"];
-const GATED = ["/demo", "/agoda", "/api/demo"];
+const PRIVATE = ["/demo", "/agoda", "/cars24", "/console", "/gate"];
+const GATED = ["/demo", "/agoda", "/cars24", "/api/demo"];
 
 function startsWithAny(path: string, prefixes: readonly string[]): boolean {
   return prefixes.some((p) => path === p || path.startsWith(`${p}/`));

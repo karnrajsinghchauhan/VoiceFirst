@@ -19,6 +19,7 @@ from datetime import date, datetime, timedelta
 from typing import Literal, Protocol
 from zoneinfo import ZoneInfo
 
+from app.campaigns.journeys import booking_shape
 from app.contracts.generated.booking_event import BookingEvent
 from app.contracts.generated.call_outcome import (
     CallOutcome,
@@ -45,7 +46,6 @@ from app.voice import prompts
 from app.voice.context import PurposeContext
 from app.voice.dark_patterns import assert_clean
 from app.voice.guardrails import Signals, classify
-from app.campaigns.journeys import booking_shape
 from app.voice.normalise import (
     CURRENCY_WORDS,
     amount_words,

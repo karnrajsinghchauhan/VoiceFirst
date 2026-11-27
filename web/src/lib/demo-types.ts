@@ -7,6 +7,8 @@ export const SCENARIOS = [
   { id: "stop_calling", title: "Stop calling me" },
   { id: "child_answers", title: "Child answers" },
   { id: "card_number", title: "Customer reads out a card number" },
+  { id: "cars24_inspection", title: "Cars24: home inspection confirmation" },
+  { id: "cars24_reschedule", title: "Cars24: test drive needs a new time" },
 ] as const;
 
 export type ScenarioId = (typeof SCENARIOS)[number]["id"];

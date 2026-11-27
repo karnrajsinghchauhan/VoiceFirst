@@ -82,7 +82,14 @@ class IncidentService(Protocol):
 
 
 DemoScenario = Literal[
-    "failed_upi", "confirmation", "angry_refund", "stop_calling", "child_answers", "card_number"
+    "failed_upi",
+    "confirmation",
+    "angry_refund",
+    "stop_calling",
+    "child_answers",
+    "card_number",
+    "cars24_inspection",
+    "cars24_reschedule",
 ]
 DemoEventKind = Literal[
     "holdout", "gate", "clearance", "disclosure", "tool", "whatsapp", "crm", "qa", "cost", "end"

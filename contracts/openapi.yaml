@@ -906,6 +906,8 @@ components:
           - stop_calling
           - child_answers
           - card_number
+          - cars24_inspection
+          - cars24_reschedule
           title: Scenario
           type: string
         transcript:
@@ -1483,6 +1485,8 @@ components:
           - stop_calling
           - child_answers
           - card_number
+          - cars24_inspection
+          - cars24_reschedule
           title: Scenario
           type: string
       required:

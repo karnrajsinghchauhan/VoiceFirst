@@ -5,7 +5,7 @@
  "method": "Real dispatcher, gates, agent and post-call on an isolated in-memory engine with mock providers and a scripted caller. Times are engine milliseconds; provider latency is not included until real keys (M8).",
  "events": [
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "holdout",
    "label": "Holdout check (no-call group)",
    "status": "pass",
@@ -15,7 +15,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Jurisdiction: +91 only",
    "status": "pass",
@@ -25,7 +25,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Kill switch and campaign pause",
    "status": "pass",
@@ -35,7 +35,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Consent basis on record",
    "status": "pass",
@@ -45,7 +45,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "DND preference registry",
    "status": "pass",
@@ -55,7 +55,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Opt-out lock",
    "status": "pass",
@@ -65,7 +65,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Caller ID declared as A2P on DLT",
    "status": "pass",
@@ -75,7 +75,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Number series matches purpose",
    "status": "pass",
@@ -85,7 +85,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Caller ID active",
    "status": "pass",
@@ -95,7 +95,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Call window (recipient local time)",
    "status": "pass",
@@ -105,7 +105,7 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "gate",
    "label": "Attempt cap and cooldown",
    "status": "pass",
@@ -115,16 +115,16 @@
    }
   },
   {
-   "t_ms": 12,
+   "t_ms": 19,
    "kind": "clearance",
    "label": "GateClearance issued (single use, 60 s)",
    "status": "pass",
    "detail": {
-    "clearance_id": "clr_2184fb0fbc664393be5673e5c8f9c4bd"
+    "clearance_id": "clr_4f8b653a86394f629e7c73f322741019"
    }
   },
   {
-   "t_ms": 15,
+   "t_ms": 25,
    "kind": "disclosure",
    "label": "AI and recording disclosed",
    "status": "pass",
@@ -133,7 +133,7 @@
    }
   },
   {
-   "t_ms": 15,
+   "t_ms": 25,
    "kind": "tool",
    "label": "end_call",
    "status": "info",
@@ -142,7 +142,7 @@
    }
   },
   {
-   "t_ms": 15,
+   "t_ms": 25,
    "kind": "qa",
    "label": "QA score 100",
    "status": "pass",
@@ -151,7 +151,7 @@
    }
   },
   {
-   "t_ms": 15,
+   "t_ms": 25,
    "kind": "cost",
    "label": "Cost 110 paise",
    "status": "info",
@@ -160,7 +160,7 @@
    }
   },
   {
-   "t_ms": 15,
+   "t_ms": 25,
    "kind": "end",
    "label": "Outcome: minor_on_line",
    "status": "info",
@@ -173,27 +173,27 @@
   {
    "speaker": "agent",
    "text": "Namaste ji, main Agoda ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main Kavita ji se baat kar rahi hoon?",
-   "t_ms": 15
+   "t_ms": 25
   },
   {
    "speaker": "customer",
    "text": "hello? main Aarav hoon, main aath saal ka hoon",
-   "t_ms": 15
+   "t_ms": 25
   },
   {
    "speaker": "agent",
    "text": "Beta, kya aap ghar ke kisi bade ko phone de sakte hain, jinke naam par booking hai?",
-   "t_ms": 15
+   "t_ms": 25
   },
   {
    "speaker": "customer",
    "text": "papa ghar pe nahi hain",
-   "t_ms": 15
+   "t_ms": 25
   },
   {
    "speaker": "agent",
    "text": "Koi baat nahi beta, hum baad mein call kar lenge. Dhanyavaad.",
-   "t_ms": 15
+   "t_ms": 25
   }
  ],
  "whatsapp_preview": null,
@@ -280,5 +280,5 @@
    0
   ]
  },
- "recorded_at": "2026-11-27"
+ "recorded_at": "2026-11-28"
 }

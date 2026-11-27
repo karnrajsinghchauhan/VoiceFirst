@@ -10,6 +10,8 @@ const SCENARIOS: { id: string; outcome: string; whatsapp: boolean; crm: boolean 
   { id: "stop_calling", outcome: "opted_out", whatsapp: false, crm: false },
   { id: "child_answers", outcome: "minor_on_line", whatsapp: false, crm: false },
   { id: "card_number", outcome: "link_sent", whatsapp: true, crm: false },
+  { id: "cars24_inspection", outcome: "details_confirmed", whatsapp: false, crm: true },
+  { id: "cars24_reschedule", outcome: "handed_off", whatsapp: false, crm: true },
 ];
 
 async function enter(page: Page): Promise<void> {

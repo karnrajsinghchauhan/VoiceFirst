@@ -7,6 +7,7 @@ import threading
 from datetime import UTC, datetime, time, timedelta
 
 from app.api.ports import DemoRun, DemoScenario, KillSwitchResult
+from app.core.config import ClientSettings
 from app.core.errors import AuthError, NotFoundError
 from app.core.ids import new_id
 from app.demo.engine import demo_settings, run_call, time_kill_switch
@@ -42,9 +43,13 @@ class DemoService:
         spec = SCENARIOS[scenario]
         persona = self._personas[spec.persona_id]
         at = _call_time(datetime.now(UTC))
-        event = build_event(self._engine_settings, spec, persona, at)
+        settings = self._engine_settings
+        if persona.client is not None:
+            # A Cars24 scenario runs as a Cars24 tenant: the agent says Cars24, not Agoda.
+            settings = settings.model_copy(update={"client": ClientSettings(name=persona.client)})
+        event = build_event(settings, spec, persona, at)
         with self._lock:
-            run = run_call(self._engine_settings, event, persona, at, killed=self._engaged)
+            run = run_call(settings, event, persona, at, killed=self._engaged)
         return build_run(new_id("demo"), scenario, run, persona)
 
     def kill(self) -> KillSwitchResult:
