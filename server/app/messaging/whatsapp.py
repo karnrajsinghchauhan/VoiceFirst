@@ -101,6 +101,7 @@ def _send(
 
 def _payment_params(settings: Settings, event: BookingEvent) -> dict[str, str]:
     return {
+        "client": settings.client.name,
         "first_name": event.customer.first_name,
         "city": event.property.city,
         "amount": format_inr(event.amount_due.value, event.amount_due.currency),
@@ -180,7 +181,7 @@ def send_app_link(
         provider,
         event,
         "av_app_link_v1",
-        {"first_name": event.customer.first_name, "link": link},
+        {"client": settings.client.name, "first_name": event.customer.first_name, "link": link},
         "app_link",
     )
 

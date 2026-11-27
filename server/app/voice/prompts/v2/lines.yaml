@@ -6,9 +6,9 @@
 
 opening:
   # S1 (brief v3): disclosure, then identity. Nothing about the booking until the person confirms.
-  hinglish: "Namaste ji, main Agoda ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main {first_name} ji se baat kar rahi hoon?"
-  hi: "नमस्ते जी, मैं Agoda की तरफ़ से एक AI असिस्टेंट बोल रही हूँ, और यह कॉल रिकॉर्ड हो रही है। क्या मैं {first_name} जी से बात कर रही हूँ?"
-  en: "Hello, this is an AI assistant calling on behalf of Agoda, and this call is recorded. Am I speaking with {first_name}?"
+  hinglish: "Namaste ji, main {client} ki taraf se ek AI assistant bol rahi hoon, aur yeh call record ho rahi hai. Kya main {first_name} ji se baat kar rahi hoon?"
+  hi: "नमस्ते जी, मैं {client} की तरफ़ से एक AI असिस्टेंट बोल रही हूँ, और यह कॉल रिकॉर्ड हो रही है। क्या मैं {first_name} जी से बात कर रही हूँ?"
+  en: "Hello, this is an AI assistant calling on behalf of {client}, and this call is recorded. Am I speaking with {first_name}?"
 
 j1_purpose:
   hinglish: "Dhanyavaad ji. Aapki {city} wali booking ka payment pending hai — kya main aapko WhatsApp par payment link bhej doon?"
@@ -51,14 +51,14 @@ j1_link_sent_nodue:
   en: "Done, the link is on your WhatsApp. The total of {amount} can be paid on the secure page through that link."
 
 j1_no_whatsapp:
-  hinglish: "Aapke number par WhatsApp updates ki anumati nahi hai, isliye main link nahi bhej sakti. Aap Agoda app mein jaakar payment kar sakte hain."
-  hi: "आपके नंबर पर WhatsApp अपडेट्स की अनुमति नहीं है, इसलिए मैं लिंक नहीं भेज सकती। आप Agoda ऐप में जाकर पेमेंट कर सकते हैं।"
-  en: "Your number has not opted in to WhatsApp updates, so I cannot send the link. You can pay in the Agoda app."
+  hinglish: "Aapke number par WhatsApp updates ki anumati nahi hai, isliye main link nahi bhej sakti. Aap {client} app mein jaakar payment kar sakte hain."
+  hi: "आपके नंबर पर WhatsApp अपडेट्स की अनुमति नहीं है, इसलिए मैं लिंक नहीं भेज सकती। आप {client} ऐप में जाकर पेमेंट कर सकते हैं।"
+  en: "Your number has not opted in to WhatsApp updates, so I cannot send the link. You can pay in the {client} app."
 
 j1_declined:
-  hinglish: "Koi baat nahi ji. Aap chahein to Agoda app mein bhi payment kar sakte hain."
-  hi: "कोई बात नहीं जी। आप चाहें तो Agoda ऐप में भी पेमेंट कर सकते हैं।"
-  en: "No problem. You can also pay in the Agoda app whenever you like."
+  hinglish: "Koi baat nahi ji. Aap chahein to {client} app mein bhi payment kar sakte hain."
+  hi: "कोई बात नहीं जी। आप चाहें तो {client} ऐप में भी पेमेंट कर सकते हैं।"
+  en: "No problem. You can also pay in the {client} app whenever you like."
 
 bnpl_explain:
   hinglish: "Aapki booking Book Now, Pay Later wali hai, yaani payment {due_date} tak India mein jaari card ya account se karna hai. Kya main link bhej doon?"
@@ -161,9 +161,9 @@ credential_warning:
   en: "Please stop there — never share card details or an OTP on a call. I only send a link; you pay yourself on the secure page."
 
 introduce:
-  hinglish: "Main Agoda ki taraf se AI assistant bol rahi hoon."
-  hi: "मैं Agoda की तरफ़ से AI असिस्टेंट बोल रही हूँ।"
-  en: "I am an AI assistant calling on behalf of Agoda."
+  hinglish: "Main {client} ki taraf se AI assistant bol rahi hoon."
+  hi: "मैं {client} की तरफ़ से AI असिस्टेंट बोल रही हूँ।"
+  en: "I am an AI assistant calling on behalf of {client}."
 
 bot_answer:
   hinglish: "Ji haan, main AI assistant hoon. Aap chahein to main aapko insaan se jod sakti hoon."
@@ -181,19 +181,19 @@ filler:
   en: "One second, I am checking."
 
 addon_app_link:
-  hinglish: "Ji, add-ons ki jaankari Agoda app mein hai. Maine app ka link WhatsApp par bhej diya hai."
-  hi: "जी, ऐड-ऑन की जानकारी Agoda ऐप में है। मैंने ऐप का लिंक WhatsApp पर भेज दिया है।"
-  en: "Information on add-ons is in the Agoda app. I have sent the app link to your WhatsApp."
+  hinglish: "Ji, add-ons ki jaankari {client} app mein hai. Maine app ka link WhatsApp par bhej diya hai."
+  hi: "जी, ऐड-ऑन की जानकारी {client} ऐप में है। मैंने ऐप का लिंक WhatsApp पर भेज दिया है।"
+  en: "Information on add-ons is in the {client} app. I have sent the app link to your WhatsApp."
 
 addon_no_whatsapp:
-  hinglish: "Ji, add-ons ki jaankari aapko Agoda app mein mil jayegi."
-  hi: "जी, ऐड-ऑन की जानकारी आपको Agoda ऐप में मिल जाएगी।"
-  en: "You will find information on add-ons in the Agoda app."
+  hinglish: "Ji, add-ons ki jaankari aapko {client} app mein mil jayegi."
+  hi: "जी, ऐड-ऑन की जानकारी आपको {client} ऐप में मिल जाएगी।"
+  en: "You will find information on add-ons in the {client} app."
 
 unknown_question:
-  hinglish: "Yeh jaankari meri booking details mein nahi hai. Aap Agoda app mein property se seedhe pooch sakte hain."
-  hi: "यह जानकारी मेरी बुकिंग डिटेल्स में नहीं है। आप Agoda ऐप में प्रॉपर्टी से सीधे पूछ सकते हैं।"
-  en: "That information is not in the booking details I have. You can ask the property directly in the Agoda app."
+  hinglish: "Yeh jaankari meri booking details mein nahi hai. Aap {client} app mein property se seedhe pooch sakte hain."
+  hi: "यह जानकारी मेरी बुकिंग डिटेल्स में नहीं है। आप {client} ऐप में प्रॉपर्टी से सीधे पूछ सकते हैं।"
+  en: "That information is not in the booking details I have. You can ask the property directly in the {client} app."
 
 line_unclear:
   hinglish: "Maaf kijiye ji, awaaz saaf nahi aayi. Kya aap dobara bol sakte hain?"

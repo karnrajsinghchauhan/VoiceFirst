@@ -32,15 +32,15 @@ TEMPLATES: dict[str, Template] = {
     "av_payment_link_v1": Template(
         name="av_payment_link_v1",
         category="utility",
-        params=("first_name", "city", "amount", "link", "grievance"),
+        params=("client", "first_name", "city", "amount", "link", "grievance"),
         bodies={
-            "hinglish": "Namaste {{first_name}} ji, aapki {{city}} wali Agoda booking ka payment "
+            "hinglish": "Namaste {{first_name}} ji, aapki {{city}} wali {{client}} booking ka payment "
             "{{amount}} baaki hai. Aap is surakshit link par payment kar sakte hain: "
             "{{link}}. Card ya OTP kabhi kisi ko na batayein. " + _GRIEVANCE_LINE["hinglish"],
-            "hi": "नमस्ते {{first_name}} जी, आपकी {{city}} वाली Agoda बुकिंग का भुगतान {{amount}} "
+            "hi": "नमस्ते {{first_name}} जी, आपकी {{city}} वाली {{client}} बुकिंग का भुगतान {{amount}} "
             "बाकी है। आप इस सुरक्षित लिंक पर भुगतान कर सकते हैं: {{link}}। कार्ड या OTP कभी "
             "किसी को न बताएं। " + _GRIEVANCE_LINE["hi"],
-            "en": "Hello {{first_name}}, the payment of {{amount}} for your Agoda booking in "
+            "en": "Hello {{first_name}}, the payment of {{amount}} for your {{client}} booking in "
             "{{city}} is pending. You can pay on this secure page: {{link}}. Never share "
             "card details or OTPs with anyone. " + _GRIEVANCE_LINE["en"],
         },
@@ -48,7 +48,7 @@ TEMPLATES: dict[str, Template] = {
     "av_payment_pending_v1": Template(
         name="av_payment_pending_v1",
         category="utility",
-        params=("first_name", "city", "amount", "link", "grievance"),
+        params=("client", "first_name", "city", "amount", "link", "grievance"),
         bodies={
             "hinglish": "Namaste {{first_name}} ji, humne aapko call kiya tha. Aapki {{city}} wali "
             "booking ka payment {{amount}} baaki hai. Payment link: {{link}}. "
@@ -62,12 +62,12 @@ TEMPLATES: dict[str, Template] = {
     "av_app_link_v1": Template(
         name="av_app_link_v1",
         category="utility",
-        params=("first_name", "link"),
+        params=("client", "first_name", "link"),
         bodies={
-            "hinglish": "Namaste {{first_name}} ji, aapne jo poocha tha, woh Agoda app mein yahan "
+            "hinglish": "Namaste {{first_name}} ji, aapne jo poocha tha, woh {{client}} app mein yahan "
             "dekh sakte hain: {{link}}",
-            "hi": "नमस्ते {{first_name}} जी, आपने जो पूछा था, वह Agoda ऐप में यहाँ देख सकते हैं: " "{{link}}",
-            "en": "Hello {{first_name}}, you can find what you asked about in the Agoda app here: "
+            "hi": "नमस्ते {{first_name}} जी, आपने जो पूछा था, वह {{client}} ऐप में यहाँ देख सकते हैं: " "{{link}}",
+            "en": "Hello {{first_name}}, you can find what you asked about in the {{client}} app here: "
             "{{link}}",
         },
     ),

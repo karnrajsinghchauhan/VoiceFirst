@@ -305,3 +305,8 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `BRAND_NAME` defaults to BookedMeetings and the site URL to bookedmeetings.com (Karn, 2026-11-28; supersedes D-701's ownermeetings.com). `/` is the brand home; the voice product's pages live under `/voice` (home, product, security, pricing, changelog) with permanent redirects from the old paths. Status, company, legal and docs stay at the root because they cover the whole brand. The footer disclaimer names Agoda and Cars24. The domain is not bought (spending gate).
 - Why: Karn wants one brand serving more than one client (Agoda, Cars24), with voice as one section of it.
 - Would change it: Karn choosing a subdomain instead of a path.
+
+## D-035 (2026-11-28) The client is tenant configuration, not text
+- Decision: `Settings.client.name` (default "Agoda") fills `{client}` in every spoken line, WhatsApp template and notice. A tenant runtime serves one client (D-020), so Cars24 is a second tenant with `AV_CLIENT__NAME=Cars24`.
+- Why: Karn wants to work with Cars24 as well; the engine must not say "Agoda" on a Cars24 call.
+- Would change it: nothing.

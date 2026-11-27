@@ -10,6 +10,7 @@ _VALUES = {
     k: "x"
     for k in (
         "first_name",
+        "client",
         "city",
         "property_name",
         "check_in_date",

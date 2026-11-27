@@ -88,6 +88,11 @@ class GrievanceSettings(BaseModel):
     notice_url: str = "https://example.invalid/agoda-voice/notice"
 
 
+class ClientSettings(BaseModel):
+    # The company this tenant calls on behalf of; spoken in every opening and template (D-035).
+    name: str = "Agoda"
+
+
 class PaymentLinkSettings(BaseModel):
     # [CD] link format and expiry.
     base_url: str = "https://example.invalid/agoda/pay"
@@ -149,6 +154,7 @@ class Settings(BaseSettings):
     residency: ResidencySettings = ResidencySettings()
     grievance: GrievanceSettings = GrievanceSettings()
     payment_link: PaymentLinkSettings = PaymentLinkSettings()
+    client: ClientSettings = ClientSettings()
 
 
 _MOCK_ROLES = ("stt", "tts", "llm", "telephony", "whatsapp", "crm")

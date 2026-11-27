@@ -208,6 +208,7 @@ class Conversation:
             "city": str(ctx.get("property.city")),
             "property_name": str(ctx.get("property.name")),
             "booking_tail": str(ctx.get("booking_id"))[-4:],
+            "client": self.s.settings.client.name,
         }
         values["check_in_date"] = date_words(
             date.fromisoformat(ctx.get("stay.check_in")), self.lang

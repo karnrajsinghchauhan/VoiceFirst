@@ -12,8 +12,8 @@ from app.core.config import Settings
 from app.core.types import Purpose
 
 _PURPOSE_TEXT: dict[Purpose, str] = {
-    "J1": "Helping you complete the pending payment for your Agoda booking by sending a payment link.",
-    "J2": "Confirming your Agoda booking details (dates, guests, arrival time, special requests) before arrival.",
+    "J1": "Helping you complete the pending payment for your {client} booking by sending a payment link.",
+    "J2": "Confirming your {client} booking details (dates, guests, arrival time, special requests) before arrival.",
 }
 
 _DATA_ITEMS: dict[Purpose, tuple[str, ...]] = {
@@ -51,10 +51,10 @@ class Notice:
 
 def build_notice(settings: Settings, purpose: Purpose) -> Notice:
     return Notice(
-        purpose=_PURPOSE_TEXT[purpose],
+        purpose=_PURPOSE_TEXT[purpose].format(client=settings.client.name),
         data_items=_DATA_ITEMS[purpose],
         recording="This call is recorded.",
-        ai_disclosure="The caller is an AI assistant acting on behalf of Agoda.",
+        ai_disclosure=f"The caller is an AI assistant acting on behalf of {settings.client.name}.",
         rights=(
             "access a summary of your personal data we process",
             "correct or complete your data",
