@@ -285,3 +285,8 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `Src`, `Measured`, `Spec` and `Est` render `data-claim`; `web/tests/public-pages.spec.ts` walks the text of each public page and fails on any percentage or money amount outside such a mark, and runs axe for WCAG 2.1 AA. `GET /status` on the engine reports live checks (API, database, dialling state, provider mode) with no data, and an empty uptime history until one is measured.
 - Why: brief v3 section 6 ("every public number needs a source or the label estimate") is only true if a test enforces it.
 - Would change it: a public page that needs a numeric example; it then uses `Est`.
+
+## D-031 (2026-11-27) MCP is a tool layer over existing services; the kill switch and consent are never tools
+- Decision: `app/mcp` exposes six tools (list, pause and start campaigns; read outcomes; read the QA scorecard), each bound to one RBAC permission, reachable only with a scoped API key, and audit-logged whether allowed or refused. Kill switch, consent, DNC, payment links and any money action are on a refusal list, and no tool may require `killswitch:write`, `consent:write` or `apikeys:write`. JSON-RPC handler only; no transport, not deployed.
+- Why: Karn's step 6; an agent may reduce calling (pause) but must not release the control that exists to stop it.
+- Would change it: Agoda asking for agents to engage (never release) the kill switch; that would be a separate, audited tool behind its own scope.
