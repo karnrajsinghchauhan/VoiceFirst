@@ -20,7 +20,8 @@ export async function latestReportPath(): Promise<string | null> {
   for (const name of entries.sort().reverse()) {
     const candidate = join(dir, name, "index.html");
     const info = await stat(candidate).catch((e: NodeJS.ErrnoException) => {
-      if (e.code === "ENOENT") return null;
+      // Files such as reports/agoda-letter.pdf sit beside the report directories.
+      if (e.code === "ENOENT" || e.code === "ENOTDIR") return null;
       throw e;
     });
     if (info?.isFile()) return candidate;

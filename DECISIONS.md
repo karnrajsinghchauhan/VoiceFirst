@@ -276,3 +276,8 @@ Format: ID, date, decision, why, what would change it.
 - Decision: `/agoda` (private, noindex, passcode) cites only `docs/sources.md` rows, `content/measured.json` results and labelled estimates; its call transcript is the recorded demo run and its question list is generated from `docs/discovery-questions.md`. `npm run pdf:agoda` prints it from the production build to `reports/agoda-letter.pdf`, which is committed (the only exception to the `reports/` ignore).
 - Why: a letter that copies facts by hand drifts from the code and the sources.
 - Would change it: nothing.
+
+## D-030 (2026-11-27) The claims rule is a browser test over every public page
+- Decision: `Src`, `Measured`, `Spec` and `Est` render `data-claim`; `web/tests/public-pages.spec.ts` walks the text of each public page and fails on any percentage or money amount outside such a mark, and runs axe for WCAG 2.1 AA. `GET /status` on the engine reports live checks (API, database, dialling state, provider mode) with no data, and an empty uptime history until one is measured.
+- Why: brief v3 section 6 ("every public number needs a source or the label estimate") is only true if a test enforces it.
+- Would change it: a public page that needs a numeric example; it then uses `Est`.

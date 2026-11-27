@@ -24,7 +24,7 @@ export default function SourcesPage() {
         </thead>
         <tbody>
           {SOURCES.map((s) => (
-            <tr key={s.id} id={s.id} className="target:bg-accent-soft">
+            <tr key={s.id} id={s.id} className="target:bg-accent-soft" data-claim="source">
               <td>
                 <code>{s.id}</code>
               </td>

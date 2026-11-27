@@ -46,3 +46,15 @@ Method: `make eval` and `make eval-audio`, deterministic scripted caller and moc
 | Dark-pattern findings | 0 | 0 | 0 |
 
 Regression check: the text scorecard is identical to the run on main of 2026-11-25; the only voice-package change since then is the exported `HANDOFF_QUEUES` constant.
+
+## Public site (2026-11-27)
+
+Method: `next build` with the mock data layer, `next start`, Lighthouse 12.8.2 (headless Chromium 1243, default mobile emulation), one warm-up request per server; Playwright with axe-core (WCAG 2.1 A/AA tags).
+
+| Page | Performance | Accessibility | Best practices | SEO |
+|------|-------------|---------------|----------------|-----|
+| / | 98 | 100 | 100 | 100 |
+| /product | 98 | 100 | 100 | 100 |
+| /security, /pricing, /changelog, /company, /status, /docs, /legal/privacy | 99 | 100 | 100 | 100 |
+
+`tests/public-pages.spec.ts`: 15 public pages each carry the disclaimer, have no untagged percentage or money claim (the claims test), return 200 and have zero axe WCAG 2.1 AA violations; security.txt follows RFC 9116. Playwright: 44 mock-site tests and 9 live-engine tests pass.

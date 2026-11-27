@@ -7,7 +7,7 @@ test("home shows the recorded call, the five promises and the disclaimer", async
   await expect(page.getByTestId("disclaimer")).toHaveText(disclaimer());
   await expect(page.locator("#promises li")).toHaveCount(5);
   await expect(page.getByTestId("transcript")).toContainText("Kya main");
-  await expect(page.getByTestId("timeline")).toContainText("Single-use clearance issued");
+  await expect(page.getByTestId("timeline")).toContainText("GateClearance issued");
 });
 
 for (const doc of DOCS) {

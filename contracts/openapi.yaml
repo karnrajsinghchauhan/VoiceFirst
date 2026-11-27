@@ -537,6 +537,28 @@ components:
       - export
       title: CompleteOut
       type: object
+    Component:
+      properties:
+        checked_at:
+          format: date-time
+          title: Checked At
+          type: string
+        name:
+          title: Name
+          type: string
+        status:
+          enum:
+          - operational
+          - degraded
+          - down
+          title: Status
+          type: string
+      required:
+      - name
+      - status
+      - checked_at
+      title: Component
+      type: object
     ConsentIn:
       additionalProperties: false
       properties:
@@ -1544,6 +1566,35 @@ components:
       - assertions_passed
       - trace_id
       title: SimulationResult
+      type: object
+    StatusReport:
+      properties:
+        components:
+          items:
+            $ref: '#/components/schemas/Component'
+          title: Components
+          type: array
+        history:
+          items:
+            additionalProperties:
+              anyOf:
+              - type: string
+              - type: number
+            type: object
+          title: History
+          type: array
+        overall:
+          enum:
+          - operational
+          - degraded
+          - down
+          title: Overall
+          type: string
+      required:
+      - overall
+      - components
+      - history
+      title: StatusReport
       type: object
     ToolsCalledItem:
       additionalProperties: false
@@ -4017,6 +4068,61 @@ paths:
       summary: Simulate
       tags:
       - simulate
+  /status:
+    get:
+      operationId: status_status_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusReport'
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Conflict
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Internal Server Error
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+          description: Bad Gateway
+      summary: Status
+      tags:
+      - ops
   /whoami:
     get:
       description: The console derives what to show from the caller's role.
