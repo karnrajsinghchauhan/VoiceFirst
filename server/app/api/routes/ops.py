@@ -196,6 +196,32 @@ def open_incident(
     return view
 
 
+@router.post("/incidents/{incident_id}/reported", tags=["incidents"])
+def mark_incident_reported(
+    incident_id: str,
+    body: ReasonIn,
+    deps: Deps,
+    db: Db,
+    principal: Annotated[Principal, Depends(require("incidents:write"))],
+) -> IncidentView:
+    view = deps.incidents.mark_reported(incident_id, deps.clock.now())
+    _audit(deps, db, principal, "incident.reported", f"incident:{incident_id}", body.reason)
+    return view
+
+
+@router.post("/incidents/{incident_id}/acknowledge", tags=["incidents"])
+def acknowledge_incident(
+    incident_id: str,
+    body: ReasonIn,
+    deps: Deps,
+    db: Db,
+    principal: Annotated[Principal, Depends(require("incidents:write"))],
+) -> IncidentView:
+    view = deps.incidents.acknowledge(incident_id, deps.clock.now(), principal.actor)
+    _audit(deps, db, principal, "incident.acknowledge", f"incident:{incident_id}", body.reason)
+    return view
+
+
 @router.get("/audit", tags=["audit"])
 def list_audit(
     deps: Deps,

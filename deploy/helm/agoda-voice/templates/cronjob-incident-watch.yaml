@@ -1,0 +1,24 @@
+# Every 15 minutes: pages a person when a CERT-In or DPDP report clock has run out (R2 H2).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-incident-watch
+  labels:
+    {{- include "av.labels" . | nindent 4 }}
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext: {runAsNonRoot: true, runAsUser: 65534}
+          containers:
+            - name: watch
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              command: ["python", "-m", "app.incidents.watch"]
+              env:
+                {{- include "av.env" . | nindent 16 }}
+              envFrom:
+                {{- include "av.envFrom" . | nindent 16 }}

@@ -15,6 +15,7 @@ evaluation and its dial, so the counts the gates read are exact.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Literal, Protocol
@@ -93,6 +94,7 @@ class Dispatcher:
         fallback: FallbackSender,
         cli_by_purpose: Mapping[Purpose, str],
         rules: JourneyRules,
+        call_workers: int = 1,
     ) -> None:
         self._factory = session_factory
         self._bus = bus
@@ -103,6 +105,7 @@ class Dispatcher:
         self._fallback = fallback
         self._cli_by_purpose = dict(cli_by_purpose)
         self._rules = rules
+        self._call_workers = call_workers
 
     # Ingest
 
@@ -166,13 +169,44 @@ class Dispatcher:
     # Dispatch
 
     def run_due(self) -> list[DispatchResult]:
-        """Processes every item due now, one at a time. Stops at the kill switch."""
+        """Processes every item due now. Stops at the kill switch.
+
+        Gates, clearance and dial stay sequential in this one writer (D-201), so attempt caps
+        and cooldowns count committed dial rows exactly. Up to `call_workers` dialled calls
+        then run at once; no more are dialled than can run, so nobody answers to silence (D-033).
+        """
         results: list[DispatchResult] = []
         while True:
-            item_id = self._take_next_due()
-            if item_id is None:
+            calls: list[tuple[str, BookingEvent, CallHandle, Purpose]] = []
+            taken = 0
+            while len(calls) < self._call_workers:
+                item_id = self._take_next_due()
+                if item_id is None:
+                    break
+                taken += 1
+                handle, event, result, provider_failure = self._clear_and_dial(item_id)
+                if provider_failure is not None:
+                    raise provider_failure
+                if handle is None:
+                    results.append(result)
+                else:
+                    calls.append((item_id, event, handle, result.purpose))
+            if taken == 0:
                 return results
-            results.append(self._dispatch(item_id))
+            results.extend(self._run_calls(calls))
+
+    def _run_calls(
+        self, calls: list[tuple[str, BookingEvent, CallHandle, Purpose]]
+    ) -> list[DispatchResult]:
+        if not calls:
+            return []
+        with ThreadPoolExecutor(max_workers=len(calls)) as pool:
+            futures = [pool.submit(self._runner.run, h, e, p) for _, e, h, p in calls]
+            # result() re-raises a call's typed error after every other call has finished.
+            return [
+                self._record_outcome(item_id, event, handle, future.result())
+                for (item_id, event, handle, _), future in zip(calls, futures, strict=True)
+            ]
 
     def _take_next_due(self) -> str | None:
         with transaction(self._factory) as session:
@@ -203,15 +237,6 @@ class Dispatcher:
                 state="dropped", last_reason="kill_switch_engaged", updated_at=self._clock.now()
             )
         )
-
-    def _dispatch(self, item_id: str) -> DispatchResult:
-        handle, event, result, provider_failure = self._clear_and_dial(item_id)
-        if provider_failure is not None:
-            raise provider_failure
-        if handle is None:
-            return result
-        outcome = self._runner.run(handle, event, result.purpose)
-        return self._record_outcome(item_id, event, handle, outcome)
 
     def _clear_and_dial(
         self, item_id: str

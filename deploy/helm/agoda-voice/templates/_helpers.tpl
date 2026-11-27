@@ -29,12 +29,17 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
   value: {{ dict "allowed_regions" .Values.residency.allowedRegions "provider_regions" .Values.residency.providerRegions | toJson | quote }}
 - name: AV_RETENTION
   value: {{ dict "audio_days" .Values.retention.audioDays "transcript_days" .Values.retention.transcriptDays "ict_log_days" .Values.retention.ictLogDays | toJson | quote }}
+- name: AV_CALL_WORKERS
+  value: {{ .Values.dispatcher.callWorkers | quote }}
 - name: AV_NTP_SERVERS
   value: {{ .Values.time.ntpServers | toJson | quote }}
 - name: AV_DATABASE_URL
   valueFrom:
     secretKeyRef: {name: {{ .Values.postgres.existingSecret }}, key: {{ .Values.postgres.secretKey }}}
-envFrom:
-  - secretRef:
-      name: {{ .Values.secrets.existingSecret }}
+{{- end -}}
+
+{{/* Container-level, beside env: the provider keys from the platform secret store. */}}
+{{- define "av.envFrom" -}}
+- secretRef:
+    name: {{ .Values.secrets.existingSecret }}
 {{- end -}}

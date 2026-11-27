@@ -17,6 +17,7 @@ from app.core.bus import EventBus
 from app.core.clock import Clock
 from app.core.config import Settings
 from app.core.db import transaction
+from app.core.errors import ProviderError
 from app.core.ids import mask_booking_id, new_id
 from app.core.logging import get_logger
 from app.crm.cases import open_case
@@ -121,7 +122,15 @@ class LiveToolBackend:
                 reason=f"{reason} (customer said: {when})",
             )
             s.add(row)
-        return ToolResult("scheduled", row.callback_id)
+        # A promised callback must reach a person: the CRM ticket is what an agent works from.
+        ticket = self._crm.create_ticket(
+            subject=f"Agoda Voice callback due {row.due_at:%Y-%m-%d %H:%M} UTC ({mask_booking_id(event.booking_id)})",
+            body=f"{row.reason}\nGrievance channel: {self._settings.grievance.channel}",
+            requester_ref=call_id,
+            tags=["agoda_voice", "callback", f"queue_{row.queue}"],
+            priority="normal",
+        )
+        return ToolResult("scheduled", ticket.ticket_id)
 
     def warm_transfer(
         self, call_id: str, event: BookingEvent, summary: HandoffSummary
@@ -130,7 +139,16 @@ class LiveToolBackend:
             result = warm_transfer(
                 s, self._bus, self._queue, self._clock, summary, self._settings.voice_gender
             )
+        # The handoff commits before the CRM call: a CRM outage must not erase a transfer that
+        # may already have a person on the line. A failed case write pages a human instead.
+        try:
             ticket = open_case(self._crm, summary, self._settings.grievance.channel)
+        except ProviderError as exc:
+            self.alert(call_id, "crm_case_failed", exc.code)
+            return TransferResult(
+                connected=result.kind == "transferred", queue=summary.queue, ref=result.agent_ref
+            )
+        with transaction(self._factory) as s:
             attach_ticket(s, summary.call_id, ticket.ticket_id)
         return TransferResult(
             connected=result.kind == "transferred",

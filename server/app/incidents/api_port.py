@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.api.ports import IncidentKind, IncidentView
 from app.core.db import transaction
+from app.incidents import service
 from app.incidents.models import IncidentRow
 from app.incidents.service import open_incident
 
@@ -97,3 +98,19 @@ class IncidentPort:
                 detected_at=detected_at,
             )
             return _view(row, kind, None)
+
+    def _one(self, row: IncidentRow) -> IncidentView:
+        return _view(
+            row,
+            _API_KIND[row.kind],  # type: ignore[arg-type]
+            row.report_due_at if row.kind == "cert_in" else None,
+        )
+
+    def mark_reported(self, incident_id: str, at: datetime) -> IncidentView:
+        """Stops the regulatory clock: the CERT-In or Board report has been filed."""
+        with transaction(self._factory) as session:
+            return self._one(service.mark_reported(session, incident_id, at))
+
+    def acknowledge(self, incident_id: str, at: datetime, actor: str) -> IncidentView:
+        with transaction(self._factory) as session:
+            return self._one(service.acknowledge(session, incident_id, at, actor))

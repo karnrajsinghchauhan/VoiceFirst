@@ -106,4 +106,5 @@ def build_dispatcher(
         fallback=WhatsAppFallback(rt.session_factory, rt.settings, rt.clock, p.whatsapp),
         cli_by_purpose=rt.settings.compliance.cli_by_purpose,
         rules=JourneyRules(),
+        call_workers=rt.settings.call_workers,
     )

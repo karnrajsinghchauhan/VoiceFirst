@@ -277,7 +277,26 @@ Format: ID, date, decision, why, what would change it.
 - Why: a letter that copies facts by hand drifts from the code and the sources.
 - Would change it: nothing.
 
+## D-029 (2026-11-27) The pitch pack lives on its own branch and PR
+- Decision: `docs/sales/` (Markdown plus PDFs from `scripts/sales_pdf.py`), the launch-cost list, the MCP scaffold and the review fixes go on `v3/pitch-pack`, based on `v3/w3-frontend`, with its own PR. Site polish stays on PR #14.
+- Why: PR #14 is the front end; sales documents and a server module would make it unreviewable on a phone.
+- Would change it: Karn preferring one PR.
 ## D-030 (2026-11-27) The claims rule is a browser test over every public page
 - Decision: `Src`, `Measured`, `Spec` and `Est` render `data-claim`; `web/tests/public-pages.spec.ts` walks the text of each public page and fails on any percentage or money amount outside such a mark, and runs axe for WCAG 2.1 AA. `GET /status` on the engine reports live checks (API, database, dialling state, provider mode) with no data, and an empty uptime history until one is measured.
 - Why: brief v3 section 6 ("every public number needs a source or the label estimate") is only true if a test enforces it.
 - Would change it: a public page that needs a numeric example; it then uses `Est`.
+
+## D-031 (2026-11-27) MCP is a tool layer over existing services; the kill switch and consent are never tools
+- Decision: `app/mcp` exposes six tools (list, pause and start campaigns; read outcomes; read the QA scorecard), each bound to one RBAC permission, reachable only with a scoped API key, and audit-logged whether allowed or refused. Kill switch, consent, DNC, payment links and any money action are on a refusal list, and no tool may require `killswitch:write`, `consent:write` or `apikeys:write`. JSON-RPC handler only; no transport, not deployed.
+- Why: Karn's step 6; an agent may reduce calling (pause) but must not release the control that exists to stop it.
+- Would change it: Agoda asking for agents to engage (never release) the kill switch; that would be a separate, audited tool behind its own scope.
+
+## D-032 (2026-11-27) Section 5 review fixes
+- Decision: fixed in code: callbacks open a CRM ticket; the handoff commits before the CRM call and a CRM failure pages a person; erasure and the nightly purge scrub booking-event payloads, clearances and handoff summaries; overdue CERT-In/DPDP reports page a person every 15 minutes (CronJob) and `POST /incidents/{id}/reported|acknowledge` stop the clocks; production refuses placeholder grievance, notice and payment-link values and refuses `stt=sarvam` until its confidence is calibrated; the Helm chart's `envFrom` placement (it now passes `helm lint`, closing D-012). Corrected claims: the demo's staffed queue is modelled, 0 real calls, the latency figure is modelled, Kubernetes effort excludes missing chart pieces, ICT-log retention is a deployment requirement, the billing unit is a paid J1 booking or a confirmed J2.
+- Why: brief v3 section 5: fix every High and Critical with the smallest change; where a fix needs keys or a design, stop claiming it and queue it (PLAN.md).
+- Would change it: nothing.
+
+## D-033 (2026-11-27) Dialled calls run concurrently; gates stay single-writer (amends D-201)
+- Decision: `run_due` clears and dials up to `call_workers` items sequentially, then runs those calls in parallel threads and records their outcomes; it never dials more calls than it can run. Default 1 (tests), Helm 20.
+- Why: review R3 C1: one call at a time per tenant cannot serve a pilot. Clearance and the dial-attempt row commit before a call runs, so caps and cooldowns still count exactly (tested with a shared number).
+- Would change it: moving the call loop into the LiveKit worker (PLAN item 1), after which the dispatcher only dials.
